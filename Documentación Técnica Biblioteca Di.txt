@@ -1,0 +1,181 @@
+Documentación Técnica: Biblioteca Digital CUNOC (Archivo Original)
+Nombre del Archivo: index.html (Monolítico)
+Tecnologías: HTML5, CSS3 (Inline), JavaScript (Vanilla ES6+)
+Almacenamiento: LocalStorage
+Estado: Funcional pero requiere refactorización (separación de archivos y correcciones visuales).
+1. Estructura General del Código
+El archivo original contiene tres secciones principales embebidas:
+HTML: Estructura semántica con pantallas de bienvenida, modales, header, panel de admin y vista pública.
+CSS: Estilos definidos dentro de la etiqueta <style>, incluyendo variables CSS, utilidades tipo Tailwind y componentes específicos.
+JavaScript: Lógica completa definida dentro de la etiqueta <script>, manejando autenticación, CRUD de datos, calendarios y carruseles.
+2. Bloque HTML (<body>)
+2.1 Pantalla de Bienvenida (#welcome-screen)
+Fondo: Azul USAC (#002C5F).
+Imagen: GIF animado (assets/images/En.gif).
+Elementos: Título "Biblioteca Virtual Trabajo Social", subtítulo "CUNOC · Quetzaltenango", botón "Ingresar al Portal".
+2.2 Modal de Autenticación (#auth-modal)
+Pestañas: "Entrar" / "Registrar".
+Campos: Nombre (solo registro), Carné, Contraseña.
+Imagen: GIF animado (assets/images/En.gif).
+Lógica: Valida contra localStorage (biblioteca_users_v3).
+2.3 Modal de Acceso Admin (#admin-modal)
+Campos: Nombre, Cargo (Select: Docente/Creador/Colaborador), Contraseña/Nawal.
+Validación: Verifica contraseñas maestras o Nawales mayas.
+2.4 Header Principal (#app-header)
+Logo: GIF animado (assets/images/En.gif) → Debe cambiarse a estático.
+Navegación Estudiante: Inicio, Funciones, Acerca de.
+Botones Derecha: Acceso Admin, Panel Admin (visible solo para admins), Tema Oscuro/Claro, Salir.
+2.5 Panel de Administración (#admin-panel)
+Estadísticas: Total Estudiantes, Documentos, Descargas.
+Formularios:
+Carga de Recursos (Tesis, Investigación, Guía EPS).
+Lanzar Aviso/Evento.
+Publicar Libro en Carrusel (con selección de color de portada).
+Listas:
+Libros en Exhibición.
+Buzón de Consultas (con respuesta).
+Estudiantes Registrados (opción de silenciar).
+Limpieza de Muro (eliminar avisos/documentos).
+2.6 Vista Pública (#public-view)
+Se divide en 3 pestañas principales:
+A. Pestaña Inicio (#tab-inicio)
+Hero de bienvenida personalizado.
+Tarjetas de Misión y Visión.
+Objetivos de la Biblioteca (4 tarjetas).
+Sección "Acerca de" (Historia, Objetivos Institucionales, Equipo).
+B. Pestaña Funciones (#tab-funciones)
+Header descriptivo.
+Grid de 5 tarjetas de navegación rápida:
+Calendario Académico.
+Aporte Estudiantil.
+Comunicación Directa.
+Biblioteca Drive.
+Repositorio Institucional.
+C. Pestaña Plataforma (#tab-plataforma)
+Carrusel Principal: "Nuevas Adquisiciones" (3D transform).
+Buscador Global.
+Muro de Noticias: Listado de anuncios urgentes/generales.
+Repositorio Institucional: Filtrado por Tesis, Investigación, Guía EPS.
+Biblioteca Drive: Sección explicativa con botón a repositorio.
+Calendario Interactivo: Vistas Mensual/Semanal/Diaria.
+Aporte Estudiantil: Formularios para subir docs/avisos (limitado a 1 por sesión).
+Comunicación Directa: Envío de mensajes y historial.
+2.7 Footer
+Logo institucional.
+Redes sociales (Facebook, Instagram, WhatsApp).
+Copyright USAC 2026.
+2.8 Elementos Flotantes (A Eliminar)
+#floating-carousel: Carrusel de libros en esquina inferior derecha.
+#float-mini: Botón minimizado para restaurar carrusel.
+#book-detail-modal: Modal de detalles de libro.
+3. Bloque CSS (<style>)
+Variables Principales
+css
+123456
+Clases Utilitarias (Estilo Tailwind)
+Layout: .flex, .grid, .hidden, .relative, .absolute, .fixed.
+Espaciado: .p-4, .m-2, .gap-4, etc.
+Tipografía: .text-xl, .font-bold, .uppercase.
+Colores: .bg-usac-blue, .text-white, .border-gray-200.
+Componentes Específicos
+.btn-bronze, .btn-blue: Botones estilizados.
+.premium-input: Inputs con bordes redondeados y foco bronce.
+.section-card: Tarjetas blancas con sombra suave.
+.modal-backdrop, .modal-box: Estilos para modales.
+.cover-blue, .cover-amber, etc.: Gradientes para portadas de libros.
+body.dark: Overrides para modo oscuro.
+Animaciones
+@keyframes fadeIn, scaleIn, bounce.
+4. Bloque JavaScript (<script>)
+Constantes y Almacenamiento
+KEYS: Definición de claves para LocalStorage (users, docs, anns, session, msgs, books).
+store: Objeto helper para get/set en LocalStorage.
+NAWALES: Array de días del calendario maya para validación de admins.
+DEFAULT_BOOKS: Array de objetos con libros predeterminados (título, autor, descripción, color, link).
+Funciones de Autenticación
+validateAdminPwd(cargo, pwd): Valida si la contraseña es "k'at-m" (Creador) o un Nawal válido (Docente/Colaborador).
+handleAuth(e): Login/Registro de estudiantes.
+handleAdminAccess(e): Login de administradores.
+loginSuccess(user): Inicia sesión, oculta welcome screen, muestra app.
+handleLogout(): Cierra sesión y limpia estado.
+Funciones de UI y Navegación
+showAuthModal(), closeAuthModal(), openAdminModal().
+switchAuthTab(mode): Cambia entre login y registro.
+updateHeaderUI(): Actualiza nombre, rol y botones según usuario.
+toggleDark(): Alterna clase dark en body.
+setMainTab(tab): Cambia entre Inicio/Funciones/Plataforma.
+scrollToSection(id): Scroll suave a sección específica.
+toggleAdminPanel(): Muestra/oculta panel de admin.
+Funciones de Administración (CRUD)
+renderAdminPanel(): Renderiza estadísticas, listas de estudiantes, libros, mensajes y opciones de eliminación.
+adminAddDoc(e), adminAddAnn(e), adminAddBook(e): Agregan nuevos items.
+deleteDoc(id), deleteAnn(id), deleteMsg(id), deleteBook(id): Eliminan items.
+muteStudent(carne): Silencia/desilencia estudiante.
+replyMsg(e, id): Responde mensaje de estudiante.
+togglePinDoc(id), togglePinAnn(id): Fija item al inicio.
+Funciones de Estudiante
+studentAddDoc(e), studentAddAnn(e): Sube doc/aviso (limitado a 1 por sesión).
+studentSendMsg(e): Envía mensaje a coordinación.
+renderMyMessages(): Muestra historial propio.
+Funciones de Renderizado Público
+renderAll(): Orquesta el renderizado de noticias, repositorio y mensajes.
+renderAnnouncements(search): Renderiza muro de noticias con filtro.
+renderRepositorio(search): Renderiza listas de tesis/investigación/guías.
+renderCalendar(): Renderiza calendario en vista Mes/Semana/Día.
+showEventDetail(jsonStr): Muestra modal con detalles de evento.
+Funciones de Carrusel
+initCarousels(): Inicia carrusel principal y flotante.
+initMainCarousel(), renderMainCarousel(): Lógica 3D del carrusel principal.
+carouselShift(dir): Navega siguiente/anterior.
+initFloatCarousel(), renderFloatCarousel(): Lógica del carrusel flotante (a eliminar).
+openBookDetail(book): Abre modal de detalles del libro.
+minimizeCarousel(), restoreCarousel(): Controla visibilidad del flotante.
+Inicialización
+window.addEventListener('DOMContentLoaded', ...): Recupera sesión guardada y renderiza vista inicial.
+5. Notas para Refactorización (PRD)
+Separación de Archivos:
+Extraer CSS a style.css.
+Extraer JS a script.js.
+Dejar solo HTML estructural en index.html.
+Corrección de Imágenes:
+Header/Footer: Cambiar src="assets/images/En.gif" por src="assets/images/2.png" (Logo estático).
+Welcome/Login: Mantener src="assets/images/En.gif" (GIF animado).
+Eliminación de Funcionalidades:
+Borrar HTML de #floating-carousel y #float-mini.
+Borrar JS asociado: initFloatCarousel, renderFloatCarousel, floatNext, floatPrev, minimizeCarousel, restoreCarousel, openFloatBook, variables floatCarouselIdx, floatTimer.
+Integración Google Drive:
+En sección #biblioteca-drive, reemplazar contenido por botón directo:
+<a href="https://drive.google.com/drive/folders/TU_LINK_AQUI" target="_blank">ACCEDER AL REPOSITORIO EN GOOGLE DRIVE →</a>
+Navegación "Acerca de":
+Asegurar que botón "Acerca de" en header haga scroll a #acerca dentro de #tab-inicio.
+Despliegue:
+Asegurar rutas relativas correctas para GitHub Pages/Vercel.
+Usar enlaces externos para imágenes de libros (Drive/Imgur) para evitar problemas de carga.
+toma en cuenta que si te quedas sin tokens en el ultimo mensaje que me des quiero que me digas en que paso o parte te quedaste para delegarle a otro agente tu trabajo sin problemas 
+
+6. Nuevas Políticas de Contraseñas Básicas (Pruebas y Desarrollo)
+Para facilitar el desarrollo, las pruebas y la depuración de la plataforma, se han simplificado los requisitos de complejidad de las contraseñas del panel administrativo. Se admiten tanto el hashing original SHA-256 como las siguientes credenciales base temporales para pruebas:
+
+═══════════════════════════════════════
+   CREDENCIALES DE PRUEBAS DEL SISTEMA
+═══════════════════════════════════════
+
+ADMINISTRADOR:
+• Usuario: admin
+• Contraseña: admin123
+• Rol: Acceso total
+
+COLABORADORES:
+• Usuario: colaborador1
+• Contraseña: colab123
+• Rol: Gestión de contenido
+
+DOCENTES:
+• Usuario: docente1
+• Contraseña: docente123
+• Rol: Gestión de cursos
+
+═══════════════════════════════════════
+
+Políticas de Contraseñas para Estudiantes:
+El registro de estudiantes admite contraseñas sencillas sin complejidad estricta (mínimo de caracteres básicos alfanuméricos) para garantizar un flujo de pruebas ágil.

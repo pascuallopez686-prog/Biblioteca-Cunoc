@@ -1,0 +1,21 @@
+# Variables de entorno - NUNCA subir a GitHub
+.env
+.env.local
+.env.production
+
+# Archivos sensibles
+credenciales.txt
+credenciales.md
+ordenes
+ordenes.md
+
+# Dependencias
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/

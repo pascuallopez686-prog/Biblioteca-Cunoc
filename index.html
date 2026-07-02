@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Biblioteca Digital CUNOC de Trabajo Social: recursos académicos, avisos, repositorio institucional y comunicación estudiantil.">
+    <meta name="theme-color" content="#002C5F">
+    <title>Biblioteca Digital CUNOC - Trabajo Social</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+        integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════════
+     PANTALLA DE BIENVENIDA
+     ══════════════════════════════════════════ -->
+    <div id="welcome-screen">
+        <img src="imags/en.gif" alt="Fondo animado" class="welcome-bg-gif">
+        <div class="welcome-container">
+            <h1>Biblioteca Virtual Trabajo Social</h1>
+            <p class="subtitle">CUNOC · Quetzaltenango</p>
+            <button id="btn-enter" class="btn-bronze">Ingresar al Portal</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     MODAL DE AUTENTICACIÓN ESTUDIANTE
+     ══════════════════════════════════════════ -->
+    <div id="auth-modal" class="modal-backdrop hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Acceso a la Biblioteca</h2>
+                <button type="button" class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="auth-tabs">
+                <button type="button" class="tab-btn active" data-tab="login">Entrar</button>
+                <button type="button" class="tab-btn" data-tab="register">Registrar</button>
+            </div>
+            <div class="modal-content">
+                <img src="imags/en.gif" alt="Login" class="auth-gif">
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-carne">Carné</label>
+                        <input type="text" id="login-carne" class="premium-input" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Contraseña</label>
+                        <input type="password" id="login-password" class="premium-input" autocomplete="current-password"
+                            required>
+                    </div>
+                    <button type="submit" class="btn-blue">Iniciar Sesión</button>
+                </form>
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="reg-name">Nombre Completo</label>
+                        <input type="text" id="reg-name" class="premium-input" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-carne">Carné</label>
+                        <input type="text" id="reg-carne" class="premium-input" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Contraseña</label>
+                        <input type="password" id="reg-password" class="premium-input" autocomplete="new-password"
+                            required>
+                    </div>
+                    <button type="submit" class="btn-blue">Registrarse</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     MODAL DE ACCESO ADMINISTRATIVO
+     ══════════════════════════════════════════ -->
+    <div id="admin-modal" class="modal-backdrop hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Acceso Administrativo</h2>
+                <button type="button" class="close-btn" onclick="closeAdminModal()">&times;</button>
+            </div>
+            <form id="admin-form" class="auth-form">
+                <div class="form-group">
+                    <label for="admin-name">Nombre</label>
+                    <input type="text" id="admin-name" class="premium-input" autocomplete="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-role">Cargo</label>
+                    <select id="admin-role" class="premium-input" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="admin">Administrador</option>
+                        <option value="aso">ASO (Colaborador)</option>
+                        <option value="docente">Docente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Contraseña / Nawal</label>
+                    <input type="password" id="admin-password" class="premium-input" autocomplete="current-password"
+                        required>
+                </div>
+                <button type="submit" class="btn-bronze">Acceder como Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     HEADER PRINCIPAL
+     ══════════════════════════════════════════ -->
+    <header id="app-header" class="hidden">
+        <div class="header-container">
+            <div class="logo-section">
+                <span class="header-title">Biblioteca Digital</span>
+                <img src="imags/2.png" alt="Logo USAC TS" class="header-logo nav-logo"
+                    onclick="switchMainView('biblioteca')" title="Ir a Biblioteca">
+                <img src="imags/si.jpg" alt="Logo AETSRO" class="header-logo nav-logo"
+                    onclick="switchMainView('aetsro')" title="Ver AETSRO">
+                <img src="imags/no.png" alt="Logo Consejo" class="header-logo nav-logo"
+                    onclick="switchMainView('consejo')" title="Ver Consejo Elvira Barreno">
+            </div>
+
+            <nav class="main-nav">
+                <!-- Menú Desplegable Cursos -->
+                <div class="dropdown">
+                    <button class="nav-btn dropbtn" aria-haspopup="true">Cursos ▾</button>
+                    <div class="dropdown-content" role="menu">
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('cursos'); scrollToSection('courses-globales'); return false;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#87CEEB"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                            </svg>Plataformas Globales</a>
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('cursos'); scrollToSection('courses-otros'); return false;"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#FF9F43"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-2 10H6v-2h12v2zm0-4H6v-2h12v2z" />
+                            </svg>Otros Recursos</a>
+                    </div>
+                </div>
+
+                <!-- Menú Desplegable IA -->
+                <div class="dropdown">
+                    <button class="nav-btn dropbtn" aria-haspopup="true">IA ▾</button>
+                    <div class="dropdown-content" role="menu">
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('ia'); scrollToSection('ia-asistentes'); return false;"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#A29BFE"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                                <path d="M15 19H5v-2h10v2z" />
+                            </svg>Asistentes de Redacción</a>
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('ia'); scrollToSection('ia-tecnicas'); return false;"><svg
+                                xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#00CEC9"
+                                viewBox="0 0 24 24">
+                                <path
+                                    d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+                                <path
+                                    d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
+                            </svg> Desarrollo e IA Técnica</a>
+                    </div>
+                </div>
+
+                <!-- Menú Desplegable Plataforma General -->
+                <div class="dropdown">
+                    <button class="nav-btn dropbtn" aria-haspopup="true">Plataforma General ▾</button>
+                    <div class="dropdown-content" role="menu">
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('plataforma'); scrollToSection('platform-news'); return false;">
+                            Muro de Noticias</a>
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('plataforma'); scrollToSection('platform-drive'); return false;">
+                            Biblioteca Drive</a>
+
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('plataforma'); scrollToSection('platform-communication'); return false;">
+                            Comunicación Directa</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="header-actions">
+                <button id="btn-admin-access" class="btn-small" onclick="openAdminModal()">Acceso Admin</button>
+                <button id="btn-admin-panel" class="btn-small hidden" onclick="toggleAdminPanel()">Panel Admin</button>
+                <button id="btn-theme" class="btn-icon" onclick="toggleDark()" title="Cambiar tema">🌙</button>
+                <button id="btn-logout" class="btn-small" onclick="handleLogout()">Salir</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+     PANEL DE ADMINISTRACIÓN
+     (hermano de <main>, FUERA de #public-view)
+     ══════════════════════════════════════════ -->
+    <section id="admin-panel" class="hidden" aria-label="Panel de Administración">
+        <div class="admin-container">
+            <h2>⚙ Panel de Administración</h2>
+
+            <!-- Estadísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Estudiantes</h3>
+                    <p id="stat-students">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Documentos</h3>
+                    <p id="stat-docs">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Descargas</h3>
+                    <p id="stat-downloads">0</p>
+                </div>
+            </div>
+
+            <!-- Formularios de administración -->
+            <div class="admin-forms">
+                <div class="form-section">
+                    <h3>Carga de Recursos</h3>
+                    <form id="admin-doc-form">
+                        <select id="doc-type" class="premium-input">
+                            <option value="tesis">Tesis</option>
+                            <option value="investigacion">Investigación</option>
+
+                        </select>
+                        <input type="text" id="doc-title" placeholder="Título" class="premium-input" required>
+                        <input type="text" id="doc-author" placeholder="Autor" class="premium-input" required>
+                        <input type="url" id="doc-link" placeholder="URL del documento" class="premium-input" required>
+                        <button type="submit" class="btn-blue">Publicar Recurso</button>
+                    </form>
+                </div>
+
+                <div class="form-section">
+                    <h3>Lanzar Aviso / Evento</h3>
+                    <form id="admin-ann-form">
+                        <input type="text" id="ann-title" placeholder="Título del aviso" class="premium-input" required>
+                        <textarea id="ann-content" placeholder="Contenido del aviso" class="premium-input" rows="3"
+                            required></textarea>
+                        <select id="ann-type" class="premium-input">
+                            <option value="general">General</option>
+                            <option value="urgente">Urgente</option>
+                        </select>
+                        <div class="form-group">
+                            <label for="ann-image"
+                                style="font-size:0.85rem; font-weight:600; margin-top:0.25rem;">Imagen del Aviso
+                                (Opcional - Transcripción Base64)</label>
+                            <input type="file" id="ann-image" accept="image/*" class="premium-input">
+                        </div>
+                        <button type="submit" class="btn-blue">Publicar Aviso</button>
+                    </form>
+                </div>
+
+                <!-- Configuración de Redes Sociales -->
+                <div class="form-section form-section--social">
+                    <h3><i class="fas fa-share-alt"></i> Redes Sociales del Footer</h3>
+                    <p class="form-hint">Introduce las URLs de cada red. Deja vacío para ocultar el ícono.</p>
+                    <form id="admin-social-form">
+                        <div class="social-input-row">
+                            <span class="social-label"><i class="fab fa-facebook-f social-ico facebook-ico"></i>
+                                Facebook</span>
+                            <input type="url" id="social-facebook" placeholder="https://facebook.com/..."
+                                class="premium-input">
+                        </div>
+                        <div class="social-input-row">
+                            <span class="social-label"><i class="fab fa-x-twitter social-ico x-ico"></i> X
+                                (Twitter)</span>
+                            <input type="url" id="social-x" placeholder="https://x.com/..." class="premium-input">
+                        </div>
+                        <div class="social-input-row">
+                            <span class="social-label"><i class="fab fa-instagram social-ico instagram-ico"></i>
+                                Instagram</span>
+                            <input type="url" id="social-instagram" placeholder="https://instagram.com/..."
+                                class="premium-input">
+                        </div>
+                        <div class="social-input-row">
+                            <span class="social-label"><i class="fab fa-linkedin-in social-ico linkedin-ico"></i>
+                                LinkedIn</span>
+                            <input type="url" id="social-linkedin" placeholder="https://linkedin.com/..."
+                                class="premium-input">
+                        </div>
+                        <div class="social-input-row">
+                            <span class="social-label"><i class="fab fa-youtube social-ico youtube-ico"></i>
+                                YouTube</span>
+                            <input type="url" id="social-youtube" placeholder="https://youtube.com/..."
+                                class="premium-input">
+                        </div>
+                        <button type="submit" class="btn-blue"><i class="fas fa-save"></i> Guardar Redes
+                            Sociales</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Listas de administración -->
+            <div class="admin-lists">
+                <div class="list-section">
+                    <h3>Buzón de Consultas</h3>
+                    <div id="admin-messages-list"></div>
+                </div>
+                <div class="list-section">
+                    <h3>Estudiantes Registrados</h3>
+                    <div id="admin-students-list"></div>
+                </div>
+                <div class="list-section">
+                    <h3>Limpieza de Muro</h3>
+                    <div id="admin-cleanup-section"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════
+     VISTA PÚBLICA PRINCIPAL
+     ══════════════════════════════════════════ -->
+    <main id="public-view" class="hidden">
+
+        <!-- ── VISTA 1: BIBLIOTECA ── -->
+        <div id="view-biblioteca" class="main-view active">
+
+            <!-- Pestaña Inicio (mostrada por defecto) -->
+            <section id="tab-inicio" class="tab-content active">
+                <div class="hero-section theme-section">
+                    <div class="hero-bg">
+                        <img src="imags/usac1_hd_static.png" alt="Logo USAC" class="hero-gif" id="hero-gif-bg">
+                        <div class="hero-overlay"></div>
+                    </div>
+                    <div class="hero-content">
+                        <h1 id="welcome-message">Bienvenido a la Biblioteca Digital</h1>
+                        <p>Tu centro de recursos académicos de Trabajo Social</p>
+                    </div>
+                </div>
+
+                <div class="cards-grid" style="margin-top:2rem;">
+                    <div class="section-card theme-card">
+                        <h3>Misión</h3>
+                        <p>Descentralizar el acceso a la información académica y fomentar la investigación en Trabajo
+                            Social basado en la ética y la excelencia educativa.
+                            .</p>
+                    </div>
+                    <div class="section-card theme-card">
+                        <h3>Visión</h3>
+                        <p>Ser una biblioteca digital innvadora y descentralizada en la región para estudios de Trabajo
+                            Social.</p>
+                    </div>
+                </div>
+
+                <div class="objectives-grid">
+                    <div class="objective-card theme-card">
+                        <h4>Acceso Universal para estudiantes de trabajo social </h4>
+                        <p>Recursos disponibles 24/7</p>
+                    </div>
+                    <div class="objective-card theme-card">
+                        <h4>Calidad Académica</h4>
+                        <p>Contenido verificado y actualizado</p>
+                    </div>
+                    <div class="objective-card theme-card">
+                        <h4>Innovación</h4>
+                        <p>Tecnología al servicio del aprendizaje</p>
+                    </div>
+                    <div class="objective-card theme-card">
+                        <h4>Comunidad</h4>
+                        <p>Espacio de colaboración estudiantil</p>
+                    </div>
+                </div>
+
+                <!-- Acerca de — Layout Vertical -->
+                <section id="acerca" class="about-section theme-section">
+                    <h2>Acerca de la Biblioteca</h2>
+                    <img src="imags/logo-cunoc-dorado.png" alt="Logo CUNOC Dorado"
+                        style="width:150px;opacity:.8;display:block;margin:0 auto 1rem;"
+                        onerror="this.style.display='none'">
+
+                    <div class="about-content-vertical">
+                        <div class="about-block theme-card">
+                            <h3>Historia</h3>
+                            <p>La Biblioteca Digital de Trabajo Social del CUNOC fortalece las habilidades teóricas y
+                                técnicas de los estudiantes mediante la gamificación del conocimiento y la
+                                descentralización de información académica. Esta plataforma elimina barreras geográficas
+                                para garantizar un acceso equitativo a recursos especializados, regido siempre por un
+                                inquebrantable compromiso con la ética profesional. Como resultado, optimiza el
+                                desempeño de los futuros
+                                egresados en diversos ámbitos laborales, dotándolos de una sólida base conceptual,
+                                adaptabilidad tecnológica y rigor moral.
+                            </p>
+                        </div>
+                        <div class="about-block theme-card">
+                            <h3>Objetivos </h3>
+                            <ul style="padding-left:1.2rem;margin-top:.5rem;">
+                                <li>Promover la investigación académica</li>
+                                <li>Facilitar el acceso a recursos especializados</li>
+                                <li>Fomentar la colaboración entre estudiantes</li>
+                                <li>Garantizar la actualización constante de contenidos</li>
+                                <li>Integrar tecnología para mejorar la experiencia de aprendizaje</li>
+                                <li>Contribuir a la formación ética y profesional de los futuros trabajadores sociales
+                                </li>
+                                <li>Fortalecer la identidad académica y profesional de la comunidad estudiantil</li>
+                            </ul>
+                        </div>
+                        <div class="about-block theme-card">
+                            <h3>Equipo</h3>
+                            <img src="imags/sello-trabajo-social-50.png" alt="Sello Trabajo Social" class="about-seal"
+                                onerror="this.style.display='none'">
+                            <p>Estudiantes y docentes comprometidos con la excelencia académica.</p>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <!-- ── Pestaña Cursos ── -->
+            <section id="tab-cursos" class="tab-content hidden">
+                <div class="functions-header theme-section">
+                    <h2><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#87CEEB"
+                            class="bi bi-award-fill" viewBox="0 0 16 16">
+                            <path
+                                d="m8 0 1.669.864 1.858.282.842 1.68 1.337 1.32L13.4 6l.306 1.854-1.337 1.32-.842 1.68-1.858.282L8 12l-1.669-.864-1.858-.282-.842-1.68-1.337-1.32L2.6 6l-.306-1.854 1.337-1.32.842-1.68L6.331.864z" />
+                            <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1z" />
+                        </svg>Cursos y Formación Académica</h2>
+                    <p>Recursos educativos gratuitos y plataformas de aprendizaje continuo</p>
+                </div>
+                <!-- FILA 1: Plataformas Globales y Tecnología -->
+                <section id="plataformas-globales">
+                    <h3 class="category-title" id="courses-globales"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Plataformas Globales, cursos tecnicos y diplomados
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 1 Itec -->
+                        <a href="https://cursositec.com/app/explorar-cursos" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/zg.png" alt="Iec" class="edu-card-img">
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-university platform-icon"
+                                        style="color:#0056D2;"></i><span>COURSERA</span></div>
+                                <h4 class="edu-card-title">Educación en tiempo real</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">Cursos
+                                        Gratuita</span></div>
+                            </div>
+                        </a>
+                        <!-- 1 Coursera -->
+                        <a href="https://www.coursera.org/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/a.png" alt="Coursera" class="edu-card-img">
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-university platform-icon"
+                                        style="color:#0056D2;"></i><span>COURSERA</span></div>
+                                <h4 class="edu-card-title">Plataforma Educativa Coursera</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">Auditoría
+                                        Gratuita</span></div>
+                            </div>
+                        </a>
+                        <!-- 2 edX -->
+                        <a href="https://home.edx.org/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/b.png" alt="edX" class="edu-card-img">
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-graduation-cap platform-icon"
+                                        style="color:#B22222;"></i><span>EDX</span></div>
+                                <h4 class="edu-card-title">Cursos de Educación Superior edX</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-academic">Educación
+                                        Superior Global</span></div>
+                            </div>
+                        </a>
+                        <!-- 3 Udacity -->
+                        <a href="https://www.udacity.com/dashboard" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/c.png" alt="Udacity"
+                                    class="edu-card-img">
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-code platform-icon"
+                                        style="color:#01B3E4;"></i><span>UDACITY</span></div>
+                                <h4 class="edu-card-title">Formación Tecnológica Udacity</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Cursos
+                                        Tecnológicos</span></div>
+                            </div>
+                        </a>
+                        <!-- 15 NETACAD Cisco -->
+                        <a href="https://www.netacad.com/es/catalogs/learn" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/ñ.png" alt="NETACAD Cisco"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-project-diagram platform-icon"
+                                        style="color:#008080;"></i><span>CISCO</span></div>
+                                <h4 class="edu-card-title">NETACAD Cisco</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Networking
+                                        y
+                                        tecnología</span></div>
+                            </div>
+                            <!-- HOY APRENDO -->
+                            <a href="https://hoyaprendo.com/" target="_blank" class="edu-card">
+                                <div class="edu-card-img-wrapper"><img src="images/E/aprendo.png" alt="Hoy Aprendo"
+                                        class="edu-card-img"></div>
+                                <div class="edu-card-body">
+                                    <div class="edu-card-platform-info"><i class="fas fa-lightbulb platform-icon"
+                                            style="color:#FFA500;"></i><span>HOY APRENDO</span></div>
+                                    <h4 class="edu-card-title">Hoy Aprendo</h4>
+                                    <div class="edu-card-badge-container"><span
+                                            class="edu-card-badge badge-tech">Aprendizaje
+                                            diario</span></div>
+                                </div>
+                            </a>
+
+                    </div>
+
+                    <!-- FILA 2: Educación Regional y Guatemala -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Educación nacional e internacional
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 4 Edutin Academy -->
+                        <a href="https://app.edutin.com/home" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/d.png" alt="Edutin Academy"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-certificate platform-icon"
+                                        style="color:#FF8C00;"></i><span>EDUTIN ACADEMY</span></div>
+                                <h4 class="edu-card-title">Certificaciones Profesionales Edutin</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-professional">Certificaciones Diversas</span></div>
+                            </div>
+                        </a>
+                        <!-- 5 Capacítate -->
+                        <a href="https://capacitateparaelempleo.org/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/e.png" alt="Capacítate para el Empleo"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-briefcase platform-icon"
+                                        style="color:#4CAF50;"></i><span>CAPACÍTATE</span></div>
+                                <h4 class="edu-card-title">Capacítate para el Empleo</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-professional">Enfoque práctico</span></div>
+                            </div>
+                        </a>
+                        <!-- 8 SVET Guatemala (h-png.png) -->
+                        <a href="https://edu.svet.gob.gt/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/h-png.png" alt="SVET Guatemala"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-school platform-icon"
+                                        style="color:#3F51B5;"></i><span>SVET</span></div>
+                                <h4 class="edu-card-title">SVET Guatemala</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Sistema
+                                        educativo virtual</span></div>
+                            </div>
+                        </a>
+                        <!-- 9 GuateAprende -->
+                        <a href="https://www.guateaprende.com/cursos/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/i.png" alt="GuateAprende"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-book-reader platform-icon"
+                                        style="color:#9C27B0;"></i><span>GUATEAPRENDE</span></div>
+                                <h4 class="edu-card-title">GuateAprende</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-local">Plataforma
+                                        educativa GT</span></div>
+                            </div>
+                        </a>
+                        <!-- 10 Politécnico -->
+                        <a href="https://politecnicointercontinental.com/diplomados-virtuales-gratis/" target="_blank"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/j.png"
+                                    alt="Politécnico Intercontinental" class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-globe platform-icon"
+                                        style="color:#607D8B;"></i><span>POLITÉCNICO</span></div>
+                                <h4 class="edu-card-title">Politécnico Intercontinental</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-academic">Diplomados
+                                        virtuales</span></div>
+                            </div>
+                        </a>
+                        <!-- 16 CONDUSEF -->
+                        <a href="https://www.condusef.gob.mx/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/p.png" alt="CONDUSEF"
+                                    class="edu-card-img">
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-university platform-icon"
+                                        style="color:#009688;"></i><span>CONDUSEF</span></div>
+                                <h4 class="edu-card-title">CONDUSEF</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-academic">Educación
+                                        financiera</span></div>
+                            </div>
+                        </a>
+                        <!-- 20 SUAYED UNAM -->
+                        <a href="https://cuaed.unam.mx/suayed/pages/oferta-educativa.html" target="_blank"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/zb.png" alt="SUAYED UNAM"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-book-reader platform-icon"
+                                        style="color:#D32F2F;"></i><span>SUAYED</span></div>
+                                <h4 class="edu-card-title">SUAYED UNAM</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-academic">Universidad a Distancia</span></div>
+                            </div>
+                        </a>
+                        <!-- 30 Aprende.com México -->
+                        <a href="https://aprende.com/mx/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/t.png" alt="Aprende.com México"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-graduation-cap platform-icon"
+                                        style="color:#4CAF50;"></i><span>APRENDE.COM</span></div>
+                                <h4 class="edu-card-title">Aprende.com México - Oficios y Técnica</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-professional">Aprendizaje práctico</span></div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- FILA 3: Habilidades Digitales y Datos -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Habilidades Digitales
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 6 Cursa.app -->
+                        <a href="https://cursa.app/es" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/f.png" alt="Cursa.app"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-play platform-icon"
+                                        style="color:#E91E63;"></i><span>CURSA</span></div>
+                                <h4 class="edu-card-title">Cursa.app</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">Agregador
+                                        de
+                                        cursos gratis</span></div>
+                            </div>
+                        </a>
+                        <!-- 7 Aprende.org -->
+                        <a href="https://aprende.org/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/g.png" alt="Aprende.org"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-heartbeat platform-icon"
+                                        style="color:#00BCD4;"></i><span>APRENDE.ORG</span></div>
+                                <h4 class="edu-card-title">Aprende.org</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-academic">Salud
+                                        y
+                                        Crecimiento</span></div>
+                            </div>
+                        </a>
+
+                        </a>
+                        <!-- 27 AprenderGratis.es -->
+                        <a href="https://aprendergratis.es/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/q.png" alt="AprenderGratis.es"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-search platform-icon"
+                                        style="color:#E91E63;"></i><span>APRENDERGRATIS</span></div>
+                                <h4 class="edu-card-title">AprenderGratis.es - Cursos en Español</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">Directorio
+                                        gratis</span></div>
+                            </div>
+                        </a>
+                        <!-- 28 Claseflix -->
+                        <a href="https://claseflix.io/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/r.png" alt="Claseflix"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-video platform-icon"
+                                        style="color:#E50914;"></i><span>CLASEFLIX</span></div>
+                                <h4 class="edu-card-title">Claseflix - Video Cursos Gratis</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">Cursos
+                                        Online</span></div>
+                            </div>
+                        </a>
+                        <!-- 29 Dostin Hurtado -->
+                        <a href="https://dostinhurtado.com/site/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/s.png" alt="Dostin Hurtado"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-chalkboard-teacher platform-icon"
+                                        style="color:#2196F3;"></i><span>DOSTIN HURTADO</span></div>
+                                <h4 class="edu-card-title">Dostin Hurtado - Tutoriales Técnicos</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-tech">Capacitación</span></div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- FILA 4: Sociedad, Derechos y Organismos -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Sociedad, Derechos y Organismos
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 17 Serjus -->
+                        <a href="https://www.serjus.org.gt/descargas/#_" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/u.png" alt="Serjus"
+                                    class="edu-card-img">
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-handshake platform-icon"
+                                        style="color:#5D4037;"></i><span>SERJUS</span></div>
+                                <h4 class="edu-card-title">Serjus</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Servicios
+                                        Jurídicos</span></div>
+                            </div>
+                        </a>
+                        <!-- 18 Fundación Oxlajuj No'j -->
+                        <a href="https://linktr.ee/fundacionoxlajujnoj" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/z.png" alt="Fundación Oxlajuj No'j"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-hands-helping platform-icon"
+                                        style="color:#8BC34A;"></i><span>OXLAJUJ</span></div>
+                                <h4 class="edu-card-title">Fundación Oxlajuj No'j</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Derechos
+                                        humanos</span></div>
+                            </div>
+                        </a>
+                        <!-- 19 Agencia CAF -->
+                        <a href="https://linktr.ee/AgendaCAF" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/zaf.png" alt="Agencia CAF"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-money-bill-wave platform-icon"
+                                        style="color:#FFC107;"></i><span>CAF</span></div>
+                                <h4 class="edu-card-title">Agencia CAF</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-professional">Banco
+                                        de Desarrollo</span></div>
+                            </div>
+                        </a>
+                        <!-- 21 Educo Guatemala -->
+                        <a href="https://linktr.ee/EducoGuatemala" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/zc.png" alt="Educo Guatemala"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-child platform-icon"
+                                        style="color:#FF7043;"></i><span>EDUCO</span></div>
+                                <h4 class="edu-card-title">Educo Guatemala</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Defensa
+                                        niñez</span></div>
+                            </div>
+                        </a>
+                        <!-- 22 OIM Migración -->
+                        <a href="https://linktr.ee/onumigracion" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/zd.png" alt="OIM Migración"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-globe-americas platform-icon"
+                                        style="color:#1565C0;"></i><span>OIM</span></div>
+                                <h4 class="edu-card-title">OIM Migración</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-professional">Organización Internacional</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!--OPS-OMS-->
+                        <a href="https://www.paho.org/es" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/ops.png" alt="OPS-OMS"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-hospital platform-icon"
+                                        style="color:#4CAF50;"></i><span>OPS-OMS</span></div>
+                                <h4 class="edu-card-title">Organización Panamericana de la Salud</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-professional">Salud
+                                        Pública</span></div>
+                            </div>
+                            <!--UNICEF CURSOS-->
+                            <a href="https://www.unicef.org/uruguay/cursos-UNICEF" target="_blank" class="edu-card">
+                                <div class="edu-card-img-wrapper"><img src="images/E/unicef.png" alt="UNICEF"
+                                        class="edu-card-img"></div>
+                                <div class="edu-card-body">
+                                    <div class="edu-card-platform-info"><i class="fas fa-child platform-icon"
+                                            style="color:#2196F3;"></i><span>UNICEF</span></div>
+                                    <h4 class="edu-card-title">UNICEF - Cursos y Recursos Educativos</h4>
+                                    <div class="edu-card-badge-container"><span
+                                            class="edu-card-badge badge-professional">Infancia
+                                            y Educación</span></div>
+                                </div>
+                                <!--FAO CURSOS-->
+                                <a href="https://www.fao.org/americas/cursos" target="_blank" class="edu-card">
+                                    <div class="edu-card-img-wrapper"><img src="images/E/fao.png" alt="FAO"
+                                            class="edu-card-img"></div>
+                                    <div class="edu-card-body">
+                                        <div class="edu-card-platform-info"><i class="fas fa-seedling platform-icon"
+                                                style="color:#4CAF50;"></i><span>FAO</span></div>
+                                        <h4 class="edu-card-title">FAO - Organización de las Naciones Unidas para la
+                                            Alimentación y la Agricultura</h4>
+                                        <div class="edu-card-badge-container"><span
+                                                class="edu-card-badge badge-professional">Agricultura
+                                                y Alimentación</span></div>
+                                    </div>
+                                </a>
+                    </div>
+
+                    <!-- FILA 5: Memoria Histórica y Formación Política -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Memoria Histórica y Formación Política
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 23 Memorial Concordia -->
+                        <a href="https://galeria.memorialparalaconcordia.org/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/ze.png" alt="Memorial Concordia"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-landmark platform-icon"
+                                        style="color:#795548;"></i><span>MEMORIAL</span></div>
+                                <h4 class="edu-card-title">Memorial Concordia</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Memoria
+                                        histórica</span></div>
+                            </div>
+                        </a>
+                        <!-- 24 Memoria Histórica Film -->
+                        <a href="https://videoteca.memorialparalaconcordia.org/?page_id=1615" target="_blank"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/zf.png" alt="Memoria Histórica Film"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-film platform-icon"
+                                        style="color:#37474F;"></i><span>FILM</span></div>
+                                <h4 class="edu-card-title">Memoria Histórica Film</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Videoteca
+                                        conflicto</span></div>
+                            </div>
+                        </a>
+                        <!-- 31 Incide Joven -->
+                        <a href="https://incidejoven.org/" target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/w.png" alt="Incide Joven"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-bullhorn platform-icon"
+                                        style="color:#9C27B0;"></i><span>INCIDE JOVEN</span></div>
+                                <h4 class="edu-card-title">Incide Joven - Derechos y Política</h4>
+                                <div class="edu-card-badge-container"><span
+                                        class="edu-card-badge badge-local">Incidencia
+                                        política</span></div>
+                            </div>
+                        </a>
+                        <!-- 32 Kas Guatemala -->
+                        <a href="https://linktr.ee/KASPartidos?fbclid=PAT01DUARXCiJleHRuA2FlbQIxMABzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAaccwJtI9GZ9LYSqZsqYkKRiCYlFZRm-tl4HMqr_ohsVZnWaVT8PYlvGxmAyEw_aem_kXFI7pen_MyMIAcuf5zlDA"
+                            target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/x.png" alt="Kas Guatemala"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-university platform-icon"
+                                        style="color:#003366;"></i><span>KAS GUATEMALA</span></div>
+                                <h4 class="edu-card-title">Fundación Konrad Adenauer Guatemala</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Formación
+                                        política</span></div>
+                            </div>
+                        </a>
+                        <!-- 33 Fes Guatemala -->
+                        <a href="https://linktr.ee/FESGuatemala?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAdGRzdgRXDSVleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAaeAHIvQAlm-aPSMEmzr1fofxu7gNY4DAsjRSFY6NV9i6-Q0oywSwClNCA6XEA_aem_zeg_Q3zrBWJ4JekW33X99Q"
+                            target="_blank" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/I/y.png" alt="Fes Guatemala"
+                                    class="edu-card-img"></div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info"><i class="fas fa-comments platform-icon"
+                                        style="color:#CC0000;"></i><span>FES GUATEMALA</span></div>
+                                <h4 class="edu-card-title">Fundación Friedrich Ebert Guatemala</h4>
+                                <div class="edu-card-badge-container"><span class="edu-card-badge badge-local">Diálogo y
+                                        Formación</span></div>
+                            </div>
+                        </a>
+                    </div><!-- /edu-grid cursos -->
+                </section><!-- /plataformas-globales -->
+
+                <!-- ══════════════════════════════════════════
+                 SECCIÓN: OTROS RECURSOS — INFORMACIÓN VARIA
+                 Separada de Plataformas Globales con encabezado
+                 propio y 3 filas de 5 tarjetas (igual que Cursos)
+                 ══════════════════════════════════════════ -->
+                <section id="otros-recursos" aria-label="Otros Recursos e Información Varia">
+
+                    <!-- Encabezado propio de la subsección -->
+                    <div class="functions-header theme-section" id="courses-otros" style="margin-top: 3rem;">
+                        <h2>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#FF9F43"
+                                viewBox="0 0 24 24" style="vertical-align:middle; margin-right:.5rem;">
+                                <path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9
+                                2-2V8c0-1.1-.9-2-2-2zm-2 10H6v-2h12v2zm0-4H6v-2h12v2z" />
+                            </svg>
+                            Otros Recursos
+                        </h2>
+                        <p>informacion varia: portales institucionales, transparencia y sociedad civil de Guatemala</p>
+                    </div>
+
+                    <!-- FILA 1: Instituciones del Estado -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Instituciones del Estado
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 1 Tribunal Supremo Electoral -->
+                        <a href="https://tse.org.gt/" target="_blank" rel="noopener noreferrer" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/tse.png" alt="TSE Guatemala"
+                                    class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-check-double"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-gavel platform-icon" style="color:#2196F3;"></i>
+                                    <span>TSE GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Tribunal Supremo Electoral</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Contexto Nacional</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 2 INAP -->
+                        <a href="https://inap.gob.gt/app/cursos" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/inap.png" alt="INAP Guatemala"
+                                    class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-graduation-cap platform-icon" style="color:#4CAF50;"></i>
+                                    <span>INAP GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Cursos de Administración Pública</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-academic">Formación Pública</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 3 SIB -->
+                        <a href="https://www.sib.gob.gt/PortalEF/course/index.php?categoryid=2" target="_blank"
+                            rel="noopener noreferrer" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/sib.png" alt="SIB Guatemala"
+                                    class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-piggy-bank platform-icon" style="color:#FF9800;"></i>
+                                    <span>SIB GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Educación Financiera</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-academic">Formación Financiera</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 4 SISCODE -->
+                        <a href="https://auditoriasiscode.scep.gob.gt/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/siscode.png" alt="SISCODE SCEP"
+                                    class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-diagram-project"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-users-cog platform-icon" style="color:#9C27B0;"></i>
+                                    <span>SISCODE SCEP</span>
+                                </div>
+                                <h4 class="edu-card-title">Auditoría SISCODE</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Consejos de Desarrollo</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 5 DIFOTECA -->
+                        <a href="https://formacion.minfin.gob.gt/difoteca/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/minfin.png"
+                                    alt="Difoteca de Formación Fiscal" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-folder-open"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-book platform-icon" style="color:#E91E63;"></i>
+                                    <span>MINFIN GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Difoteca de Formación Fiscal</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-academic">Capacitación Fiscal</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div><!-- /fila 1 -->
+
+                    <!-- FILA 2: Transparencia y Fiscalización -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Transparencia y Fiscalización
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 6 Ojo con mi Pisto -->
+                        <a href="https://www.ojoconmipisto.com/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper">
+                                <img src="images/E/ojoconmipisto.jpg" alt="Ojo con mi Pisto" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-magnifying-glass"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-eye platform-icon" style="color:#F44336;"></i>
+                                    <span>OJO CON MI PISTO</span>
+                                </div>
+                                <h4 class="edu-card-title">Periodismo y Fiscalización Municipal</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Auditoría Social</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 7 Transparencia Municipal -->
+                        <a href="https://transparenciamunicipal.org/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/transparenciamunicipal.png"
+                                    alt="Transparencia Municipal" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-city"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-shield-halved platform-icon" style="color:#00BCD4;"></i>
+                                    <span>TRANSPARENCIA MUNICIPAL</span>
+                                </div>
+                                <h4 class="edu-card-title">Portal de Transparencia Municipal</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Gestión Local</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 8 Guatecompras -->
+                        <a href="https://www.guatecompras.gt/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/guatecompras.png" alt="Guatecompras"
+                                    class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-shopping-cart platform-icon" style="color:#795548;"></i>
+                                    <span>GUATECOMPRAS</span>
+                                </div>
+                                <h4 class="edu-card-title">Sistema de Adquisiciones y Contrataciones</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-professional">Contrataciones Públicas</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 9 SEGEPLAN -->
+                        <a href="https://sistemas.segeplan.gob.gt/guest/SNPPKG$PL_MODULO.AREA_HTML?prmVG=1"
+                            target="_blank" rel="noopener noreferrer" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/segeplan.png" alt="SEGEPLAN Guatemala"
+                                    class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-project-diagram platform-icon" style="color:#607D8B;"></i>
+                                    <span>SEGEPLAN</span>
+                                </div>
+                                <h4 class="edu-card-title">Sistema Nacional de Proyectos (SNIP)</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Planificación Nacional</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 10 Transparencia Presupuestaria -->
+                        <a href="https://transparenciapresupuestaria.minfin.gob.gt/" target="_blank"
+                            rel="noopener noreferrer" class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/presupuesto.png"
+                                    alt="Transparencia Presupuestaria" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-file-contract platform-icon" style="color:#009688;"></i>
+                                    <span>MINFIN GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Portal de Transparencia Presupuestaria</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-professional">Transparencia Fiscal</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div><!-- /fila 2 -->
+
+                    <!-- FILA 3: Datos, Información y Sociedad -->
+                    <h3 class="category-title"
+                        style="color:var(--usac-blue); margin:20px 0 10px; font-family:'Merriweather'">
+                        Datos, Información y Sociedad
+                    </h3>
+                    <div class="edu-grid accordion-row">
+                        <!-- 11 Transferencias CODEDES -->
+                        <a href="https://transferenciascodedes.minfin.gob.gt/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper">
+                                <img src="images/E/codede.png" alt="Transferencias CODEDES" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-hand-holding-dollar platform-icon" style="color:#8BC34A;"></i>
+                                    <span>MINFIN GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Control de Transferencias CODEDES</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Descentralización</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 12 Datos Abiertos -->
+                        <a href="https://datos.gob.gt/" target="_blank" rel="noopener noreferrer" class="edu-card">
+                            <div class="edu-card-img-wrapper">
+                                <img src="images/E/datosabiertos.png" alt="Datos Abiertos" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-share-nodes platform-icon" style="color:#03A9F4;"></i>
+                                    <span>GOBIERNO GT</span>
+                                </div>
+                                <h4 class="edu-card-title">Portal Nacional de Datos Abiertos</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-tech">Datos Abiertos</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 13 SAT -->
+                        <a href="https://portal.sat.gob.gt/portal/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper">
+                                <img src="images/E/sat.png" alt="SAT Guatemala" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-wallet platform-icon" style="color:#3F51B5;"></i>
+                                    <span>SAT GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Portal de Gestión Tributaria</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-professional">Gestión Tributaria</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 14 Prensa Comunitaria -->
+                        <a href="https://prensacomunitaria.org/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper"><img src="images/E/Prensa-Comunitaria.png"
+                                    alt="Prensa Comunitaria" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-newspaper"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-bullhorn platform-icon" style="color:#FF5722;"></i>
+                                    <span>PRENSA COMUNITARIA</span>
+                                </div>
+                                <h4 class="edu-card-title">Prensa Comunitaria Km169</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-local">Información Alternativa</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- 15 ASIES -->
+                        <a href="https://asies.org.gt/biblioteca/" target="_blank" rel="noopener noreferrer"
+                            class="edu-card">
+                            <div class="edu-card-img-wrapper">
+                                <img src="images/E/asies.png" alt="ASIES Guatemala" class="edu-card-img">
+                                <div class="edu-card-placeholder" style="height: 100%;">
+                                    <i class="fas fa-book-bookmark"></i>
+                                </div>
+                            </div>
+                            <div class="edu-card-body">
+                                <div class="edu-card-platform-info">
+                                    <i class="fas fa-book-open platform-icon" style="color:#795548;"></i>
+                                    <span>ASIES GUATEMALA</span>
+                                </div>
+                                <h4 class="edu-card-title">Biblioteca de Investigación Social</h4>
+                                <div class="edu-card-badge-container">
+                                    <span class="edu-card-badge badge-academic">Estudios Sociales</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div><!-- /fila 3 -->
+                </section><!-- /otros-recursos -->
+            </section><!-- /tab-cursos -->
+
+            <!-- ── Pestaña Modelos de IA ── -->
+            <section id="tab-ia" class="tab-content hidden">
+                <div class="functions-header theme-section">
+                    <h2> Inteligencia Artificial para la Investigación Social</h2>
+                    <p>Herramientas avanzadas para optimizar la búsqueda bibliográfica, redacción académica y análisis
+                    </p>
+                </div>
+
+                <!-- Grupo 1: Asistentes de Conversación -->
+                <h3 class="category-title" id="ia-asistentes"> Asistentes de Conversación</h3>
+                <div class="edu-grid">
+                    <!-- 1 Google Gemini -->
+                    <a href="https://gemini.google.com/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/A.png" alt="Google Gemini"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fab fa-google platform-icon"
+                                    style="color:#4285F4;"></i><span>GOOGLE</span></div>
+                            <h4 class="edu-card-title">Google Gemini — IA Multimodal</h4>
+                            <p class="card-desc">IA multimodal para análisis de documentos e imágenes</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Análisis De
+                                    Documentos</span></div>
+                        </div>
+                    </a>
+                    <!-- 2 Claude -->
+                    <a href="https://claude.ai/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/B.png" alt="Claude" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-brain platform-icon"
+                                    style="color:#D4A27A;"></i><span>ANTHROPIC</span></div>
+                            <h4 class="edu-card-title">Claude — Razonamiento Avanzado</h4>
+                            <p class="card-desc">Razonamiento avanzado y redacción académica</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-academic">Redacción
+                                    Académica</span></div>
+                        </div>
+                    </a>
+                    <!-- 3 Microsoft Copilot -->
+                    <a href="https://copilot.microsoft.com/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/C.png" alt="Microsoft Copilot"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fab fa-microsoft platform-icon"
+                                    style="color:#0078D4;"></i><span>MICROSOFT</span></div>
+                            <h4 class="edu-card-title">Microsoft Copilot — Office IA</h4>
+                            <p class="card-desc">IA integrada en Microsoft Office</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-professional">Integrado En Office</span></div>
+                        </div>
+                    </a>
+                    <!-- 4 Grok -->
+                    <a href="https://grok.x.ai/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/D.png" alt="Grok" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fab fa-x-twitter platform-icon"
+                                    style="color:#000;"></i><span>XAI</span></div>
+                            <h4 class="edu-card-title">Grok — IA en Tiempo Real</h4>
+                            <p class="card-desc">IA con datos en tiempo real de X</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Datos En
+                                    Tiempo Real</span></div>
+                        </div>
+                    </a>
+                    <!-- 5 OpenAI ChatGPT -->
+                    <a href="https://chat.openai.com/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/K.png" alt="OpenAI ChatGPT"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-comments platform-icon"
+                                    style="color:#10A37F;"></i><span>OPENAI</span></div>
+                            <h4 class="edu-card-title">OpenAI ChatGPT</h4>
+                            <p class="card-desc">Asistente general para tareas diversas</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">General</span>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- 6 Meta AI -->
+                    <a href="https://www.meta.ai/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/meta.png" alt="Meta AI"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fab fa-meta platform-icon"
+                                    style="color:#0082FB;"></i><span>META</span></div>
+                            <h4 class="edu-card-title">Meta AI — Llama Chat</h4>
+                            <p class="card-desc">Chat gratuito basado en Llama</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-free">Gratuito</span></div>
+                        </div>
+                    </a>
+                    <!-- 7 Mistral AI -->
+                    <a href="https://chat.mistral.ai/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/mistra.png" alt="Mistral AI"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-wind platform-icon"
+                                    style="color:#FF7000;"></i><span>MISTRAL</span></div>
+                            <h4 class="edu-card-title">Mistral AI — Le Chat</h4>
+                            <p class="card-desc">Modelo europeo para razonamiento</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Modelo
+                                    Europeo</span></div>
+                        </div>
+                    </a>
+                    <!-- 8 DeepSeek -->
+                    <a href="https://chat.deepseek.com/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/E.png" alt="DeepSeek" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-atom platform-icon"
+                                    style="color:#4F46E5;"></i><span>DEEPSEEK</span></div>
+                            <h4 class="edu-card-title">DeepSeek — IA de Código Abierto</h4>
+                            <p class="card-desc">IA open-source para programación</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-free">Open
+                                    Source</span></div>
+                        </div>
+                    </a>
+                </div><!-- /grupo 1 -->
+
+                <!-- Grupo 2: Búsqueda y Análisis -->
+                <h3 class="category-title"> Búsqueda y Análisis</h3>
+                <div class="edu-grid">
+                    <!-- 9 Perplexity -->
+                    <a href="https://perplexity.ai/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/F.png" alt="Perplexity"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-search platform-icon"
+                                    style="color:#20B2AA;"></i><span>PERPLEXITY</span></div>
+                            <h4 class="edu-card-title">Perplexity</h4>
+                            <p class="card-desc">Búsqueda conversacional con fuentes</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-tech">Búsqueda</span></div>
+                        </div>
+                    </a>
+                    <!-- 10 NotebookLM -->
+                    <a href="https://notebooklm.google/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/G.png" alt="NotebookLM"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-book-open platform-icon"
+                                    style="color:#34A853;"></i><span>GOOGLE</span></div>
+                            <h4 class="edu-card-title">NotebookLM</h4>
+                            <p class="card-desc">Análisis de documentos y notas</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-academic">Investigación</span></div>
+                        </div>
+                    </a>
+                    <!-- 11 Kimi AI -->
+                    <a href="https://kimi.moonshot.cn/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/H.png" alt="Kimi AI" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-moon platform-icon"
+                                    style="color:#7C4DFF;"></i><span>MOONSHOT</span></div>
+                            <h4 class="edu-card-title">Kimi AI</h4>
+                            <p class="card-desc">Análisis de textos largos</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-academic">Análisis
+                                    largo</span></div>
+                        </div>
+                    </a>
+                    <!-- 12 DuckDuckGo AI -->
+                    <a href="https://duckduckgo.com/ai-chat" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/I.png" alt="DuckDuckGo AI"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-shield-alt platform-icon"
+                                    style="color:#DE5833;"></i><span>DUCKDUCKGO</span></div>
+                            <h4 class="edu-card-title">DuckDuckGo AI</h4>
+                            <p class="card-desc">Chat con privacidad</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-professional">Privacidad</span></div>
+                        </div>
+                    </a>
+                </div><!-- /grupo 2 -->
+
+                <!-- Grupo 3: Generación Multimedia -->
+                <h3 class="category-title"> Generación Multimedia</h3>
+                <div class="edu-grid">
+                    <!-- 13 Gamma AI -->
+                    <a href="https://gamma.app/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/gamma.png" alt="Gamma AI"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-presentation-screen platform-icon"
+                                    style="color:#7C3AED;"></i><span>GAMMA</span></div>
+                            <h4 class="edu-card-title">Gamma — Presentaciones con IA</h4>
+                            <p class="card-desc">Presentaciones automáticas con IA</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-professional">Presentaciones</span></div>
+                        </div>
+                    </a>
+                    <!-- 14 Oreate AI -->
+                    <a href="https://www.oreateai.com/home/vertical/htmlPPT/es" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/N.png" alt="Oreate AI"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-file-powerpoint platform-icon"
+                                    style="color:#E67E22;"></i><span>OREATE</span></div>
+                            <h4 class="edu-card-title">Oreate AI</h4>
+                            <p class="card-desc">Presentaciones automatizadas</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-professional">Generación</span></div>
+                        </div>
+                    </a>
+                    <!-- 15 Wan AI -->
+                    <a href="https://wan.video/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/Ñ.png" alt="Wan AI" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-video platform-icon"
+                                    style="color:#9B59B6;"></i><span>WAN</span></div>
+                            <h4 class="edu-card-title">Wan AI</h4>
+                            <p class="card-desc">Generación de video e imágenes</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-tech">Video/Imagen</span></div>
+                        </div>
+                    </a>
+                    <!-- 16 Vibiz -->
+                    <a href="https://www.vibiz.ai/es/new-vibiz" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/P.png" alt="Vibiz" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-cogs platform-icon"
+                                    style="color:#00B894;"></i><span>VIBIZ</span></div>
+                            <h4 class="edu-card-title">Vibiz</h4>
+                            <p class="card-desc">IA para redes sociales</p>
+                            <div class="edu-card-badge-container"><span
+                                    class="edu-card-badge badge-professional">Social</span></div>
+                        </div>
+                    </a>
+                </div><!-- /grupo 3 -->
+
+                <!-- Grupo 4: Herramientas Especializadas -->
+                <h3 class="category-title" id="ia-tecnicas"> Herramientas Especializadas</h3>
+                <div class="edu-grid">
+                    <!-- 18 Anthropic Web -->
+                    <a href="https://www.anthropic.com/" target="_blank" class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/J.png" alt="Anthropic Web"
+                                class="edu-card-img"></div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-robot platform-icon"
+                                    style="color:#D4A27A;"></i><span>ANTHROPIC</span></div>
+                            <h4 class="edu-card-title">Anthropic Web</h4>
+                            <p class="card-desc">Recursos sobre seguridad en IA</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Chat</span>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- 19 Cisco AI -->
+                    <a href="https://www.cisco.com/c/en/us/solutions/artificial-intelligence.html" target="_blank"
+                        class="edu-card">
+                        <div class="edu-card-img-wrapper"><img src="images/A/M.png" alt="Cisco AI" class="edu-card-img">
+                        </div>
+                        <div class="edu-card-body">
+                            <div class="edu-card-platform-info"><i class="fas fa-network-wired platform-icon"
+                                    style="color:#1BA0D7;"></i><span>CISCO</span></div>
+                            <h4 class="edu-card-title">Cisco AI</h4>
+                            <p class="card-desc">IA para redes empresariales</p>
+                            <div class="edu-card-badge-container"><span class="edu-card-badge badge-tech">Redes</span>
+                            </div>
+                        </div>
+                    </a>
+                </div><!-- /grupo 4 -->
+            </section><!-- /tab-ia -->
+
+            <!-- ── Pestaña Plataforma General (desde Dropdown) ── -->
+            <section id="tab-plataforma" class="tab-content hidden">
+                <!-- Búsqueda global -->
+                <div class="search-section theme-section">
+                    <input type="search" id="global-search" placeholder="Buscar en toda la biblioteca..."
+                        class="premium-input search-input" aria-label="Buscar documentos y avisos">
+                </div>
+
+                <!-- Muro de noticias -->
+                <div id="platform-news" class="news-section theme-section">
+                    <h2>Muro de Noticias</h2>
+                    <div id="announcements-list" aria-live="polite"></div>
+                </div>
+
+
+
+                <!-- Drive -->
+                <div id="platform-drive" class="drive-section theme-section">
+                    <h2>Biblioteca Drive</h2>
+                    <p>Accede a nuestro repositorio completo en Google Drive.</p>
+                    <a href="https://drive.google.com/drive/u/0/folders/1FychtariaHXYu8TGC2UfUMQ_2np9xw4p"
+                        target="_blank" rel="noopener" class="btn-drive-large">ACCEDER AL REPOSITORIO EN GOOGLE DRIVE
+                        →</a>
+                </div>
+                <!-- Comunicación directa -->
+                <div id="platform-communication" class="communication-section theme-section">
+                    <h2>Comunicación Directa</h2>
+                    <form id="student-msg-form">
+                        <textarea id="msg-content" placeholder="Escribe tu mensaje a coordinación..."
+                            class="premium-input" rows="4" required></textarea>
+                        <button type="submit" class="btn-blue">Enviar Mensaje</button>
+                    </form>
+                    <div id="my-messages" class="messages-history">
+                        <h3>Mis Mensajes</h3>
+                        <div id="messages-list"></div>
+                    </div>
+                </div>
+            </section>
+
+        </div><!-- /view-biblioteca -->
+
+        <!-- ── VISTA 2: AETSRO ── -->
+        <div id="view-aetsro" class="main-view hidden">
+            <div class="institutional-hero theme-section">
+                <div class="hero-bg">
+                    <img src="imags/aetsro_hd_static.png" alt="Fondo AETSRO" class="hero-gif" id="aetsro-gif-bg">
+                    <div class="hero-overlay"></div>
+                </div>
+                <div class="hero-content">
+                    <h1>AETSRO</h1>
+                    <p>Asociación de Estudiantes de Trabajo Social de Occidente</p>
+                </div>
+            </div>
+
+            <div class="institutional-content">
+                <div class="section-card theme-card">
+                    <h3>Nuestra Historia</h3>
+                    <p>Fundada con el propósito de unir a la comunidad estudiantil del CUNOC, AETSRO ha sido por más de
+                        dos décadas el pilar de la organización estudiantil en Trabajo Social.</p>
+                </div>
+
+                <!-- Galería institucional -->
+                <div class="section-card theme-card">
+                    <h3>Galería Institucional</h3>
+                    <div class="image-gallery">
+                        <img src="imags/aetsro1.jpg" alt="Actividad AETSRO 1" onerror="this.style.display='none'">
+                        <img src="imags/aetsro2.jpg" alt="Actividad AETSRO 2" onerror="this.style.display='none'">
+                        <img src="imags/aetsro3.jpg" alt="Actividad AETSRO 3" onerror="this.style.display='none'">
+                    </div>
+                </div>
+
+               
+                <!-- Redes AETSRO -->
+                <div class="social-links-section theme-card">
+                    <h3>Síguenos — AETSRO</h3>
+                        <div class="social-icons-row">
+                            <a href="https://www.facebook.com/AETSRO" class="social-icon-link" title="Facebook AETSRO" aria-label="Facebook AETSRO" target="_blank" rel="noopener">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-icon-link" title="Instagram AETSRO" aria-label="Instagram AETSRO">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </div>
+                </div>
+            </div>
+        </div><!-- /view-aetsro -->
+
+        <!-- ── VISTA 3: CONSEJO ELVIRA BARRENO ── -->
+        <div id="view-consejo" class="main-view hidden">
+            <div class="institutional-hero theme-section consejo-hero">
+                <div class="hero-bg">
+                    <img src="imags/huelga.gif" alt="Fondo Consejo" class="hero-gif" id="consejo-gif-bg">
+                    <div class="hero-overlay"></div>
+                </div>
+                <div class="hero-content">
+                    <h1>Consejo Autónomo de Huelga</h1>
+                    <p>"Elvira Barreno Coyoy" · Lucha, Memoria y Dignidad</p>
+                </div>
+            </div>
+
+          
+
+                <!-- Redes Consejo -->
+                <div class="social-links-section theme-card">
+                    <h3>Contacto — Consejo Elvira Barreno</h3>
+                    <div class="social-icons-row">
+                        <a href="#" class="social-icon-link consejo-icon" title="WhatsApp Consejo"
+                            aria-label="WhatsApp Consejo">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" class="social-icon-link consejo-icon" title="Facebook Consejo"
+                            aria-label="Facebook Consejo">
+                            <i class="fab fa-facebook-plane"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /view-consejo -->
+
+    </main>
+
+    <!-- ══════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════ -->
+    <footer id="app-footer" class="hidden">
+        <div class="footer-container">
+            <div class="footer-logo">
+                <img src="imags/6.png" alt="Logo USAC" class="footer-img" onerror="this.style.display='none'">
+            </div>
+            <div class="footer-social" id="footer-social-icons">
+                <!-- Los íconos se generan dinámicamente desde localStorage via renderSocialLinks() -->
+            </div>
+            <div class="footer-copy">
+                <p>&copy; 2026 USAC · CUNOC. Todos los derechos reservados.</p>
+                <p>Diseñado por PASCUAL-AJM</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Detalles de Evento -->
+    <div id="event-detail-modal" class="modal-backdrop hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Detalles del Evento</h2>
+                <button type="button" class="close-btn" onclick="closeEventModal()">&times;</button>
+            </div>
+            <div id="event-detail-content"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
