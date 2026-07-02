@@ -93,10 +93,11 @@ module.exports = (req, res) => {
     });
   }
 
-  // Calcular hash de la contraseña ingresada
+  // Normalizar y calcular hash de la contraseña ingresada
+  const normalizedPassword = password.trim();
   const passwordHash = crypto
     .createHash('sha256')
-    .update(password)
+    .update(normalizedPassword, 'utf8')
     .digest('hex');
 
   // Buscar usuario con normalización para evitar fallos por mayúsculas, minúsculas o espacios extra

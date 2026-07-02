@@ -13,12 +13,6 @@ const KEYS = {
     social:  'biblioteca_social_v1'
 };
 
-const NAWALES = [
-    'Imox', "I'q", "Aq'ab'al", "K'at", 'Kan', 'Kame', 'Kej', "Q'anil",
-    "Toj", "Tz'i'", "B'atz'", "E'", 'Aj', 'Ix', 'Men', "Kib'",
-    "Kab'an", "Etz'nab'", 'Kawoq', 'Ajpu'
-];
-
 /* ============================================================
    SEGURIDAD: Autenticación Administrativa delegada al Backend
    (Las contraseñas y hashes residen exclusivamente en el servidor)
@@ -70,6 +64,8 @@ function switchMainView(viewName) {
         setExclusiveTab('inicio');
     } else if (viewName === 'aetsro') {
         restartAetsroGif();
+    } else if (viewName === 'consejo') {
+        restartConsejoGif();
     }
 }
 
@@ -326,8 +322,6 @@ function applyStoredTheme() {
         if (btn) btn.textContent = '☀️';
     }
 }
-
-function setMainTab(tab) { setExclusiveTab(tab); }
 
 function scrollToSection(id) {
     // Asegurar que la vista de biblioteca y la vista pública están visibles

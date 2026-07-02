@@ -8,6 +8,7 @@ credenciales.txt
 credenciales.md
 ordenes
 ordenes.md
+Documentación*.txt
 
 # Dependencias
 node_modules/

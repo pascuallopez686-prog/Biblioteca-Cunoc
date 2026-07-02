@@ -1,13 +1,13 @@
 {
   "name": "cunoc",
   "version": "1.0.0",
+  "description": "Biblioteca Digital CUNOC – Trabajo Social",
   "main": "script.js",
   "scripts": {
     "dev": "node dev-server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node dev-server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": ""
+  "keywords": ["cunoc", "biblioteca", "trabajo-social"],
+  "author": "PASCUAL-AJM",
+  "license": "ISC"
 }
