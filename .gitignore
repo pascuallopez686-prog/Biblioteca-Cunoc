@@ -9,6 +9,7 @@ credenciales.md
 ordenes
 ordenes.md
 Documentación*.txt
+bootstrap-supabase.js
 
 # Dependencias
 node_modules/
@@ -20,3 +21,13 @@ npm-debug.log*
 # Editor
 .vscode/
 .idea/
+.cursor/
+
+# GIFs grandes (>38 MB cada uno) — se sirven desde hosting externo o se suben manualmente
+# Para usarlos localmente, descárgalos y colócalos en imags/ sin subirlos al repo
+imags/usac1_hd.gif
+imags/aetsro_hd.gif
+
+# OS
+.DS_Store
+Thumbs.db

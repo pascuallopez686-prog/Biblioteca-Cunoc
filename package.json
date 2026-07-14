@@ -5,9 +5,19 @@
   "main": "script.js",
   "scripts": {
     "dev": "node dev-server.js",
-    "start": "node dev-server.js"
+    "start": "node dev-server.js",
+    "seed": "node bootstrap-supabase.js"
   },
-  "keywords": ["cunoc", "biblioteca", "trabajo-social"],
+  "keywords": [
+    "cunoc",
+    "biblioteca",
+    "trabajo-social"
+  ],
   "author": "PASCUAL-AJM",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "stylelint": "^17.14.0",
+    "stylelint-config-standard": "^40.0.0"
+  }
 }

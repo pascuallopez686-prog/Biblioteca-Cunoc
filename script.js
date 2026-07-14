@@ -5,7 +5,6 @@
 
 const DEBUG_PREFIX = '[CUNOC]';
 const KEYS = {
-    users:   'biblioteca_users_v3',
     docs:    'biblioteca_docs_v3',
     anns:    'biblioteca_anns_v3',
     session: 'biblioteca_session_v3',
@@ -14,9 +13,50 @@ const KEYS = {
 };
 
 /* ============================================================
-   SEGURIDAD: Autenticación Administrativa delegada al Backend
-   (Las contraseñas y hashes residen exclusivamente en el servidor)
+   SEGURIDAD Y SESIÓN (API centralizada)
    ============================================================ */
+
+function sanitizeSessionUser(user) {
+    const safe = {
+        id: user.id,
+        name: user.name,
+        role: user.role || 'student'
+    };
+    if (user.carne) safe.carne = user.carne;
+    if (user.muted) safe.muted = user.muted;
+    if (user.token) safe.token = user.token;
+    if (user.isAdmin) safe.isAdmin = true;
+    return safe;
+}
+
+function authHeaders(json = true) {
+    const headers = {};
+    if (json) headers['Content-Type'] = 'application/json';
+    if (currentUser?.token) headers.Authorization = `Bearer ${currentUser.token}`;
+    return headers;
+}
+
+async function verifySession(token) {
+    try {
+        const response = await fetch('/api/auth/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        });
+        const data = await response.json();
+        return data.success ? data : null;
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error verificando sesión:`, err);
+        return null;
+    }
+}
+
+async function fetchStudents() {
+    const response = await fetch('/api/students', { headers: authHeaders(false) });
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'No se pudo cargar estudiantes');
+    return data.students || [];
+}
 
 /* ============================================================
    DATOS POR DEFECTO Y STORAGE
@@ -32,14 +72,12 @@ const store = {
     }
 };
 
-// Inicializar datos por defecto
-if (!store.get(KEYS.users))  store.set(KEYS.users, []);
+// Inicializar datos locales (docs/avisos/mensajes — Fase 2 migrará a servidor)
 if (!store.get(KEYS.docs))   store.set(KEYS.docs, []);
 if (!store.get(KEYS.anns))   store.set(KEYS.anns, []);
 if (!store.get(KEYS.msgs))   store.set(KEYS.msgs, []);
 
 let currentUser        = null;
-let calendarView       = 'month';
 let currentFilter      = 'all';
 let studentSessionDocs = 0;
 let studentSessionAnns = 0;
@@ -48,6 +86,7 @@ let studentSessionAnns = 0;
    NAVEGACIÓN ENTRE VISTAS INSTITUCIONALES
    ============================================================ */
 function switchMainView(viewName) {
+    closeMobileNav();
     // Ocultar panel admin si está visible
     const adminPanel = document.getElementById('admin-panel');
     if (adminPanel) adminPanel.classList.add('hidden');
@@ -64,8 +103,12 @@ function switchMainView(viewName) {
         setExclusiveTab('inicio');
     } else if (viewName === 'aetsro') {
         restartAetsroGif();
+        // Aplicar interactividad a las imágenes de AETSRO
+        setTimeout(() => applyImageInteractivity(target), 100);
     } else if (viewName === 'consejo') {
         restartConsejoGif();
+        // Aplicar interactividad a las imágenes del Consejo
+        setTimeout(() => applyImageInteractivity(target), 100);
     }
 }
 
@@ -98,38 +141,56 @@ function setExclusiveTab(tabName) {
         restartHeroGif();
     } else if (tabName === 'plataforma') {
         renderAll();
-        renderCalendar();
     }
 }
 
 /* ============================================================
-   AUTENTICACIÓN DE ESTUDIANTES (sin cambios)
+   AUTENTICACIÓN DE ESTUDIANTES (Supabase vía API)
    ============================================================ */
-function handleAuth(e) {
+async function handleAuth(e) {
     e.preventDefault();
     const isLogin = !document.getElementById('login-form').classList.contains('hidden');
-    if (isLogin) {
-        const carne    = document.getElementById('login-carne').value.trim();
-        const password = document.getElementById('login-password').value;
-        const users    = store.get(KEYS.users) || [];
-        const user     = users.find(u => u.carne === carne && u.password === password);
-        if (user) {
-            if (user.muted) { alert('Tu cuenta ha sido silenciada. Contacta al administrador.'); return; }
-            loginSuccess(user);
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    if (submitBtn) { submitBtn.disabled = true; }
+
+    try {
+        if (isLogin) {
+            const carne    = document.getElementById('login-carne').value.trim();
+            const password = document.getElementById('login-password').value;
+            const response = await fetch('/api/auth/student-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ carne, password })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                alert(data.message || 'Carné o contraseña incorrectos');
+                return;
+            }
+            loginSuccess(sanitizeSessionUser({ ...data.user, token: data.token }));
         } else {
-            alert('Carné o contraseña incorrectos');
+            const name     = document.getElementById('reg-name').value.trim();
+            const carne    = document.getElementById('reg-carne').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const response = await fetch('/api/auth/student-register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, carne, password })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                alert(data.message || 'No se pudo completar el registro');
+                return;
+            }
+            alert('Registro exitoso. Entrando a la biblioteca.');
+            loginSuccess(sanitizeSessionUser({ ...data.user, token: data.token }));
+            e.target.reset();
         }
-    } else {
-        const name     = document.getElementById('reg-name').value.trim();
-        const carne    = document.getElementById('reg-carne').value.trim();
-        const password = document.getElementById('reg-password').value;
-        const users    = store.get(KEYS.users) || [];
-        if (users.find(u => u.carne === carne)) { alert('Este carné ya está registrado'); return; }
-        const newUser = { id: Date.now(), name, carne, password, role: 'student', muted: false, registeredAt: new Date().toISOString() };
-        users.push(newUser);
-        store.set(KEYS.users, users);
-        alert('Registro exitoso. Entrando a la biblioteca.');
-        loginSuccess(newUser);
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error de autenticación:`, err);
+        alert('Error de conexión. Verifica que el servidor esté activo y Supabase configurado.');
+    } finally {
+        if (submitBtn) submitBtn.disabled = false;
     }
 }
 
@@ -162,13 +223,13 @@ async function handleAdminAccess(e) {
         const data = await response.json();
 
         if (data.success) {
-            const adminUser = { 
-                id: Date.now(), 
-                name: data.usuario, 
-                role: data.cargo, 
+            const adminUser = sanitizeSessionUser({
+                id: Date.now(),
+                name: data.usuario,
+                role: data.cargo,
                 isAdmin: true,
                 token: data.token
-            };
+            });
             loginSuccess(adminUser);
             closeAdminModal();
             e.target.reset();
@@ -188,8 +249,9 @@ async function handleAdminAccess(e) {
    LOGIN / LOGOUT
    ============================================================ */
 function loginSuccess(user) {
-    currentUser = user;
-    store.set(KEYS.session, user);
+    const sessionUser = sanitizeSessionUser(user);
+    currentUser = sessionUser;
+    store.set(KEYS.session, sessionUser);
 
     document.getElementById('welcome-screen')?.classList.add('hidden');
     document.getElementById('auth-modal')?.classList.add('hidden');
@@ -250,7 +312,9 @@ function switchAuthTab(mode) {
 function updateHeaderUI() {
     if (!currentUser) return;
     const adminPanelBtn = document.getElementById('btn-admin-panel');
-    if (adminPanelBtn) adminPanelBtn.classList.toggle('hidden', !currentUser.isAdmin);
+    if (adminPanelBtn) {
+        adminPanelBtn.classList.toggle('hidden', !(currentUser.isAdmin && currentUser.token));
+    }
     const welcomeMsg = document.getElementById('welcome-message');
     if (welcomeMsg) welcomeMsg.textContent = `Bienvenido, ${currentUser.name}`;
 }
@@ -343,12 +407,23 @@ function scrollToSection(id) {
 /* ============================================================
    PANEL DE ADMINISTRACIÓN (CORREGIDO)
    ============================================================ */
-function toggleAdminPanel() {
-    // Solo permitir si el usuario es admin
-    if (!currentUser || !currentUser.isAdmin) {
+async function toggleAdminPanel() {
+    if (!currentUser?.token) {
         alert('Acceso denegado: no tienes permisos de administrador.');
         return;
     }
+
+    const verified = await verifySession(currentUser.token);
+    if (!verified || verified.type !== 'admin') {
+        alert('Sesión administrativa inválida o expirada. Inicia sesión de nuevo.');
+        handleLogout();
+        return;
+    }
+
+    currentUser.isAdmin = true;
+    currentUser.name = verified.usuario;
+    currentUser.role = verified.cargo;
+    store.set(KEYS.session, sanitizeSessionUser(currentUser));
 
     const panel = document.getElementById('admin-panel');
     if (!panel) { console.error(`${DEBUG_PREFIX} No se encontró #admin-panel`); return; }
@@ -369,6 +444,25 @@ function toggleAdminPanel() {
 }
 
 /* ============================================================
+   ADMIN DASHBOARD TABS
+   ============================================================ */
+function switchAdminTab(tabId) {
+    document.querySelectorAll('.admin-tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+    });
+    const targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        targetTab.classList.remove('hidden');
+    }
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if(btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+/* ============================================================
    ACORDEONES (AETSRO / CONSEJO)
    ============================================================ */
 function toggleAccordion(id) {
@@ -379,18 +473,22 @@ function toggleAccordion(id) {
 /* ============================================================
    RENDERIZADO DEL PANEL ADMIN
    ============================================================ */
-function renderAdminPanel() {
-    const users = store.get(KEYS.users) || [];
+async function renderAdminPanel() {
     const docs  = store.get(KEYS.docs)  || [];
     const anns  = store.get(KEYS.anns)  || [];
+    let users   = [];
+
+    try {
+        users = await fetchStudents();
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error cargando estudiantes:`, err);
+    }
 
     const statStudents  = document.getElementById('stat-students');
     const statDocs      = document.getElementById('stat-docs');
-    const statDownloads = document.getElementById('stat-downloads');
 
     if (statStudents)  statStudents.textContent  = users.length;
     if (statDocs)      statDocs.textContent       = docs.length;
-    if (statDownloads) statDownloads.textContent  = '0';
 
     renderAdminMessagesList();
     renderAdminStudentsList(users);
@@ -424,7 +522,7 @@ function renderAdminStudentsList(users) {
     container.innerHTML = users.map(u =>
         `<div class="message-card">
             <strong>${u.name}</strong> — Carné: ${u.carne}
-            <button onclick="muteStudent('${u.carne}')" class="btn-small" style="margin-left:1rem;">${u.muted ? 'Desilenciar' : 'Silenciar'}</button>
+            <button type="button" class="btn-small mute-student-btn" data-carne="${u.carne}" data-muted="${u.muted}" style="margin-left:1rem;">${u.muted ? 'Desilenciar' : 'Silenciar'}</button>
         </div>`
     ).join('');
 }
@@ -513,10 +611,24 @@ function deleteDoc(id)  { if (!confirm('¿Eliminar?')) return; store.set(KEYS.do
 function deleteAnn(id)  { if (!confirm('¿Eliminar?')) return; store.set(KEYS.anns,  (store.get(KEYS.anns)  || []).filter(a => a.id !== id)); renderAdminPanel(); renderAll(); }
 function deleteMsg(id)  { if (!confirm('¿Eliminar?')) return; store.set(KEYS.msgs,  (store.get(KEYS.msgs)  || []).filter(m => m.id !== id)); renderAdminPanel(); }
 
-function muteStudent(carne) {
-    const users = store.get(KEYS.users) || [];
-    const user  = users.find(u => u.carne === carne);
-    if (user) { user.muted = !user.muted; store.set(KEYS.users, users); renderAdminPanel(); alert(`Estudiante ${user.muted ? 'silenciado' : 'desilenciado'}`); }
+async function muteStudent(carne, currentlyMuted) {
+    try {
+        const response = await fetch('/api/students', {
+            method: 'PATCH',
+            headers: authHeaders(),
+            body: JSON.stringify({ carne, muted: !currentlyMuted })
+        });
+        const data = await response.json();
+        if (!data.success) {
+            alert(data.message || 'No se pudo actualizar al estudiante');
+            return;
+        }
+        await renderAdminPanel();
+        alert(`Estudiante ${!currentlyMuted ? 'silenciado' : 'desilenciado'}`);
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error silenciando estudiante:`, err);
+        alert('Error de conexión al actualizar estudiante');
+    }
 }
 function replyMsg(e, id) {
     e.preventDefault();
@@ -604,6 +716,121 @@ function renderMyMessages() {
 /* ============================================================
    RENDERIZADO PÚBLICO
    ============================================================ */
+function linkify(text) {
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlPattern, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
+}
+
+let currentGalleryImages = [];
+let currentImageIndex = 0;
+
+function openLightbox(src, alt, galleryContainer = null) {
+    const lb = document.getElementById('img-lightbox');
+    const lbImg = document.getElementById('img-lightbox-img');
+    if (!lb || !lbImg) return;
+    
+    // Detectar si la imagen viene de una galería y capturar todas las imágenes
+    if (galleryContainer) {
+        const images = galleryContainer.querySelectorAll('img');
+        currentGalleryImages = Array.from(images).map(img => ({
+            src: img.currentSrc || img.src,
+            alt: img.alt || ''
+        }));
+        currentImageIndex = currentGalleryImages.findIndex(img => img.src === src);
+    } else {
+        currentGalleryImages = [{src, alt}];
+        currentImageIndex = 0;
+    }
+    
+    lbImg.src = src;
+    lbImg.alt = alt || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    lb.focus();
+}
+
+function nextGalleryImage() {
+    if (currentGalleryImages.length <= 1) return;
+    currentImageIndex = (currentImageIndex + 1) % currentGalleryImages.length;
+    displayGalleryImage();
+}
+
+function prevGalleryImage() {
+    if (currentGalleryImages.length <= 1) return;
+    currentImageIndex = (currentImageIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+    displayGalleryImage();
+}
+
+function displayGalleryImage() {
+    const lbImg = document.getElementById('img-lightbox-img');
+    const counter = document.getElementById('img-lightbox-counter');
+    const prevBtn = document.getElementById('img-lightbox-prev');
+    const nextBtn = document.getElementById('img-lightbox-next');
+    
+    if (!lbImg || !currentGalleryImages[currentImageIndex]) return;
+    lbImg.src = currentGalleryImages[currentImageIndex].src;
+    lbImg.alt = currentGalleryImages[currentImageIndex].alt;
+    
+    // Mostrar u ocultar botones según la cantidad de imágenes
+    const hasMultipleImages = currentGalleryImages.length > 1;
+    if (prevBtn) prevBtn.style.display = hasMultipleImages ? 'flex' : 'none';
+    if (nextBtn) nextBtn.style.display = hasMultipleImages ? 'flex' : 'none';
+    
+    // Actualizar contador
+    if (counter && hasMultipleImages) {
+        counter.textContent = `${currentImageIndex + 1} / ${currentGalleryImages.length}`;
+        counter.style.display = 'block';
+    } else if (counter) {
+        counter.style.display = 'none';
+    }
+}
+
+function applyImageInteractivity(root = document) {
+    const images = root.querySelectorAll('img:not(#img-lightbox-img)');
+    images.forEach(img => {
+        if (img.closest('#img-lightbox')) return;
+        if (img.classList.contains('interactive-image')) return;
+        // Excluir imágenes de navegación y logotipos del encabezado
+        if (img.classList.contains('nav-logo') || img.classList.contains('header-logo')) return;
+        if (img.classList.contains('hero-gif')) return;
+        // Excluir imágenes en las secciones de cursos e IA
+        if (img.closest('#tab-cursos') || img.closest('#tab-ia')) return;
+
+        img.classList.add('interactive-image');
+        img.setAttribute('tabindex', '0');
+        img.setAttribute('role', 'button');
+        img.setAttribute('aria-label', img.alt || 'Abrir imagen ampliada');
+
+        if (!img.getAttribute('title')) {
+            img.setAttribute('title', 'Clic para ver imagen completa');
+        }
+    });
+}
+
+function openImageFromElement(img) {
+    if (!img) return;
+    const source = img.currentSrc || img.src;
+    if (!source) return;
+    
+    // Buscar si la imagen está en una galería (consejo-gallery-grid, image-gallery, pdf-list-container, etc.)
+    let galleryContainer = img.closest('.consejo-gallery-grid') || 
+                           img.closest('.image-gallery') || 
+                           img.closest('.pdf-list-container');
+    
+    openLightbox(source, img.alt || '', galleryContainer);
+}
+
+function closeLightbox() {
+    const lb = document.getElementById('img-lightbox');
+    if (!lb) return;
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    const lbImg = document.getElementById('img-lightbox-img');
+    if (lbImg) lbImg.src = '';
+    currentGalleryImages = [];
+    currentImageIndex = 0;
+}
+
 function renderAll() { renderAnnouncements(); renderRepositorio(); renderMyMessages(); }
 
 function renderAnnouncements(search = '') {
@@ -619,13 +846,16 @@ function renderAnnouncements(search = '') {
     if (!anns.length) { container.innerHTML = '<p>No hay anuncios</p>'; return; }
     container.innerHTML = anns.map(a =>
         `<div class="announcement-card ${a.type === 'urgente' ? 'urgent' : ''}">
-            <h3>${a.pinned ? '📌 ' : ''}${a.title}</h3>
-            <p>${a.content}</p>
-            ${a.image ? `<img src="${a.image}" alt="Imagen de aviso: ${a.title}" class="ann-card-img" style="max-width:100%; max-height:300px; object-fit:cover; border-radius:var(--radius-sm); margin-top:0.75rem; display:block;">` : ''}
-            ${a.isStudentContribution ? `<div style="font-size:0.8rem;color:var(--gray-600);margin-top:0.5rem;">Por: ${a.studentName}</div>` : ''}
-            <div style="font-size:0.8rem;color:var(--gray-600);margin-top:0.5rem;">${new Date(a.createdAt).toLocaleDateString()}</div>
+            ${a.image ? `<img src="${a.image}" alt="Imagen: ${a.title}" class="ann-card-img" title="Clic para ver imagen completa">` : ''}
+            <div class="ann-body">
+                <h3>${a.pinned ? '📌 ' : ''}${a.title}</h3>
+                <p>${linkify(a.content)}</p>
+                ${a.isStudentContribution ? `<div class="ann-meta">Por: ${a.studentName}</div>` : ''}
+                <div class="ann-meta">${new Date(a.createdAt).toLocaleDateString()}</div>
+            </div>
         </div>`
     ).join('');
+    applyImageInteractivity(container);
 }
 
 function renderRepositorio(search = '', filter = 'all') {
@@ -650,61 +880,24 @@ function renderRepositorio(search = '', filter = 'all') {
 }
 
 /* ============================================================
-   CALENDARIO
-   ============================================================ */
-function renderCalendar() {
-    const container = document.getElementById('calendar-container');
-    if (!container) return;
-    const now = new Date();
-    if (calendarView === 'month')      renderMonthView(container, now.getFullYear(), now.getMonth());
-    else if (calendarView === 'week')  renderWeekView(container, now);
-    else                               renderDayView(container, now);
-}
-
-function renderMonthView(container, year, month) {
-    const firstDay     = new Date(year, month, 1);
-    const lastDay      = new Date(year, month + 1, 0);
-    const daysInMonth  = lastDay.getDate();
-    const startingDay  = firstDay.getDay();
-    const monthNames   = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    let html = `<h3 style="text-align:center;margin-bottom:1rem;color:var(--usac-blue);">${monthNames[month]} ${year}</h3>
-    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:0.5rem;">`;
-    ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d => html += `<div style="text-align:center;font-weight:bold;padding:0.5rem;">${d}</div>`);
-    for (let i = 0; i < startingDay; i++) html += '<div></div>';
-    for (let day = 1; day <= daysInMonth; day++) {
-        const isToday = day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear();
-        html += `<div style="text-align:center;padding:0.75rem;background:${isToday ? 'var(--usac-blue)' : 'var(--gray-200)'};color:${isToday ? 'white' : 'inherit'};border-radius:4px;cursor:pointer;">${day}</div>`;
-    }
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function renderWeekView(container, date) {
-    const startOfWeek = new Date(date);
-    startOfWeek.setDate(date.getDate() - date.getDay());
-    let html = '<h3 style="text-align:center;margin-bottom:1rem;color:var(--usac-blue);">Semana Actual</h3><div style="display:grid;gap:0.5rem;">';
-    for (let i = 0; i < 7; i++) {
-        const d = new Date(startOfWeek);
-        d.setDate(startOfWeek.getDate() + i);
-        html += `<div style="padding:1rem;background:var(--gray-200);border-radius:4px;"><strong>${d.toLocaleDateString('es-ES', { weekday: 'long' })}</strong><br>${d.toLocaleDateString()}</div>`;
-    }
-    html += '</div>';
-    container.innerHTML = html;
-}
-
-function renderDayView(container, date) {
-    container.innerHTML = `<h3 style="text-align:center;margin-bottom:1rem;color:var(--usac-blue);">${date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h3>
-    <div style="text-align:center;padding:2rem;">
-        <p>Selecciona un horario</p>
-        <div style="display:grid;gap:0.5rem;margin-top:1rem;">
-            ${['8:00 AM','10:00 AM','12:00 PM','2:00 PM','4:00 PM'].map(t => `<div style="padding:1rem;background:var(--gray-200);border-radius:4px;">${t} — Disponible</div>`).join('')}
-        </div>
-    </div>`;
-}
-
-/* ============================================================
    EVENT LISTENERS E INICIALIZACIÓN
    ============================================================ */
+function toggleMobileNav() {
+    const header = document.getElementById('app-header');
+    const btn = document.getElementById('btn-mobile-menu');
+    if (!header || !btn) return;
+    const open = header.classList.toggle('nav-open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.textContent = open ? '✕' : '☰';
+}
+
+function closeMobileNav() {
+    const header = document.getElementById('app-header');
+    const btn = document.getElementById('btn-mobile-menu');
+    if (header) header.classList.remove('nav-open');
+    if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.textContent = '☰'; }
+}
+
 function setupEventListeners() {
     document.getElementById('btn-enter')?.addEventListener('click', showAuthModal);
     document.getElementById('login-form')?.addEventListener('submit', handleAuth);
@@ -715,6 +908,17 @@ function setupEventListeners() {
     document.querySelectorAll('.auth-tabs .tab-btn').forEach(btn =>
         btn.addEventListener('click', () => switchAuthTab(btn.dataset.tab))
     );
+
+    document.getElementById('btn-mobile-menu')?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleMobileNav();
+    });
+
+    document.getElementById('admin-students-list')?.addEventListener('click', (e) => {
+        const btn = e.target.closest('.mute-student-btn');
+        if (!btn) return;
+        muteStudent(btn.dataset.carne, btn.dataset.muted === 'true');
+    });
 
     document.getElementById('admin-doc-form')?.addEventListener('submit', adminAddDoc);
     document.getElementById('admin-ann-form')?.addEventListener('submit', adminAddAnn);
@@ -736,15 +940,6 @@ function setupEventListeners() {
         })
     );
 
-    document.querySelectorAll('.view-btn').forEach(btn =>
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            calendarView = btn.dataset.view;
-            renderCalendar();
-        })
-    );
-
     // Cerrar modales al hacer clic en el backdrop
     document.querySelectorAll('.modal-backdrop').forEach(modal =>
         modal.addEventListener('click', (e) => {
@@ -752,7 +947,37 @@ function setupEventListeners() {
         })
     );
 
-    // Cerrar dropdown al hacer clic fuera
+    // Lightbox: cerrar al hacer clic en el fondo oscuro
+    document.getElementById('img-lightbox')?.addEventListener('click', (e) => {
+        if (e.target === document.getElementById('img-lightbox')) closeLightbox();
+    });
+
+    document.addEventListener('click', (e) => {
+        const img = e.target.closest('img.interactive-image');
+        if (!img || img.closest('#img-lightbox')) return;
+        e.preventDefault();
+        openImageFromElement(img);
+    });
+
+    // Lightbox: cerrar con tecla Escape y navegación con flechas
+    document.addEventListener('keydown', (e) => {
+        const lb = document.getElementById('img-lightbox');
+        if (!lb || !lb.classList.contains('open')) return;
+        
+        if (e.key === 'Escape') {
+            closeLightbox();
+        } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+            e.preventDefault();
+            nextGalleryImage();
+        } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+            e.preventDefault();
+            prevGalleryImage();
+        } else if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.matches('img.interactive-image')) {
+            e.preventDefault();
+            openImageFromElement(document.activeElement);
+        }
+    });
+
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.dropdown')) {
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('open'));
@@ -775,6 +1000,7 @@ function setupEventListeners() {
             content.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
                     content.classList.remove('open');
+                    closeMobileNav();
                 });
             });
         }
@@ -805,7 +1031,7 @@ function renderSocialLinks() {
 
     SOCIAL_NETWORKS.forEach(net => {
         const url = saved[net.key] || '';
-        if (!url) return; // ocultar si sin URL
+        if (!url) return;
 
         const a = document.createElement('a');
         a.href = url;
@@ -817,11 +1043,6 @@ function renderSocialLinks() {
         a.innerHTML = `<i class="fab ${net.icon}"></i>`;
         container.appendChild(a);
     });
-
-    // Si no hay ninguna red, mostrar iconos de placeholder
-    if (container.childElementCount === 0) {
-        container.innerHTML = '<span class="footer-social-empty">Sin redes sociales configuradas</span>';
-    }
 }
 
 function loadSocialFormValues() {
@@ -846,26 +1067,80 @@ function setupSocialForm() {
         store.set(KEYS.social, data);
         renderSocialLinks();
 
-        // Feedback visual
         const btn = form.querySelector('button[type="submit"]');
-        const original = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-check"></i> ¡Guardado!';
-        btn.style.background = '#22c55e';
-        setTimeout(() => {
-            btn.innerHTML = original;
-            btn.style.background = '';
-        }, 2000);
+        if (btn) {
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> ¡Guardado!';
+            btn.style.background = '#22c55e';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.background = '';
+            }, 2000);
+        }
     });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     applyStoredTheme();
+    applyImageInteractivity(document);
     setupEventListeners();
     setupSocialForm();
     renderSocialLinks();
     loadSocialFormValues();
+
     const session = store.get(KEYS.session);
-    if (session) loginSuccess(session);
+    if (session?.token) {
+        const verified = await verifySession(session.token);
+        if (verified?.type === 'admin') {
+            loginSuccess(sanitizeSessionUser({
+                ...session,
+                isAdmin: true,
+                name: verified.usuario,
+                role: verified.cargo,
+                token: session.token
+            }));
+        } else if (verified?.type === 'student') {
+            loginSuccess(sanitizeSessionUser({
+                id: verified.id,
+                name: verified.name,
+                carne: verified.carne,
+                role: verified.role,
+                muted: verified.muted,
+                token: session.token
+            }));
+        } else {
+            localStorage.removeItem(KEYS.session);
+        }
+    }
+
     studentSessionDocs = 0;
     studentSessionAnns = 0;
+});
+
+/* ============================================================
+   TARJETAS LEGALES — TOGGLE PARA MÓVIL / TECLADO
+   ============================================================ */
+function toggleLegalCard(card) {
+    const isExpanded = card.classList.contains('expanded');
+    // Cerrar todas las demás tarjetas legales
+    document.querySelectorAll('.legal-card').forEach(c => c.classList.remove('expanded'));
+    // Alternar la actual
+    if (!isExpanded) {
+        card.classList.add('expanded');
+        card.setAttribute('aria-expanded', 'true');
+        const full = card.querySelector('.legal-full');
+        if (full) full.setAttribute('aria-hidden', 'false');
+    } else {
+        card.setAttribute('aria-expanded', 'false');
+        const full = card.querySelector('.legal-full');
+        if (full) full.setAttribute('aria-hidden', 'true');
+    }
+}
+
+// Soporte teclado: Enter / Space expanden la tarjeta
+document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('legal-card')) {
+        e.preventDefault();
+        toggleLegalCard(e.target);
+    }
 });

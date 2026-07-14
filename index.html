@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         integrity="sha512-Avb2QiuDEEvB4bZJYdft2mNjVShBftLdPG8FJ0V7irTLQ8Uo0qcPxh4Plq7G5tGm0rU+1SPhVotteLpBERwg=="
         crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Supabase JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -113,17 +115,26 @@
      ══════════════════════════════════════════ -->
     <header id="app-header" class="hidden">
         <div class="header-container">
-            <div class="logo-section">
-                <span class="header-title">Biblioteca Digital</span>
-                <img src="imags/2.png" alt="Logo USAC TS" class="header-logo nav-logo"
-                    onclick="switchMainView('biblioteca')" title="Ir a Biblioteca">
-                <img src="imags/si.jpg" alt="Logo AETSRO" class="header-logo nav-logo"
-                    onclick="switchMainView('aetsro')" title="Ver AETSRO">
-                <img src="imags/no.png" alt="Logo Consejo" class="header-logo nav-logo"
-                    onclick="switchMainView('consejo')" title="Ver Consejo Elvira Barreno">
+            <div class="header-top-row">
+                <div class="logo-section">
+                    <span class="header-title">Biblioteca Digital</span>
+                    <div class="header-logos">
+                        <button type="button" class="logo-btn" onclick="switchMainView('biblioteca')" title="Ir a Biblioteca" aria-label="Ir a Biblioteca">
+                            <img src="imags/2.png" alt="Logo USAC TS" class="header-logo nav-logo">
+                        </button>
+                        <button type="button" class="logo-btn" onclick="switchMainView('aetsro')" title="Ver AETSRO" aria-label="Ver AETSRO">
+                            <img src="imags/si.jpg" alt="Logo AETSRO" class="header-logo nav-logo">
+                        </button>
+                        <button type="button" class="logo-btn" onclick="switchMainView('consejo')" title="Ver Consejo Elvira Barreno" aria-label="Ver Consejo Elvira Barreno">
+                            <img src="imags/no.png" alt="Logo Consejo" class="header-logo nav-logo">
+                        </button>
+                    </div>
+                </div>
+                <button type="button" id="btn-mobile-menu" class="btn-icon mobile-menu-btn" aria-label="Abrir menú"
+                    aria-expanded="false">☰</button>
             </div>
 
-            <nav class="main-nav">
+            <nav class="main-nav" id="main-nav">
                 <!-- Menú Desplegable Cursos -->
                 <div class="dropdown">
                     <button class="nav-btn dropbtn" aria-haspopup="true">Cursos ▾</button>
@@ -178,8 +189,7 @@
                             Muro de Noticias</a>
                         <a href="#" role="menuitem"
                             onclick="setExclusiveTab('plataforma'); scrollToSection('platform-drive'); return false;">
-                            Biblioteca Drive</a>
-
+                            Biblioteca - Biblioteca Drive</a>
                         <a href="#" role="menuitem"
                             onclick="setExclusiveTab('plataforma'); scrollToSection('platform-communication'); return false;">
                             Comunicación Directa</a>
@@ -202,114 +212,84 @@
      ══════════════════════════════════════════ -->
     <section id="admin-panel" class="hidden" aria-label="Panel de Administración">
         <div class="admin-container">
-            <h2>⚙ Panel de Administración</h2>
+            <div class="admin-header">
+                <h2>⚙ Panel de Administración</h2>
+            </div>
+            
+            <div class="admin-tabs-nav">
+                <button class="admin-tab-btn active" onclick="switchAdminTab('tab-dashboard')">Resumen</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tab-content')">Contenido</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tab-users')">Usuarios y Consultas</button>
+                <button class="admin-tab-btn" onclick="switchAdminTab('tab-maintenance')">Mantenimiento</button>
+            </div>
 
-            <!-- Estadísticas -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Estudiantes</h3>
-                    <p id="stat-students">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Documentos</h3>
-                    <p id="stat-docs">0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Descargas</h3>
-                    <p id="stat-downloads">0</p>
+            <div class="admin-tab-content active" id="tab-dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Estudiantes</h3>
+                        <p id="stat-students">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Documentos</h3>
+                        <p id="stat-docs">0</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Formularios de administración -->
-            <div class="admin-forms">
-                <div class="form-section">
-                    <h3>Carga de Recursos</h3>
-                    <form id="admin-doc-form">
-                        <select id="doc-type" class="premium-input">
-                            <option value="tesis">Tesis</option>
-                            <option value="investigacion">Investigación</option>
+            <div class="admin-tab-content hidden" id="tab-content">
+                <div class="admin-forms" style="display: grid; gap: 2rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                    <div class="form-section">
+                        <h3>Carga de Recursos</h3>
+                        <form id="admin-doc-form">
+                            <select id="doc-type" class="premium-input">
+                                <option value="tesis">Tesis</option>
+                                <option value="investigacion">Investigación</option>
+                            </select>
+                            <input type="text" id="doc-title" placeholder="Título" class="premium-input" required>
+                            <input type="text" id="doc-author" placeholder="Autor" class="premium-input" required>
+                            <input type="url" id="doc-link" placeholder="URL del documento" class="premium-input" required>
+                            <button type="submit" class="btn-blue">Publicar Recurso</button>
+                        </form>
+                    </div>
 
-                        </select>
-                        <input type="text" id="doc-title" placeholder="Título" class="premium-input" required>
-                        <input type="text" id="doc-author" placeholder="Autor" class="premium-input" required>
-                        <input type="url" id="doc-link" placeholder="URL del documento" class="premium-input" required>
-                        <button type="submit" class="btn-blue">Publicar Recurso</button>
-                    </form>
-                </div>
-
-                <div class="form-section">
-                    <h3>Lanzar Aviso / Evento</h3>
-                    <form id="admin-ann-form">
-                        <input type="text" id="ann-title" placeholder="Título del aviso" class="premium-input" required>
-                        <textarea id="ann-content" placeholder="Contenido del aviso" class="premium-input" rows="3"
-                            required></textarea>
-                        <select id="ann-type" class="premium-input">
-                            <option value="general">General</option>
-                            <option value="urgente">Urgente</option>
-                        </select>
-                        <div class="form-group">
-                            <label for="ann-image"
-                                style="font-size:0.85rem; font-weight:600; margin-top:0.25rem;">Imagen del Aviso
-                                (Opcional - Transcripción Base64)</label>
-                            <input type="file" id="ann-image" accept="image/*" class="premium-input">
-                        </div>
-                        <button type="submit" class="btn-blue">Publicar Aviso</button>
-                    </form>
-                </div>
-
-                <!-- Configuración de Redes Sociales -->
-                <div class="form-section form-section--social">
-                    <h3><i class="fas fa-share-alt"></i> Redes Sociales del Footer</h3>
-                    <p class="form-hint">Introduce las URLs de cada red. Deja vacío para ocultar el ícono.</p>
-                    <form id="admin-social-form">
-                        <div class="social-input-row">
-                            <span class="social-label"><i class="fab fa-facebook-f social-ico facebook-ico"></i>
-                                Facebook</span>
-                            <input type="url" id="social-facebook" placeholder="https://facebook.com/..."
-                                class="premium-input">
-                        </div>
-                        <div class="social-input-row">
-                            <span class="social-label"><i class="fab fa-x-twitter social-ico x-ico"></i> X
-                                (Twitter)</span>
-                            <input type="url" id="social-x" placeholder="https://x.com/..." class="premium-input">
-                        </div>
-                        <div class="social-input-row">
-                            <span class="social-label"><i class="fab fa-instagram social-ico instagram-ico"></i>
-                                Instagram</span>
-                            <input type="url" id="social-instagram" placeholder="https://instagram.com/..."
-                                class="premium-input">
-                        </div>
-                        <div class="social-input-row">
-                            <span class="social-label"><i class="fab fa-linkedin-in social-ico linkedin-ico"></i>
-                                LinkedIn</span>
-                            <input type="url" id="social-linkedin" placeholder="https://linkedin.com/..."
-                                class="premium-input">
-                        </div>
-                        <div class="social-input-row">
-                            <span class="social-label"><i class="fab fa-youtube social-ico youtube-ico"></i>
-                                YouTube</span>
-                            <input type="url" id="social-youtube" placeholder="https://youtube.com/..."
-                                class="premium-input">
-                        </div>
-                        <button type="submit" class="btn-blue"><i class="fas fa-save"></i> Guardar Redes
-                            Sociales</button>
-                    </form>
+                    <div class="form-section">
+                        <h3>Lanzar Aviso / Evento</h3>
+                        <form id="admin-ann-form">
+                            <input type="text" id="ann-title" placeholder="Título del aviso" class="premium-input" required>
+                            <textarea id="ann-content" placeholder="Contenido del aviso" class="premium-input" rows="3" required></textarea>
+                            <select id="ann-type" class="premium-input">
+                                <option value="general">General</option>
+                                <option value="urgente">Urgente</option>
+                            </select>
+                            <div class="form-group">
+                                <label for="ann-image" style="font-size:0.85rem; font-weight:600; margin-top:0.25rem;">Imagen del Aviso (Opcional - Transcripción Base64)</label>
+                                <input type="file" id="ann-image" accept="image/*" class="premium-input">
+                            </div>
+                            <button type="submit" class="btn-blue">Publicar Aviso</button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- Listas de administración -->
-            <div class="admin-lists">
-                <div class="list-section">
-                    <h3>Buzón de Consultas</h3>
-                    <div id="admin-messages-list"></div>
+            <div class="admin-tab-content hidden" id="tab-users">
+                <div class="admin-lists">
+                    <div class="list-section">
+                        <h3>Estudiantes Registrados</h3>
+                        <div id="admin-students-list"></div>
+                    </div>
+                    <div class="list-section">
+                        <h3>Buzón de Consultas</h3>
+                        <div id="admin-messages-list"></div>
+                    </div>
                 </div>
-                <div class="list-section">
-                    <h3>Estudiantes Registrados</h3>
-                    <div id="admin-students-list"></div>
-                </div>
-                <div class="list-section">
-                    <h3>Limpieza de Muro</h3>
-                    <div id="admin-cleanup-section"></div>
+            </div>
+
+            <div class="admin-tab-content hidden" id="tab-maintenance">
+                <div class="admin-lists">
+                    <div class="list-section">
+                        <h3>Limpieza de Muro</h3>
+                        <div id="admin-cleanup-section"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -377,39 +357,194 @@
                         onerror="this.style.display='none'">
 
                     <div class="about-content-vertical">
-                        <div class="about-block theme-card">
-                            <h3>Historia</h3>
-                            <p>La Biblioteca Digital de Trabajo Social del CUNOC fortalece las habilidades teóricas y
-                                técnicas de los estudiantes mediante la gamificación del conocimiento y la
-                                descentralización de información académica. Esta plataforma elimina barreras geográficas
-                                para garantizar un acceso equitativo a recursos especializados, regido siempre por un
-                                inquebrantable compromiso con la ética profesional. Como resultado, optimiza el
-                                desempeño de los futuros
-                                egresados en diversos ámbitos laborales, dotándolos de una sólida base conceptual,
-                                adaptabilidad tecnológica y rigor moral.
+                        <!-- Historia -->
+                        <div class="about-block theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                            onclick="toggleLegalCard(this)">
+                            <div class="legal-header">
+                                <span class="legal-icon"></span>
+                                <h3>Historia</h3>
+                            </div>
+                            <p class="legal-summary">
+                                Conoce los orígenes y evolución de nuestra biblioteca digital.
+                                <span class="expand-hint">Toca o pasa el cursor para más información →</span>
                             </p>
+                            <div class="legal-full" aria-hidden="true">
+                                <div class="legal-section">
+                                    <p>La Biblioteca Digital de Trabajo Social del CUNOC fortalece las habilidades
+                                        teóricas y
+                                        técnicas de los estudiantes mediante la gamificación del conocimiento y la
+                                        descentralización de información académica. Esta plataforma elimina barreras
+                                        geográficas
+                                        para garantizar un acceso equitativo a recursos especializados, regido siempre
+                                        por un
+                                        inquebrantable compromiso con la ética profesional. Como resultado, optimiza el
+                                        desempeño de los futuros
+                                        egresados en diversos ámbitos laborales, dotándolos de una sólida base
+                                        conceptual,
+                                        adaptabilidad tecnológica y rigor moral.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="about-block theme-card">
-                            <h3>Objetivos </h3>
-                            <ul style="padding-left:1.2rem;margin-top:.5rem;">
-                                <li>Promover la investigación académica</li>
-                                <li>Facilitar el acceso a recursos especializados</li>
-                                <li>Fomentar la colaboración entre estudiantes</li>
-                                <li>Garantizar la actualización constante de contenidos</li>
-                                <li>Integrar tecnología para mejorar la experiencia de aprendizaje</li>
-                                <li>Contribuir a la formación ética y profesional de los futuros trabajadores sociales
-                                </li>
-                                <li>Fortalecer la identidad académica y profesional de la comunidad estudiantil</li>
-                            </ul>
+
+                        <!-- Objetivos -->
+                        <div class="about-block theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                            onclick="toggleLegalCard(this)">
+                            <div class="legal-header">
+                                <span class="legal-icon"></span>
+                                <h3>Objetivos</h3>
+                            </div>
+                            <p class="legal-summary">
+                                Descubre nuestras metas para fortalecer la formación profesional.
+                                <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                            </p>
+                            <div class="legal-full" aria-hidden="true">
+                                <div class="legal-section">
+                                    <ul style="padding-left:1.2rem;margin-top:.5rem;">
+                                        <li>Promover la investigación académica</li>
+                                        <li>Facilitar el acceso a recursos especializados</li>
+                                        <li>Fomentar la colaboración entre estudiantes</li>
+                                        <li>Garantizar la actualización constante de contenidos</li>
+                                        <li>Integrar tecnología para mejorar la experiencia de aprendizaje</li>
+                                        <li>Contribuir a la formación ética y profesional de los futuros trabajadores
+                                            sociales
+                                        </li>
+                                        <li>Fortalecer la identidad académica y profesional de la comunidad estudiantil
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="about-block theme-card">
-                            <h3>Equipo</h3>
-                            <img src="imags/sello-trabajo-social-50.png" alt="Sello Trabajo Social" class="about-seal"
-                                onerror="this.style.display='none'">
-                            <p>Estudiantes y docentes comprometidos con la excelencia académica.</p>
+
+                        <!-- Equipo -->
+                        <div class="about-block theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                            onclick="toggleLegalCard(this)">
+                            <div class="legal-header">
+                                <span class="legal-icon"></span>
+                                <h3>Equipo</h3>
+                            </div>
+                            <p class="legal-summary">
+                                Conoce a quienes hacen posible este proyecto.
+                                <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                            </p>
+                            <div class="legal-full" aria-hidden="true">
+                                <div class="legal-section" style="text-align: center;">
+                                    <img src="imags/sello-trabajo-social-50.png" alt="Sello Trabajo Social"
+                                        class="about-seal" onerror="this.style.display='none'">
+                                    <p style="text-align: center;">Estudiantes y docentes comprometidos con la
+                                        excelencia académica.</p>
+                                </div>
+                            </div>
                         </div>
+
+                        <!--  Aviso Legal – Cursos y Plataformas Externas -->
+                        <div class="about-block theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                            onclick="toggleLegalCard(this)">
+                            <div class="legal-header">
+                                <span class="legal-icon"></span>
+                                <h3>Aviso Legal — Cursos y Plataformas Externas</h3>
+                            </div>
+                            <p class="legal-summary">
+                                Los cursos y plataformas enlazados <strong>no son creados por esta biblioteca</strong>.
+                                Solo redirigimos a los portales oficiales.
+                                <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                            </p>
+                            <div class="legal-full" aria-hidden="true">
+                                <div class="legal-section">
+                                    <h4> Naturaleza de los Enlaces</h4>
+                                    <p>Los cursos, plataformas y recursos educativos listados en esta sección
+                                        <strong>no son propiedad ni han sido creados por Biblioteca Digital
+                                            CUNOC</strong>.
+                                        Estos enlaces únicamente redirigen a los portales oficiales de las respectivas
+                                        plataformas educativas (Coursera, edX, Udemy, ISC, etc.).
+                                    </p>
+                                </div>
+                                <div class="legal-section">
+                                    <h4>Propósito</h4>
+                                    <p>Esta biblioteca digital funciona como un <em>repositorio de enlaces</em> para
+                                        facilitar el acceso a recursos educativos externos de calidad.
+                                        <strong>No alojamos, distribuimos ni revendemos</strong> ningún curso o
+                                        contenido de estas plataformas.
+                                    </p>
+                                </div>
+                                <div class="legal-section">
+                                    <h4> Responsabilidad</h4>
+                                    <p>El acceso y uso de estas plataformas externas está sujeto a los términos y
+                                        condiciones de cada proveedor. Biblioteca Digital CUNOC no se hace responsable
+                                        por el contenido, precios o políticas de sitios externos.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!--  Aviso Legal – Biblioteca Drive -->
+                        <div class="about-block theme-card legal-card legal-card-drive" tabindex="0" role="button"
+                            aria-expanded="false" onclick="toggleLegalCard(this)">
+                            <div class="legal-header">
+                                <span class="legal-icon"></span>
+                                <h3>Aviso Legal — Biblioteca Drive</h3>
+                            </div>
+                            <p class="legal-summary">
+                                Los libros de este repositorio son de <strong>acceso libre y descarga pública</strong>.
+                                Está <strong>prohibida su venta</strong> por posibles derechos de autor.
+                                <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                            </p>
+                            <div class="legal-full" aria-hidden="true">
+                                <div class="legal-section">
+                                    <h4> Naturaleza del Material</h4>
+                                    <p>Los libros, manuales y documentos alojados en este repositorio son
+                                        <strong>materiales de acceso libre y descarga pública</strong> con fines
+                                        exclusivamente <strong>educativos, académicos y de investigación</strong>.
+                                    </p>
+                                </div>
+                                <div class="legal-section legal-warning-section">
+                                    <h4> PROHIBIDA LA VENTA Y COMERCIALIZACIÓN</h4>
+                                    <p><strong>Queda estrictamente prohibida la venta, comercialización,
+                                            distribución con fines de lucro o cualquier uso comercial</strong> de
+                                        los materiales contenidos en este repositorio.</p>
+                                    <p>Estos documentos pueden estar protegidos por derechos de autor (copyright)
+                                        pertenecientes a sus respectivos autores, editoriales o instituciones.
+                                        Su disponibilidad en este repositorio no transfiere ni otorga ningún
+                                        derecho de propiedad sobre los mismos.</p>
+                                </div>
+                                <div class="legal-section">
+                                    <h4> Propósito Educativo</h4>
+                                    <p>Este repositorio se mantiene bajo el principio de <strong>acceso abierto</strong>
+                                        para la comunidad estudiantil del CUNOC-USAC y el público en general:</p>
+                                    <ul>
+                                        <li>Facilitar el acceso a material bibliográfico académico</li>
+                                        <li>Apoyar la investigación y el aprendizaje</li>
+                                        <li>Promover la difusión del conocimiento</li>
+                                    </ul>
+                                </div>
+                                <div class="legal-section">
+                                    <h4> Marco Legal</h4>
+                                    <p>Este repositorio opera bajo:</p>
+                                    <ul>
+                                        <li>Ley de Derechos de Autor de Guatemala</li>
+                                        <li>Principios de Uso Justo (Fair Use) con fines educativos</li>
+                                        <li>Políticas de Acceso Abierto y Ciencia Abierta</li>
+                                    </ul>
+                                    <p>Si eres titular de derechos de autor y consideras que algún material
+                                        infringe tus derechos, contáctanos para su revisión y posible retiro inmediato.
+                                    </p>
+                                </div>
+                                <div class="legal-section legal-contact-section">
+                                    <h4>Contacto</h4>
+                                    <p>Para reportar contenido o solicitar la eliminación de material:
+                                        <a href="https://www.facebook.com/AETSRO?mibextid=rS40aB7S9Ucbxw6v" target="_blank" rel="noopener noreferrer" class="legal-contact-link">Facebook AETSRO</a>
+                                    </p>
+                                </div>
+                                <p class="legal-footer-note">
+                                    <strong>Biblioteca Digital CUNOC</strong> — Centro Universitario de Occidente —
+                                    USAC<br>
+                                    <em>El conocimiento es de todos, el respeto a los derechos de autor también.</em>
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
                 </section>
+
             </section>
 
             <!-- ── Pestaña Cursos ── -->
@@ -444,7 +579,8 @@
                         </a>
                         <!-- 1 Coursera -->
                         <a href="https://www.coursera.org/" target="_blank" class="edu-card">
-                            <div class="edu-card-img-wrapper"><img src="images/I/a.png" alt="Coursera" class="edu-card-img">
+                            <div class="edu-card-img-wrapper"><img src="images/I/a.png" alt="Coursera"
+                                    class="edu-card-img">
                             </div>
                             <div class="edu-card-body">
                                 <div class="edu-card-platform-info"><i class="fas fa-university platform-icon"
@@ -1500,9 +1636,11 @@
                 <div id="platform-drive" class="drive-section theme-section">
                     <h2>Biblioteca Drive</h2>
                     <p>Accede a nuestro repositorio completo en Google Drive.</p>
-                    <a href="https://drive.google.com/drive/u/0/folders/1FychtariaHXYu8TGC2UfUMQ_2np9xw4p"
-                        target="_blank" rel="noopener" class="btn-drive-large">ACCEDER AL REPOSITORIO EN GOOGLE DRIVE
+                    <a href="https://drive.google.com/drive/folders/1tb6fbZkrrqChEvy0r9WFkGb0a7lnTpUK?usp=sharing"
+                        target="_blank" rel="noopener" class="btn-drive-large"
+                        style="margin-bottom: 1.5rem; display: inline-block;">ACCEDER AL REPOSITORIO EN GOOGLE DRIVE
                         →</a>
+
                 </div>
                 <!-- Comunicación directa -->
                 <div id="platform-communication" class="communication-section theme-section">
@@ -1541,28 +1679,345 @@
                         dos décadas el pilar de la organización estudiantil en Trabajo Social.</p>
                 </div>
 
-                <!-- Galería institucional -->
-                <div class="section-card theme-card">
-                    <h3>Galería Institucional</h3>
-                    <div class="image-gallery">
-                        <img src="imags/aetsro1.jpg" alt="Actividad AETSRO 1" onerror="this.style.display='none'">
-                        <img src="imags/aetsro2.jpg" alt="Actividad AETSRO 2" onerror="this.style.display='none'">
-                        <img src="imags/aetsro3.jpg" alt="Actividad AETSRO 3" onerror="this.style.display='none'">
+                <div class="section-card theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                    onclick="toggleLegalCard(this)">
+                    <div class="legal-header">
+                        <h3 style="margin: 0; font-size: 1.1rem; color: var(--usac-blue);">¿Qué es AETSRO?</h3>
+                    </div>
+                    <p class="legal-summary">
+                        Órgano estudiantil de la carrera de Trabajo Social Rural del CUNOC.
+                        <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                    </p>
+                    <div class="legal-full" aria-hidden="true">
+                        <div class="legal-section">
+                            <p>La A.E.T.S.R.O. se define como un órgano estudiantil de la carrera de Trabajo Social
+                                Rural,
+                                situado en la Universidad de San Carlos de Guatemala, Centro Universitario de Occidente
+                                (CUNOC),
+                                cuyo fin primordial es la atención de los espacios estudiantiles, culturales y cívicos.
+                            </p>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Misión y
+                                Objetivos
+                                Centrales</h4>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                                <li style="margin-bottom: 0.25rem;"><strong>Defensa de la Autonomía:</strong> Velar por
+                                    la
+                                    independencia de la universidad frente a injerencias externas.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Conciencia Social:</strong> Difundir la
+                                    realidad
+                                    nacional a través de diversos sectores y medios.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Representación Estudiantil:</strong> Actuar
+                                    como la
+                                    voz y el nexo de diálogo ante las necesidades del estudiantado de la carrera de
+                                    Trabajo
+                                    Social Rural.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Fomento de la Participación:</strong>
+                                    Promover el
+                                    pensamiento crítico y la autoformación personal sin opresiones ni normas
+                                    restrictivas sobre
+                                    la expresión.</li>
+                            </ul>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">El Proceso de
+                                Recuperación Histórica</h4>
+                            <p style="margin-bottom: 1rem;">La asociación atravesó un periodo de estancamiento y
+                                cooptación
+                                entre los años 2020 y 2023, tiempo durante el cual no se realizaron elecciones y los
+                                cargos
+                                fueron ocupados por personas que ya no ostentaban la calidad de estudiantes,
+                                contraviniendo los
+                                estatutos vigentes.</p>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Hitos de la
+                                Recuperación
+                                (2023-2024)</h4>
+                            <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                                <li style="margin-bottom: 0.5rem;"><strong>Movilización Estudiantil:</strong> Un grupo
+                                    organizado de estudiantes inició la recolección de firmas para exigir elecciones
+                                    legítimas.
+                                </li>
+                                <li style="margin-bottom: 0.5rem;"><strong>Asamblea de Agosto 2023:</strong> Se convocó
+                                    a la
+                                    población estudiantil para elegir una nueva Junta Directiva. Ante conflictos
+                                    internos de las
+                                    planillas propuestas, la Asamblea decidió elegir los cargos de forma individual
+                                    basándose en
+                                    la trayectoria y propuestas de los candidatos.</li>
+                                <li style="margin-bottom: 0.5rem;"><strong>Consolidación en 2024:</strong> En febrero de
+                                    2024,
+                                    una segunda asamblea completó las secretarías vacantes, logrando la conformación
+                                    total del
+                                    quórum necesario para operar legalmente y retomar las funciones de la asociación.
+                                </li>
+                            </ol>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Estructura
+                                Organizativa
+                            </h4>
+                            <p style="margin-bottom: 1rem;">De acuerdo con sus bases, la asociación se divide en tres
+                                cuerpos
+                                principales que garantizan su funcionamiento y transparencia:</p>
+                            <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                                <li style="margin-bottom: 0.25rem;"><strong>Asamblea General:</strong> Es el órgano
+                                    máximo de
+                                    decisión, conformado por el estudiantado.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Junta Directiva y Ejecutiva:</strong>
+                                    Responsable de
+                                    la gestión operativa y política.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Junta Disciplinaria y Evaluadora:</strong>
+                                    Encargada
+                                    de velar por el cumplimiento ético y normativo de los miembros.</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
 
-               
+                <div class="section-card theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                    onclick="toggleLegalCard(this)">
+                    <div class="legal-header">
+                        <h3 style="margin: 0; font-size: 1.1rem; color: var(--usac-blue);">Composición de la Junta
+                            Directiva</h3>
+                    </div>
+                    <p class="legal-summary">
+                        Estructura, secretarías, reglas y beneficios del involucramiento.
+                        <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                    </p>
+                    <div class="legal-full" aria-hidden="true">
+                        <div class="legal-section">
+                            <div
+                                style="overflow-x: auto; margin-bottom: 1.5rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);">
+                                <table style="width: 100%; border-collapse: collapse; min-width: 500px;">
+                                    <thead>
+                                        <tr
+                                            style="background: var(--gray-100); border-bottom: 2px solid var(--gray-300); text-align: left;">
+                                            <th style="padding: 0.75rem; font-weight: bold;">Cargo</th>
+                                            <th style="padding: 0.75rem; font-weight: bold;">Responsabilidades
+                                                Principales</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Presidencia</td>
+                                            <td style="padding: 0.75rem;">Representación legal, dirección de sesiones y
+                                                defensa
+                                                de los intereses de los asociados.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Vicepresidencia</td>
+                                            <td style="padding: 0.75rem;">Sustitución del presidente en su ausencia y
+                                                coordinación de secretarías.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Secretaría General</td>
+                                            <td style="padding: 0.75rem;">Custodia de documentos, levantamiento de
+                                                actas,
+                                                correspondencia y emisión de credenciales.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Secretaría de Finanzas</td>
+                                            <td style="padding: 0.75rem;">Control financiero, elaboración de
+                                                presupuestos,
+                                                fiscalización de ingresos y egresos.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Secretaría de Conflictos
+                                            </td>
+                                            <td style="padding: 0.75rem;">Mediación en problemas académicos y gremiales;
+                                                fomento
+                                                de la unidad estudiantil.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Secretaría de Cultura</td>
+                                            <td style="padding: 0.75rem;">Organización de conferencias, exposiciones y
+                                                promoción
+                                                de grupos artísticos.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Proyección al Pueblo</td>
+                                            <td style="padding: 0.75rem;">Programación de actividades sociales fuera de
+                                                la
+                                                universidad y apoyo al sector rural/campesino.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Secretaría de Actas</td>
+                                            <td style="padding: 0.75rem;">Registro oficial de los acuerdos tomados en
+                                                asambleas
+                                                y reuniones.</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid var(--gray-200);">
+                                            <td style="padding: 0.75rem; font-weight: bold;">Secretaría de Deportes</td>
+                                            <td style="padding: 0.75rem;">Promoción del deporte y mantenimiento de las
+                                                instalaciones deportivas.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Reglas y
+                                Requisitos
+                                Estatutarios</h4>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                                <li style="margin-bottom: 0.25rem;"><strong>Elegibilidad:</strong> Para optar a la
+                                    presidencia,
+                                    el estudiante debe estar asociado desde el tercer semestre, contar con todos sus
+                                    derechos
+                                    vigentes y demostrar honradez y capacidad.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Transparencia Financiera:</strong> La
+                                    Secretaría de
+                                    Finanzas tiene la obligación de emitir recibos por cada movimiento y entregar
+                                    documentación
+                                    completa al sucesor al finalizar el mandato.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Rendición de Cuentas:</strong> Los
+                                    secretarios deben
+                                    presentar informes mensuales de sus actividades.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Normas de Convivencia:</strong> Se exige el
+                                    uso de
+                                    sellos, actas e informes oficiales para avalar cualquier reunión o decisión de la
+                                    asociación.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Postura ante la Violencia:</strong> La
+                                    asociación
+                                    mantiene una política de rechazo a espacios que fomenten actos violentos o que
+                                    pongan en
+                                    riesgo la integridad física y moral del estudiantado.</li>
+                            </ul>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">La Importancia de
+                                la
+                                Participación Estudiantil</h4>
+                            <p style="margin-bottom: 1rem;">La participación no es solo una acción colectiva, sino una
+                                responsabilidad individual que surge de la conciencia del sujeto. Se identifican cinco
+                                niveles
+                                de participación esenciales para la organización:</p>
+                            <ol style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                                <li style="margin-bottom: 0.25rem;"><strong>Informar:</strong> Difusión de derechos,
+                                    deberes y
+                                    cambios políticos.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Consultar:</strong> Interacción para evaluar
+                                    la
+                                    aprobación de acciones.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Involucrar:</strong> Participación directa
+                                    en la
+                                    toma de decisiones.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Colaborar:</strong> Trabajo en equipo para
+                                    resolver
+                                    problemáticas comunes.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Empoderar:</strong> Integración total de los
+                                    ciudadanos en la exigencia de sus demandas.</li>
+                            </ol>
+
+                            <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Beneficios del
+                                Involucramiento en A.E.T.S.R.O.</h4>
+                            <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                                <li style="margin-bottom: 0.25rem;"><strong>Desarrollo Profesional:</strong> Adquisición
+                                    de
+                                    habilidades en planificación, intervención y liderazgo.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Sentido de Pertenencia:</strong> Conexión
+                                    emocional
+                                    y ética con la carrera y la comunidad.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Incidencia Política:</strong> Capacidad de
+                                    influir
+                                    en las decisiones internas de la Universidad de San Carlos, la cual tiene incidencia
+                                    en 50
+                                    instituciones del Estado.</li>
+                                <li style="margin-bottom: 0.25rem;"><strong>Defensa Social:</strong> Fortalecimiento de
+                                    la
+                                    educación pública y gratuita como un derecho para los sectores que no poseen
+                                    recursos
+                                    económicos.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <!-- ── Documentos PDF (Supabase) ── -->
+                <div class="section-card theme-card" id="aetsro-pdf-section">
+                    <h3><i class="fas fa-file-pdf" style="color:#e53e3e;margin-right:.5rem;"></i>Documentos Oficiales
+                    </h3>
+                    <p style="color:var(--gray-500);font-size:.9rem;margin-bottom:1rem;">Publicaciones, actas y
+                        comunicados oficiales de A.E.T.S.R.O.</p>
+                    <div id="aetsro-pdf-list" class="pdf-list-container">
+                        <div class="pdf-loading">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando documentos...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Galería institucional -->
+                <div class="section-card theme-card">
+                    <h3><i class="fas fa-images" style="color:var(--usac-gold);margin-right:.5rem;"></i>Galería
+                        Institucional</h3>
+                    <div class="image-gallery">
+                        <div class="gallery-item">
+                            <img src="imags/AETSRO224.jpeg" alt="ELECCIONES AETSRO 2024"
+                                onerror="this.parentElement.classList.add('img-error');this.style.display='none'">
+                            <span class="gallery-caption">Elecciones 2024</span>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="imags/AETSRO2024.jpeg" alt="ELECCIONES AETSRO 2025"
+                                onerror="this.parentElement.classList.add('img-error');this.style.display='none'">
+                            <span class="gallery-caption">Elecciones 2025</span>
+                        </div>
+                        <div class="gallery-item">
+                            <img src="imags/AETSRO2026.jpeg" alt="ELECCIONES AETSRO 2026"
+                                onerror="this.parentElement.classList.add('img-error');this.style.display='none'">
+                            <span class="gallery-caption">Elecciones 2026</span>
+                        </div>
+                    </div>
+                </div>
+
+
                 <!-- Redes AETSRO -->
                 <div class="social-links-section theme-card">
                     <h3>Síguenos — AETSRO</h3>
-                        <div class="social-icons-row">
-                            <a href="https://www.facebook.com/AETSRO" class="social-icon-link" title="Facebook AETSRO" aria-label="Facebook AETSRO" target="_blank" rel="noopener">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="#" class="social-icon-link" title="Instagram AETSRO" aria-label="Instagram AETSRO">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                        </div>
+                    <div class="social-icons-row"
+                        style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 1.5rem; margin-bottom: 1rem;">
+                        <a href="https://www.facebook.com/AETSRO?mibextid=rS40aB7S9Ucbxw6v" class="social-icon-link"
+                            title="Facebook AETSRO" aria-label="Facebook AETSRO" target="_blank"
+                            rel="noopener noreferrer"
+                            style="display: inline-block; width: 48px; height: 48px; transition: transform 0.2s;"
+                            onmouseover="this.style.transform='scale(1.1)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="fb-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#E1F0FF" />
+                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="50" cy="50" r="46" fill="url(#fb-grad)" />
+                                <circle cx="50" cy="50" r="46" fill="none" stroke="#2589FF" stroke-width="8"
+                                    stroke-linecap="round" stroke-dasharray="100 44" stroke-dashoffset="20" />
+                                <path
+                                    d="M58 36 h 8 v -14 h -10 c -12 0 -18 6 -18 18 v 10 h -10 v 14 h 10 v 32 h 16 v -32 h 12 l 2 -14 h -14 v -10 c 0 -3 2 -4 6 -4 z"
+                                    fill="#2589FF" />
+                            </svg>
+                        </a>
+                        <a href="https://www.instagram.com/aetsro.cunoc?igsh=MWhkc2c0am1jODNpbA=="
+                            class="social-icon-link" title="Instagram AETSRO" aria-label="Instagram AETSRO"
+                            target="_blank" rel="noopener noreferrer"
+                            style="display: inline-block; width: 48px; height: 48px; transition: transform 0.2s;"
+                            onmouseover="this.style.transform='scale(1.1)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="ig-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#FFE1F0" />
+                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                <rect x="4" y="4" width="92" height="92" rx="26" fill="url(#ig-grad)" />
+                                <rect x="4" y="4" width="92" height="92" rx="26" fill="none" stroke="#F12F98"
+                                    stroke-width="8" stroke-linecap="round" stroke-dasharray="110 40"
+                                    stroke-dashoffset="30" />
+                                <circle cx="50" cy="50" r="20" fill="none" stroke="#F12F98" stroke-width="8" />
+                                <circle cx="76" cy="24" r="5" fill="#F12F98" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div><!-- /view-aetsro -->
@@ -1579,18 +2034,180 @@
                     <p>"Elvira Barreno Coyoy" · Lucha, Memoria y Dignidad</p>
                 </div>
             </div>
+            <div class="institutional-content">
+    <div class="section-card theme-card">
+        <h3>Nuestra Historia</h3>
+        <p>El Consejo Autónomo de Huelga de Humanidades lleva el nombre de <strong>Gloria Elvira Barreno Coyoy</strong>, estudiante de Trabajo Social del CUNOC-USAC quien fue víctima de desaparición forzada el 2 de julio de 1985 en Zunil, Quetzaltenango. Gloria tenía 26 años y realizaba labores sociales cuando fue secuestrada. Su memoria nos inspira a continuar la lucha por la justicia social y la educación pública de calidad.</p>
+        <p style="margin-top: 1rem;">Este consejo representa la continuidad de las luchas estudiantiles que históricamente han defendido la autonomía universitaria, los derechos del pueblo guatemalteco y la transformación social a través de la educación. Cada día somos más, más fuertes y más unidos en la construcción de un mejor futuro para Guatemala.</p>
+    </div>
+
+    <div class="section-card theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+        onclick="toggleLegalCard(this)">
+        <div class="legal-header">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--usac-blue);">¿Qué es el Consejo Autónomo de Huelga?</h3>
+        </div>
+        <p class="legal-summary">
+            Organización estudiantil de la División de Humanidades del CUNOC-USAC comprometida con la defensa de la universidad pública, la autonomía universitaria y los derechos del pueblo guatemalteco.
+            <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+        </p>
+        <div class="legal-full" aria-hidden="true">
+            <div class="legal-section">
+                <p>Somos una organización estudiantil de la División de Humanidades del Centro Universitario de Occidente (CUNOC) de la Universidad de San Carlos de Guatemala. Somos un movimiento estudiantil comprometido con la defensa de la universidad pública, la autonomía universitaria y los derechos del pueblo guatemalteco. Nuestra historia se construye con lucha, dignidad y presencia activa en la defensa de nuestra casa de estudios superiores.</p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Autonomía del Comité</h4>
+                <p style="margin-bottom: 1rem;"><strong>Este comité es autónomo al Honorable Comité de Huelga de Dolores General del CUNOC</strong>, ya que consideramos que han convertido la huelga en un juego, alcohol y vandalismo, desvirtuando su verdadero propósito. La razón de ser de la Huelga de Dolores es tirar sátira a los poderes hegemónicos y a la corrupción, no la fiesta y el desorden.</p>
+                
+                <p style="margin-bottom: 1rem;">La Huelga de Dolores tradicionalmente ha sido un espacio de crítica social, de denuncia contra la corrupción y los abusos de poder. Sin embargo, en los últimos años hemos observado una desviación de estos principios fundamentales, donde prevalece el alcohol, la violencia y actividades que nada tienen que ver con la sátira política constructiva que caracteriza a nuestra tradición universitaria.</p>
+
+                <p style="margin-bottom: 1rem;">Por esta razón, hemos decidido mantener nuestra autonomía organizativa, preservando los verdaderos valores de la huelga: la crítica inteligente, la denuncia social responsable y el compromiso con el pueblo guatemalteco.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+        onclick="toggleLegalCard(this)">
+        <div class="legal-header">
+            <h3 style="margin: 0; font-size: 1.1rem; color: var(--usac-blue);">Misión, Actividades y Carreras</h3>
+        </div>
+        <p class="legal-summary">
+            Defensa de la educación pública, actividades estudiantiles, memoria histórica y representación de carreras.
+            <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+        </p>
+        <div class="legal-full" aria-hidden="true">
+            <div class="legal-section">
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Nuestra Misión</h4>
+                <p style="margin-bottom: 1rem;">Defendemos la educación pública gratuita y de calidad como derecho fundamental del pueblo guatemalteco. Trabajamos al lado del estudiante consciente y las organizaciones sociales en la construcción de unidad estudiantil cada día más fuerte y organizada.</p>
+                
+                <p style="margin-bottom: 1rem;">Nuestro compromiso es con la autonomía universitaria, la lucha contra la impunidad y la transformación social a través de la educación y la organización popular. Nuestro lema es <strong>"PUEBLO UNIDO JAMÁS SERÁ VENCIDO"</strong>.</p>
+
+                <p style="margin-bottom: 1rem;">La USAC-CUNOC es del pueblo, y el pueblo la defiende. Cada día somos más, más fuertes y más unidos en la construcción de un mejor futuro para Guatemala.</p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Posición sobre la Rectoría de la USAC</h4>
+                <p style="margin-bottom: 1rem;"><strong>No reconocemos a Walter Mazariegos como rector legítimo de la USAC</strong> por las siguientes razones fundamentales:</p>
+                
+                <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                    <li style="margin-bottom: 0.5rem;"><strong>Fraude electoral sistemático:</strong> Su reelección en 2026 (y su elección original en 2022) estuvo marcada por la exclusión arbitraria de cuerpos electorales de oposición. De los 34 cuerpos electorales que obtuvo la agrupación opositora USAC-DIRE, el Consejo Superior Universitario (CSU) solo acreditó cinco, eliminando a 16 cuerpos electorales por supuestos "errores administrativos". Esta maniobra permitió controlar el resultado final del proceso electoral.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Reformas ilegítimas al reglamento electoral:</strong> El CSU, controlado por Mazariegos, aprobó reformas integrales al Reglamento Electoral que eliminaron el Tribunal Electoral Universitario, un órgano independiente que históricamente había garantizado la transparencia de los procesos. Esta reforma concentró todo el poder en el CSU para controlar el proceso a su conveniencia, violando principios democráticos básicos.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Elección a puertas cerradas:</strong> La elección del 8 de abril de 2026 se realizó en Casa Santo Domingo, Antigua Guatemala, a puertas cerradas, sin acceso público ni señal telefónica, violando órdenes judiciales y amparos pendientes. La Policía Nacional impidió el ingreso de una jueza que llegó a realizar una exhibición personal, demostrando el nivel de ilegalidad del proceso.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Exclusión masiva de electores:</strong> 64 electores fueron excluidos del proceso final en el Parque de la Industria, y otros 35 habían sido excluidos anteriormente de manera anómala. Mazariegos se impuso con solo 50 de los 171 electores posibles, lo que representa menos del 30% del total de electores legítimos.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Incumplimiento de requisitos legales:</strong> Mazariegos no cumple con el requisito de tener finiquito de la Contraloría General de Cuentas, documento obligatorio para asumir el cargo. Fue denunciado en marzo de 2026 por irregularidades en su gestión. Además, en 2022 no cumplía con el requisito de cinco años de docencia que exige la Ley Orgánica de la USAC.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Rechazo internacional:</strong> La Unión Europea, la Organización de Estados Americanos (OEA), el Departamento de Estado de Estados Unidos (que lo incluyó en la Lista Engel en 2023 por corrupción), y las embajadas de Canadá y Reino Unido han expresado su rechazo al proceso fraudulento y han señalado que la toma de posesión "no resuelve las dudas de fondo sobre la legalidad y legitimidad" del proceso.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Cooptación del CSU:</strong> Mazariegos controla el Consejo Superior Universitario mediante un grupo leal de 19-20 consejeros que le permiten aprobar decisiones con la mitad más uno, operando bajo un esquema de clientelismo, opacidad y represión. Este grupo ha aprobado reformas que benefician sus intereses particulares en detrimento de la comunidad universitaria.</li>
+                    
+                    <li style="margin-bottom: 0.5rem;"><strong>Violencia y represión:</strong> El proceso estuvo acompañado por represión policial, gases lacrimógenos, disparos de agentes privados de seguridad, y la intimidación sistemática a electores y manifestantes opositores. Esta violencia institucional es inaceptable en nuestra casa de estudios superiores.</li>
+                </ul>
+
+                <p style="margin-bottom: 1rem;"><strong>Por todas estas razones, desconocemos la legitimidad de Walter Mazariegos como rector de la USAC y exigimos un proceso electoral transparente, democrático y respetuoso de la autonomía universitaria.</strong></p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Nuestras Actividades</h4>
+                <p style="margin-bottom: 1rem;">Fundamentalmente, nuestras actividades van orientadas a la defensa de la única universidad pública de Guatemala y tratamos de rescatar la memoria histórica que a lo largo del tiempo ha marcado las luchas sociales en beneficio del desarrollo del pueblo guatemalteco.</p>
+                
+                <p style="margin-bottom: 1rem;">Organizamos y participamos activamente en:</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                    <li style="margin-bottom: 0.25rem;"><strong>Eventos culturales</strong> como leídas de boletín con artistas quetzaltecos</li>
+                    <li style="margin-bottom: 0.25rem;"><strong>Movilizaciones</strong> en defensa de la universidad pública y contra la impunidad</li>
+                    <li style="margin-bottom: 0.25rem;"><strong>Actividades de proyección social</strong> en coordinación con organizaciones populares</li>
+                    <li style="margin-bottom: 0.25rem;"><strong>Foros y debates</strong> sobre problemáticas nacionales y universitarias</li>
+                    <li style="margin-bottom: 0.25rem;"><strong>Campañas de concientización</strong> sobre la importancia de la educación pública</li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Memoria Histórica y Lucha Social</h4>
+                <p style="margin-bottom: 1rem;">Tratamos de rescatar la memoria histórica que a lo largo del tiempo ha marcado las luchas sociales en beneficio del desarrollo del pueblo guatemalteco. Recordamos y honramos a todos los estudiantes, profesores y trabajadores universitarios que han luchado y dado su vida por la defensa de la universidad pública y la justicia social.</p>
+                
+                <p style="margin-bottom: 1rem;">La memoria de Gloria Elvira Barreno Coyoy nos recuerda que la desaparición forzada fue una herramienta del Estado durante el conflicto armado interno para silenciar a quienes luchaban por un Guatemala más justa. Su ejemplo nos compromete a continuar esa lucha desde la universidad, defendiendo los derechos humanos y la dignidad del pueblo.</p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Carreras que Representamos</h4>
+                <p style="margin-bottom: 1rem;">Representamos con orgullo a las siguientes carreras de la División de Humanidades del CUNOC-USAC en Quetzaltenango, Guatemala:</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                    <li style="margin-bottom: 0.25rem;"><strong>Pedagogía:</strong> Preparando educadores críticos y transformadores de la realidad social</li>
+                    <li style="margin-bottom: 0.25rem;"><strong>Psicología:</strong> Formando psicólogos comprometidos con la salud mental comunitaria y la justicia social</li>
+                    <li style="margin-bottom: 0.25rem;"><strong>Trabajo Social:</strong> Formando trabajadores sociales dedicados a la transformación social y la defensa de los derechos humanos</li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">Organizaciones Relacionadas</h4>
+                <p style="margin-bottom: 1rem;">Trabajamos en coordinación con:</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem; padding-left: 1rem;">
+                    <li style="margin-bottom: 0.25rem;">Honorable Autónomo Revolución Alejandro Cotí (Ingeniería CUNOC)</li>
+                    <li style="margin-bottom: 0.25rem;">Asociación de Estudiantes de Ciencia y Tecnología de Occidente</li>
+                    <li style="margin-bottom: 0.25rem;">Asociación de Estudiantes de Pedagógica de Occidente</li>
+                    <li style="margin-bottom: 0.25rem;">FUEGO Xela</li>
+                    <li style="margin-bottom: 0.25rem;">Diversas organizaciones sociales y populares de Quetzaltenango</li>
+                </ul>
+
+                <p style="margin-top: 1.5rem; font-style: italic; color: var(--usac-blue);"><strong>"La huelga es cultura. #PresentesPorUnMejorFuturo"</strong></p>              
+            </div>
+        </div>
+    </div>
+</div>
 
             <div class="institutional-content">
+                <div class="section-card theme-card consejo-gallery-section">
+                    <div class="consejo-gallery-header">
+                        <h3>Galería institucional</h3>
+                        <p>Imágenes representativas del Consejo Autónomo de Huelga y su memoria histórica.</p>
+                    </div>
+                    <div class="consejo-gallery-grid">
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga.jpg" alt="Consejo Autónomo de Huelga" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga1.jpg" alt="Acción estudiantil del consejo" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga2.jpg" alt="Movilización institucional" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga3.jpg" alt="Lucha social y educación pública" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga4.jpg" alt="Presencia del consejo en la universidad" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga6.jpg" alt="Compromiso con la memoria histórica" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga7.jpg" alt="Presencia del consejo en la movilización" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga8.jpg" alt="Lucha por la educación pública" loading="lazy">
+                        </figure>
+                        <figure class="consejo-gallery-item">
+                            <img src="imags/huelga9.jpg" alt="Memoria histórica del movimiento" loading="lazy">
+                        </figure>
+                       
+                    </div>
+                </div>
+
                 <div class="social-links-section theme-card">
                     <h3>Contacto — Consejo Elvira Barreno</h3>
-                    <div class="social-icons-row">
-                        <a href="#" class="social-icon-link consejo-icon" title="WhatsApp Consejo"
-                            aria-label="WhatsApp Consejo">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                        <a href="#" class="social-icon-link consejo-icon" title="Facebook Consejo"
-                            aria-label="Facebook Consejo">
-                            <i class="fab fa-facebook-f"></i>
+                    <div class="social-icons-row"
+                        style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 1.5rem; margin-bottom: 1rem;">
+                        <a href="https://www.facebook.com/profile.php?id=100090005391801&mibextid=rS40aB7S9Ucbxw6v"
+                            class="social-icon-link" title="Facebook Consejo" aria-label="Facebook Consejo"
+                            target="_blank" rel="noopener noreferrer"
+                            style="display: inline-block; width: 48px; height: 48px; transition: transform 0.2s;"
+                            onmouseover="this.style.transform='scale(1.1)'"
+                            onmouseout="this.style.transform='scale(1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100">
+                                <defs>
+                                    <linearGradient id="fb-grad-consejo" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#E1F0FF" />
+                                        <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="50" cy="50" r="46" fill="url(#fb-grad-consejo)" />
+                                <circle cx="50" cy="50" r="46" fill="none" stroke="#2589FF" stroke-width="8"
+                                    stroke-linecap="round" stroke-dasharray="100 44" stroke-dashoffset="20" />
+                                <path
+                                    d="M58 36 h 8 v -14 h -10 c -12 0 -18 6 -18 18 v 10 h -10 v 14 h 10 v 32 h 16 v -32 h 12 l 2 -14 h -14 v -10 c 0 -3 2 -4 6 -4 z"
+                                    fill="#2589FF" />
+                            </svg>
                         </a>
                     </div>
                 </div>
@@ -1612,13 +2229,103 @@
             </div>
             <div class="footer-copy">
                 <p>&copy; 2026 USAC · CUNOC. Todos los derechos reservados.</p>
-                <p>Diseñado por PASCUAL-AJM</p>
+                <p>Diseñado por Aguilar Lopez</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        // ── Carga de PDFs (AETSRO y Biblioteca) desde la API ──────────────────────────────
+        (function initAetsroPDFs() {
+            async function loadPDFs() {
+                const aetsroContainer = document.getElementById('aetsro-pdf-list');
+                const driveContainer = document.getElementById('drive-pdf-list');
+
+                try {
+                    const response = await fetch('/api/aetsro-documents');
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        throw new Error(result.message || 'Error en respuesta de API');
+                    }
+
+                    // 1. Renderizar PDFs de AETSRO
+                    if (aetsroContainer) {
+                        const aPdfs = result.aetsroPdfs || [];
+                        if (aPdfs.length === 0) {
+                            aetsroContainer.innerHTML = `
+                            <div class="pdf-empty">
+                                <i class="fas fa-folder-open" style="font-size:2rem;color:var(--gray-400);"></i>
+                                <p>No hay documentos oficiales por el momento.</p>
+                            </div>`;
+                        } else {
+                            aetsroContainer.innerHTML = aPdfs.map(file => `
+                            <a href="${file.url}" target="_blank" rel="noopener noreferrer" class="pdf-card">
+                                <div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>
+                                <div class="pdf-info">
+                                    <span class="pdf-name">${file.name}</span>
+                                    ${file.size ? `<span class="pdf-size">${file.size}</span>` : ''}
+                                </div>
+                                <div class="pdf-action"><i class="fas fa-external-link-alt"></i></div>
+                            </a>`).join('');
+                        }
+                    }
+
+                    // 2. Renderizar PDFs de Biblioteca / Drive
+                    if (driveContainer) {
+                        const dPdfs = result.drivePdfs || [];
+                        if (dPdfs.length === 0) {
+                            driveContainer.innerHTML = `
+                            <div class="pdf-empty">
+                                <i class="fas fa-folder-open" style="font-size:2rem;color:var(--gray-400);"></i>
+                                <p>No hay documentos generales por el momento.</p>
+                            </div>`;
+                        } else {
+                            driveContainer.innerHTML = dPdfs.map(file => `
+                            <a href="${file.url}" target="_blank" rel="noopener noreferrer" class="pdf-card">
+                                <div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>
+                                <div class="pdf-info">
+                                    <span class="pdf-name">${file.name}</span>
+                                    ${file.size ? `<span class="pdf-size">${file.size}</span>` : ''}
+                                </div>
+                                <div class="pdf-action"><i class="fas fa-external-link-alt"></i></div>
+                            </a>`).join('');
+                        }
+                    }
+
+                } catch (err) {
+                    console.error('Error cargando PDFs:', err);
+                    const errorHtml = `
+                    <div class="pdf-empty">
+                        <i class="fas fa-exclamation-triangle" style="color:#e53e3e;"></i>
+                        <p>No se pudieron cargar los documentos.</p>
+                    </div>`;
+                    if (aetsroContainer) aetsroContainer.innerHTML = errorHtml;
+                    if (driveContainer) driveContainer.innerHTML = errorHtml;
+                }
+            }
+
+            // Esperar a que el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadPDFs);
+            } else {
+                loadPDFs();
+            }
+        })();
+    </script>
+
+
+    <!-- ===== LIGHTBOX IMAGEN ===== -->
+    <div id="img-lightbox" role="dialog" aria-modal="true" aria-label="Vista de imagen completa">
+        <button id="img-lightbox-close" aria-label="Cerrar imagen" onclick="closeLightbox()">✕</button>
+        <button id="img-lightbox-prev" class="lightbox-nav-btn" aria-label="Imagen anterior" onclick="prevGalleryImage()" title="Anterior (← o A)">❮</button>
+        <img id="img-lightbox-img" src="" alt="">
+        <button id="img-lightbox-next" class="lightbox-nav-btn" aria-label="Siguiente imagen" onclick="nextGalleryImage()" title="Siguiente (→ o D)">❯</button>
+        <div id="img-lightbox-counter"></div>
+    </div>
 
 </body>
+
 
 </html>
