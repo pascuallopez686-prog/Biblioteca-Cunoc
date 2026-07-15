@@ -463,7 +463,7 @@ function toggleAccordion(id) {
    ============================================================ */
 async function renderAdminPanel() {
     const docs  = store.get(KEYS.docs)  || [];
-    const anns  = store.get(KEYS.anns)  || [];
+    const anns  = _cachedAnns.length > 0 ? _cachedAnns : (store.get(KEYS.anns) || []);
     let users   = [];
 
     try {
@@ -562,41 +562,60 @@ function adminAddAnn(e) {
     const content = document.getElementById('ann-content').value.trim();
     const type = document.getElementById('ann-type').value;
     const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-    const saveAnnouncement = (base64Image = null) => {
-        const anns = store.get(KEYS.anns) || [];
-        anns.unshift({
-            id: Date.now(),
-            title,
-            content,
-            type,
-            image: base64Image,
-            pinned: false,
-            createdAt: new Date().toISOString()
-        });
-        store.set(KEYS.anns, anns);
-        form.reset();
-        alert('Aviso publicado');
-        renderAdminPanel();
-        renderAll();
+    const postAnnouncement = async (base64Image = null) => {
+        if (submitBtn) submitBtn.disabled = true;
+        try {
+            const response = await fetch('/api/announcements', {
+                method: 'POST',
+                headers: authHeaders(),
+                body: JSON.stringify({ title, content, type, image: base64Image })
+            });
+            const data = await response.json();
+            if (!data.success) {
+                alert(data.message || 'Error publicando aviso');
+                return;
+            }
+            form.reset();
+            alert('Aviso publicado y visible para todos los estudiantes');
+            await fetchAndRenderAnnouncements();
+            renderAdminPanel();
+        } catch (err) {
+            console.error(`${DEBUG_PREFIX} Error publicando anuncio:`, err);
+            alert('Error de conexión al publicar el aviso');
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+        }
     };
 
     if (fileInput && fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
-        reader.onload = function(event) {
-            saveAnnouncement(event.target.result);
-        };
-        reader.onerror = function() {
-            alert('Error al procesar la imagen');
-        };
+        reader.onload = (event) => postAnnouncement(event.target.result);
+        reader.onerror = () => alert('Error al procesar la imagen');
         reader.readAsDataURL(fileInput.files[0]);
     } else {
-        saveAnnouncement();
+        postAnnouncement();
     }
 }
 
 function deleteDoc(id)  { if (!confirm('¿Eliminar?')) return; store.set(KEYS.docs,  (store.get(KEYS.docs)  || []).filter(d => d.id !== id)); renderAdminPanel(); renderAll(); }
-function deleteAnn(id)  { if (!confirm('¿Eliminar?')) return; store.set(KEYS.anns,  (store.get(KEYS.anns)  || []).filter(a => a.id !== id)); renderAdminPanel(); renderAll(); }
+async function deleteAnn(id) {
+    if (!confirm('¿Eliminar aviso?')) return;
+    try {
+        const response = await fetch('/api/announcements', {
+            method: 'DELETE',
+            headers: authHeaders(),
+            body: JSON.stringify({ id })
+        });
+        const data = await response.json();
+        if (!data.success) { alert(data.message || 'Error eliminando'); return; }
+        await fetchAndRenderAnnouncements();
+        renderAdminPanel();
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error eliminando anuncio:`, err);
+    }
+}
 function deleteMsg(id)  { if (!confirm('¿Eliminar?')) return; store.set(KEYS.msgs,  (store.get(KEYS.msgs)  || []).filter(m => m.id !== id)); renderAdminPanel(); }
 
 async function muteStudent(carne, currentlyMuted) {
@@ -626,7 +645,23 @@ function replyMsg(e, id) {
     if (msg) { msg.reply = reply; store.set(KEYS.msgs, msgs); renderAdminPanel(); alert('Respuesta enviada'); }
 }
 function togglePinDoc(id) { const docs = store.get(KEYS.docs) || []; const d = docs.find(d => d.id === id); if (d) { d.pinned = !d.pinned; store.set(KEYS.docs, docs); renderAdminPanel(); renderAll(); } }
-function togglePinAnn(id) { const anns = store.get(KEYS.anns) || []; const a = anns.find(a => a.id === id); if (a) { a.pinned = !a.pinned; store.set(KEYS.anns, anns); renderAdminPanel(); renderAll(); } }
+async function togglePinAnn(id) {
+    const ann = _cachedAnns.find(a => a.id === id);
+    if (!ann) return;
+    try {
+        const response = await fetch('/api/announcements', {
+            method: 'PATCH',
+            headers: authHeaders(),
+            body: JSON.stringify({ id, pinned: !ann.pinned })
+        });
+        const data = await response.json();
+        if (!data.success) { alert(data.message || 'Error actualizando'); return; }
+        await fetchAndRenderAnnouncements();
+        renderAdminPanel();
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error fijando anuncio:`, err);
+    }
+}
 
 /* ============================================================
    ACCIONES DE ESTUDIANTE
@@ -819,10 +854,33 @@ function closeLightbox() {
     currentImageIndex = 0;
 }
 
-function renderAll() { renderAnnouncements(); renderRepositorio(); renderMyMessages(); }
+function renderAll() { fetchAndRenderAnnouncements(); renderRepositorio(); renderMyMessages(); }
+
+// Caché en memoria de los anuncios cargados desde la API
+let _cachedAnns = [];
+
+async function fetchAndRenderAnnouncements(search = '') {
+    const container = document.getElementById('announcements-list');
+    if (!container) return;
+
+    // Mostrar skeleton mientras carga
+    container.innerHTML = '<p style="color:var(--gray-500);padding:1rem;">Cargando noticias...</p>';
+
+    try {
+        const response = await fetch('/api/announcements', { headers: authHeaders(false) });
+        const data = await response.json();
+        if (data.success) {
+            _cachedAnns = data.announcements || [];
+        }
+    } catch (err) {
+        console.warn(`${DEBUG_PREFIX} Sin conexión, usando caché local de anuncios.`, err);
+    }
+
+    renderAnnouncements(search);
+}
 
 function renderAnnouncements(search = '') {
-    let anns = store.get(KEYS.anns) || [];
+    let anns = _cachedAnns.slice(); // copia del caché en memoria
     anns.sort((a, b) => {
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
@@ -831,7 +889,7 @@ function renderAnnouncements(search = '') {
     if (search) { const s = search.toLowerCase(); anns = anns.filter(a => a.title.toLowerCase().includes(s) || a.content.toLowerCase().includes(s)); }
     const container = document.getElementById('announcements-list');
     if (!container) return;
-    if (!anns.length) { container.innerHTML = '<p>No hay anuncios</p>'; return; }
+    if (!anns.length) { container.innerHTML = '<p>No hay anuncios publicados aún.</p>'; return; }
     container.innerHTML = anns.map(a =>
         `<div class="announcement-card ${a.type === 'urgente' ? 'urgent' : ''}">
             ${a.image ? `<img src="${a.image}" alt="Imagen: ${a.title}" class="ann-card-img" title="Clic para ver imagen completa">` : ''}
