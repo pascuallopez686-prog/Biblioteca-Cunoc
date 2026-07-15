@@ -31,3 +31,6 @@ imags/aetsro_hd.gif
 # OS
 .DS_Store
 Thumbs.db
+
+.vercel
+.env*

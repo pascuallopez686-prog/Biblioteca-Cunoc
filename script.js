@@ -327,12 +327,8 @@ function restartHeroGif() {
         clearTimeout(heroGif.gifTimeout);
     }
 
-    // Evitar almacenamiento en caché para forzar el reinicio de la animación del GIF
+    // Evitar almacenamiento en caché para forzar el reinicio de la animación del GIF y mantenerlo animado de forma continua
     heroGif.src = 'imags/usac1_hd.gif?t=' + Date.now();
-
-    heroGif.gifTimeout = setTimeout(() => {
-        heroGif.src = 'imags/usac1_hd_static.png';
-    }, 7680); // Duración exacta de la animación: 7.68 segundos
 }
 
 function restartAetsroGif() {
@@ -343,12 +339,8 @@ function restartAetsroGif() {
         clearTimeout(aetsroGif.gifTimeout);
     }
 
-    // Evitar almacenamiento en caché para forzar el reinicio de la animación del GIF
+    // Evitar almacenamiento en caché para forzar el reinicio de la animación del GIF y mantenerlo animado de forma continua
     aetsroGif.src = 'imags/aetsro_hd.gif?t=' + Date.now();
-
-    aetsroGif.gifTimeout = setTimeout(() => {
-        aetsroGif.src = 'imags/aetsro_hd_static.png';
-    }, 7680); // Duración exacta de la animación: 7.68 segundos
 }
 
 function restartConsejoGif() {
@@ -359,12 +351,8 @@ function restartConsejoGif() {
         clearTimeout(consejoGif.gifTimeout);
     }
 
-    // Evitar caché para reiniciar la animación del GIF
+    // Evitar caché para reiniciar la animación del GIF y mantenerlo animado de forma continua
     consejoGif.src = 'imags/huelga.gif?t=' + Date.now();
-
-    consejoGif.gifTimeout = setTimeout(() => {
-        consejoGif.src = 'imags/huelga.gif';
-    }, 7680); // Duración 7.68 s
 }
 
 

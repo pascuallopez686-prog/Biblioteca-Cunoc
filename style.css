@@ -2665,64 +2665,123 @@ body.dark #tab-cursos .accordion-row .edu-card::after {
 /* RESPONSIVE - MÓVIL */
 @media (max-width: 900px) {
     #tab-cursos .accordion-row {
-        flex-direction: column;
-        height: auto;
-        gap: 15px;
+        flex-direction: column !important;
+        height: auto !important;
+        gap: 15px !important;
+        display: flex !important;
     }
 
     #tab-cursos .accordion-row .edu-card {
-        flex: none;
-        width: 100%;
-        height: 100px;
-        filter: none;
-        border-radius: 12px;
+        display: flex !important;
+        flex-direction: row !important;
+        flex: none !important;
+        width: 100% !important;
+        height: 110px !important;
+        filter: none !important;
+        border-radius: 12px !important;
+        background-color: var(--white) !important;
+        box-shadow: var(--shadow-sm) !important;
+        border: 1px solid var(--gray-200) !important;
+        overflow: hidden !important;
+        text-decoration: none !important;
     }
 
     #tab-cursos .accordion-row .edu-card-img-wrapper {
-        position: relative;
-        width: 100px;
-        height: 100%;
-        float: left;
+        position: relative !important;
+        width: 100px !important;
+        height: 100% !important;
+        flex-shrink: 0 !important;
+        float: none !important;
+        background-color: var(--gray-100) !important;
+        border-right: 1px solid var(--gray-200) !important;
+    }
+
+    #tab-cursos .accordion-row .edu-card-img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
     }
 
     #tab-cursos .accordion-row .edu-card-body {
-        position: relative;
-        opacity: 1;
-        transform: none;
-        width: calc(100% - 100px);
-        float: right;
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        width: auto !important;
+        flex-grow: 1 !important;
+        height: 100% !important;
+        float: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        padding: 12px 15px !important;
+        background-color: var(--white) !important;
         color: var(--gray-800) !important;
-        padding: 15px;
-        background: var(--white);
+        pointer-events: auto !important;
+    }
+
+    body.dark #tab-cursos .accordion-row .edu-card {
+        background-color: var(--gray-800) !important;
+        border-color: var(--gray-700) !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    body.dark #tab-cursos .accordion-row .edu-card-img-wrapper {
+        background-color: var(--gray-900) !important;
+        border-right: 1px solid var(--gray-700) !important;
     }
 
     body.dark #tab-cursos .accordion-row .edu-card-body {
+        background-color: var(--gray-800) !important;
         color: var(--gray-900) !important;
-        background: var(--gray-800);
     }
 
     #tab-cursos .accordion-row .edu-card-title {
-        font-size: 1rem;
-        margin: 5px 0;
-        color: inherit !important;
-        text-shadow: none;
+        font-size: 0.95rem !important;
+        margin: 2px 0 6px 0 !important;
+        color: var(--gray-800) !important;
+        text-shadow: none !important;
+        font-weight: 700 !important;
+        line-height: 1.3 !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+    }
+
+    body.dark #tab-cursos .accordion-row .edu-card-title {
+        color: var(--gray-900) !important;
     }
 
     #tab-cursos .accordion-row .edu-card-platform-info {
-        color: inherit !important;
-        font-size: 0.7rem;
+        color: var(--gray-500) !important;
+        font-size: 0.7rem !important;
+        margin-bottom: 2px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        font-weight: bold !important;
+    }
+
+    body.dark #tab-cursos .accordion-row .edu-card-platform-info {
+        color: var(--gray-400) !important;
     }
 
     #tab-cursos .accordion-row .edu-card::after {
-        display: none;
+        display: none !important;
+    }
+
+    #tab-cursos .accordion-row .edu-card-badge-container {
+        margin-top: 0 !important;
     }
 
     #tab-cursos .accordion-row .edu-card-badge {
-        background: inherit;
-        border: none;
-        color: inherit !important;
-        padding: 2px 8px;
-        font-size: 0.72rem;
+        display: inline-block !important;
+        padding: 2px 8px !important;
+        font-size: 0.68rem !important;
+        border-radius: 4px !important;
+        text-transform: capitalize !important;
+        font-weight: 600 !important;
     }
 }
 
@@ -3316,4 +3375,13 @@ body.dark .legal-section h4 {
     .legal-card:hover .legal-full { max-height: 0; opacity: 0; }
     .legal-card:hover .expand-hint { opacity: 1; }
     .legal-card:hover { transform: none; box-shadow: none; }
+    
+    /* Mostrar contenido si está expandido explícitamente en móvil */
+    .legal-card.expanded .legal-full {
+        max-height: 3000px !important;
+        opacity: 1 !important;
+    }
+    .legal-card.expanded .expand-hint {
+        opacity: 0 !important;
+    }
 }
