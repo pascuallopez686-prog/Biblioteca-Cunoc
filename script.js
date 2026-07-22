@@ -1197,22 +1197,30 @@ document.addEventListener('keydown', (e) => {
 let tourButtons = [];
 let tourCurrentIndex = 0;
 
-function startHeaderTour() {
-    if (localStorage.getItem('headerTourCompleted')) return;
-    const header = document.getElementById('app-header');
-    if (!header) return;
+function startHeaderTour(force = false) {
+    if (!force && localStorage.getItem('headerTourCompleted')) return;
 
-    // Filter visible header buttons
-    const allButtons = Array.from(header.querySelectorAll('button'));
-    tourButtons = allButtons.filter(btn => {
-        const style = window.getComputedStyle(btn);
-        return btn.offsetWidth > 0 && btn.offsetHeight > 0 && style.display !== 'none' && style.visibility !== 'hidden';
-    });
+    // Delay execution slightly so browser paints header layout after removing .hidden class
+    setTimeout(() => {
+        const header = document.getElementById('app-header');
+        if (!header) return;
 
-    if (tourButtons.length === 0) return;
+        // Select all header buttons
+        const allButtons = Array.from(header.querySelectorAll('button'));
+        tourButtons = allButtons.filter(btn => {
+            if (btn.classList.contains('hidden')) return false;
+            if (btn.id === 'btn-admin-panel' && (!currentUser || !currentUser.isAdmin)) return false;
+            if (btn.id === 'btn-logout') return false; // Exclude logout button from auto-clicking tour
+            
+            const style = window.getComputedStyle(btn);
+            return style.display !== 'none' && style.visibility !== 'hidden';
+        });
 
-    tourCurrentIndex = 0;
-    showTourStep(tourCurrentIndex);
+        if (tourButtons.length === 0) return;
+
+        tourCurrentIndex = 0;
+        showTourStep(tourCurrentIndex);
+    }, 500);
 }
 
 function showTourStep(index) {
@@ -1239,7 +1247,9 @@ function showTourStep(index) {
     btn.classList.add('tour-highlight');
 
     // Scroll into view if needed
-    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    try {
+        btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    } catch (e) {}
 
     const rect = btn.getBoundingClientRect();
     const tooltip = document.createElement('div');
@@ -1247,7 +1257,7 @@ function showTourStep(index) {
     tooltip.id = 'active-tour-tooltip';
 
     // Position tooltip below button, keeping within viewport bounds
-    const topPos = rect.bottom + window.scrollY + 8;
+    const topPos = Math.max(10, rect.bottom + window.scrollY + 8);
     const leftPos = Math.max(10, Math.min(window.innerWidth - 290, rect.left + window.scrollX + (rect.width / 2) - 130));
 
     tooltip.style.top = `${topPos}px`;
@@ -1275,13 +1285,15 @@ function showTourStep(index) {
 
 function advanceTourStep(index) {
     const btn = tourButtons[index];
-    if (btn) {
-        btn.click();
+    if (btn && btn.id !== 'btn-logout') {
+        try {
+            btn.click();
+        } catch (e) {}
     }
     tourCurrentIndex = index + 1;
     setTimeout(() => {
         showTourStep(tourCurrentIndex);
-    }, 350);
+    }, 400);
 }
 
 function removeAllTooltips(markCompleted = false) {
@@ -1295,4 +1307,11 @@ function removeAllTooltips(markCompleted = false) {
 function finishHeaderTour() {
     removeAllTooltips(true);
 }
+
+// Expose globally for browser console debugging / testing
+window.startHeaderTour = startHeaderTour;
+window.resetHeaderTour = function() {
+    localStorage.removeItem('headerTourCompleted');
+    startHeaderTour(true);
+};
 /* ==== End Guided Header Tour Functions ==== */
