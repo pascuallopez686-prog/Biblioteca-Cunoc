@@ -3385,3 +3385,28 @@ body.dark .legal-section h4 {
         opacity: 0 !important;
     }
 }
+/* ==== Guided Tour Tooltip ==== */
+.tour-tooltip {
+  position: absolute;
+  background: rgba(30,30,30,0.9);
+  color: #fff;
+  padding: 0.8rem 1rem;
+  border-radius: 0.4rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 2000;
+  max-width: 250px;
+  font-size: 0.9rem;
+}
+.tour-tooltip button {
+  margin-top: 0.5rem;
+  background: #ffb400;
+  color: #000;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+.tour-tooltip button:hover {
+  background: #ffa000;
+}
+/* End of guided tour tooltip styles */

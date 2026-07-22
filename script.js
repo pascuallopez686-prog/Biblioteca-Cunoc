@@ -263,6 +263,8 @@ function loginSuccess(user) {
     updateHeaderUI();
     switchMainView('biblioteca');
     renderAll();
+    // Start guided tour after UI is rendered
+    startHeaderTour();
     // initCarousels() — carrusel eliminado de la vista pública
 }
 
@@ -1190,3 +1192,42 @@ document.addEventListener('keydown', (e) => {
         toggleLegalCard(e.target);
     }
 });
+
+/* ==== Guided Header Tour Functions ==== */
+function startHeaderTour() {
+    if (localStorage.getItem('headerTourCompleted')) return;
+    const header = document.getElementById('app-header');
+    if (!header) return;
+    const buttons = header.querySelectorAll('button');
+    buttons.forEach(btn => createTooltipForButton(btn));
+    // Close all tooltips when clicking outside
+    document.addEventListener('click', function handler(e) {
+        if (!e.target.closest('.tour-tooltip') && !e.target.closest('button')) {
+            removeAllTooltips();
+            document.removeEventListener('click', handler);
+        }
+    });
+}
+
+function createTooltipForButton(btn) {
+    const rect = btn.getBoundingClientRect();
+    const tooltip = document.createElement('div');
+    tooltip.className = 'tour-tooltip';
+    tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+    tooltip.style.left = `${rect.left + window.scrollX + rect.width + 8}px`;
+    const label = btn.getAttribute('title') || btn.getAttribute('aria-label') || btn.innerText || 'Botón';
+    tooltip.innerHTML = `<strong>${label}</strong><br/><button onclick="triggerButton('${btn.id}')">Ir</button>`;
+    document.body.appendChild(tooltip);
+}
+
+function triggerButton(btnId) {
+    const btn = document.getElementById(btnId);
+    if (btn) btn.click();
+    removeAllTooltips();
+}
+
+function removeAllTooltips() {
+    document.querySelectorAll('.tour-tooltip').forEach(t => t.remove());
+    localStorage.setItem('headerTourCompleted', 'true');
+}
+/* ==== End Guided Header Tour Functions ==== */
