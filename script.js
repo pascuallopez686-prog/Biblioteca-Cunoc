@@ -183,7 +183,7 @@ async function handleAuth(e) {
                 return;
             }
             alert('Registro exitoso. Entrando a la biblioteca.');
-            loginSuccess(sanitizeSessionUser({ ...data.user, token: data.token }));
+            loginSuccess(sanitizeSessionUser({ ...data.user, token: data.token }), true);
             e.target.reset();
         }
     } catch (err) {
@@ -248,7 +248,7 @@ async function handleAdminAccess(e) {
 /* ============================================================
    LOGIN / LOGOUT
    ============================================================ */
-function loginSuccess(user) {
+function loginSuccess(user, isNewRegistration = false) {
     const sessionUser = sanitizeSessionUser(user);
     currentUser = sessionUser;
     store.set(KEYS.session, sessionUser);
@@ -263,9 +263,12 @@ function loginSuccess(user) {
     updateHeaderUI();
     switchMainView('biblioteca');
     renderAll();
-    // Start guided tour after UI is rendered
-    startHeaderTour();
-    // initCarousels() — carrusel eliminado de la vista pública
+
+    if (isNewRegistration) {
+        localStorage.removeItem('headerTourCompleted');
+    }
+    // Start guided tour automatically after UI is rendered
+    startHeaderTour(isNewRegistration);
 }
 
 function handleLogout() {
