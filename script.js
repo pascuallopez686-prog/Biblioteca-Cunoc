@@ -1348,7 +1348,7 @@ function showTourStep(index) {
 
 function advanceTourStep(index) {
     const btn = tourButtons[index];
-    if (btn && btn.id !== 'btn-logout') {
+    if (btn && btn.id !== 'btn-logout' && btn.id !== 'btn-admin-access' && btn.id !== 'btn-admin-panel') {
         try {
             btn.click();
         } catch (e) {}
@@ -1370,6 +1370,7 @@ function removeAllTooltips(markCompleted = false) {
 
 function finishHeaderTour() {
     removeAllTooltips(true);
+    closeAdminModal();
 }
 
 // Expose globally for browser console debugging / testing

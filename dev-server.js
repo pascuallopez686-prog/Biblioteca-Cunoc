@@ -1,6 +1,23 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+// Simple in‑memory rate limiter (30 req/s per IP)
+const RATE_LIMIT_WINDOW_MS = 1000;
+const MAX_REQUESTS_PER_WINDOW = 30;
+const ipCounters = {};
+function allowRequest(req) {
+  const ip = req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const entry = ipCounters[ip] || { count: 0, start: now };
+  if (now - entry.start > RATE_LIMIT_WINDOW_MS) {
+    entry.count = 1;
+    entry.start = now;
+  } else {
+    entry.count++;
+  }
+  ipCounters[ip] = entry;
+  return entry.count <= MAX_REQUESTS_PER_WINDOW;
+}
 
 const envPath = path.join(__dirname, '.env.local');
 if (fs.existsSync(envPath)) {
@@ -61,14 +78,17 @@ function handleApi(req, res, handler) {
     };
 
     try {
-      await handler(req, res);
-    } catch (err) {
-      console.error('Error en API:', err);
-      if (!res.headersSent) {
-        res.statusCode = 500;
-        res.end(JSON.stringify({ success: false, message: 'Error interno del servidor' }));
-      }
+    await handler(req, res);
+  } catch (err) {
+    console.error('Error en API:', err);
+    if (!res.headersSent) {
+      // If the handler threw a Supabase error (status >=500), map to 503
+      const status = err && err.status && err.status >= 500 ? 503 : 500;
+      const msg = err && err.status && err.status >= 500 ? 'Servicio temporalmente indisponible' : 'Error interno del servidor';
+      res.statusCode = status;
+      res.end(JSON.stringify({ success: false, message: msg }));
     }
+  }
   });
 }
 
@@ -81,6 +101,13 @@ const server = http.createServer((req, res) => {
 
   const route = req.url.split('?')[0];
   if (API_ROUTES[route]) {
+    // Apply rate limiting for API routes
+    if (!allowRequest(req)) {
+      res.statusCode = 429;
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.end(JSON.stringify({ success: false, message: 'Demasiadas peticiones, intente más tarde.' }));
+      return;
+    }
     handleApi(req, res, API_ROUTES[route]);
     return;
   }
