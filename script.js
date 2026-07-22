@@ -1210,6 +1210,10 @@ function startHeaderTour() {
 }
 
 function createTooltipForButton(btn) {
+    // Ensure the button has a unique ID for triggering
+    if (!btn.id) {
+        btn.id = 'tour-btn-' + Math.random().toString(36).substr(2, 9);
+    }
     const rect = btn.getBoundingClientRect();
     const tooltip = document.createElement('div');
     tooltip.className = 'tour-tooltip';
