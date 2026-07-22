@@ -3388,25 +3388,79 @@ body.dark .legal-section h4 {
 /* ==== Guided Tour Tooltip ==== */
 .tour-tooltip {
   position: absolute;
-  background: rgba(30,30,30,0.9);
-  color: #fff;
-  padding: 0.8rem 1rem;
-  border-radius: 0.4rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  z-index: 2000;
-  max-width: 250px;
+  background: #1e1e2d;
+  color: #ffffff;
+  padding: 1rem;
+  border-radius: 0.6rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.1);
+  z-index: 20000;
+  min-width: 220px;
+  max-width: 280px;
   font-size: 0.9rem;
+  animation: tourFadeIn 0.25s ease-out;
 }
-.tour-tooltip button {
-  margin-top: 0.5rem;
-  background: #ffb400;
-  color: #000;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 0.3rem;
+
+@keyframes tourFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tour-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  font-size: 0.75rem;
+  color: #a0a0c0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.tour-close-btn {
+  background: transparent !important;
+  border: none !important;
+  color: #a0a0c0 !important;
+  font-size: 1rem !important;
+  padding: 0 0.3rem !important;
+  margin: 0 !important;
   cursor: pointer;
 }
-.tour-tooltip button:hover {
-  background: #ffa000;
+.tour-close-btn:hover {
+  color: #ffffff !important;
+}
+
+.tour-body {
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
+  color: #e2e2e8;
+}
+
+.tour-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.tour-next-btn {
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  padding: 0.4rem 0.85rem;
+  border-radius: 0.4rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tour-next-btn:hover {
+  background: #4338ca;
+}
+
+.tour-highlight {
+  outline: 3px solid #ffb400 !important;
+  outline-offset: 2px !important;
+  z-index: 10001 !important;
 }
 /* End of guided tour tooltip styles */

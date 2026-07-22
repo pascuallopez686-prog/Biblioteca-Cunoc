@@ -1193,45 +1193,106 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-/* ==== Guided Header Tour Functions ==== */
+/* ==== Guided Header Tour Functions (Sequential Step-by-Step) ==== */
+let tourButtons = [];
+let tourCurrentIndex = 0;
+
 function startHeaderTour() {
     if (localStorage.getItem('headerTourCompleted')) return;
     const header = document.getElementById('app-header');
     if (!header) return;
-    const buttons = header.querySelectorAll('button');
-    buttons.forEach(btn => createTooltipForButton(btn));
-    // Close all tooltips when clicking outside
-    document.addEventListener('click', function handler(e) {
-        if (!e.target.closest('.tour-tooltip') && !e.target.closest('button')) {
-            removeAllTooltips();
-            document.removeEventListener('click', handler);
-        }
+
+    // Filter visible header buttons
+    const allButtons = Array.from(header.querySelectorAll('button'));
+    tourButtons = allButtons.filter(btn => {
+        const style = window.getComputedStyle(btn);
+        return btn.offsetWidth > 0 && btn.offsetHeight > 0 && style.display !== 'none' && style.visibility !== 'hidden';
     });
+
+    if (tourButtons.length === 0) return;
+
+    tourCurrentIndex = 0;
+    showTourStep(tourCurrentIndex);
 }
 
-function createTooltipForButton(btn) {
-    // Ensure the button has a unique ID for triggering
+function showTourStep(index) {
+    // Remove current tooltip and highlights without marking completed
+    removeAllTooltips(false);
+
+    if (index >= tourButtons.length) {
+        finishHeaderTour();
+        return;
+    }
+
+    const btn = tourButtons[index];
+    if (!btn) {
+        finishHeaderTour();
+        return;
+    }
+
+    // Ensure button has unique ID
     if (!btn.id) {
         btn.id = 'tour-btn-' + Math.random().toString(36).substr(2, 9);
     }
+
+    // Add highlight ring to current button
+    btn.classList.add('tour-highlight');
+
+    // Scroll into view if needed
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+
     const rect = btn.getBoundingClientRect();
     const tooltip = document.createElement('div');
     tooltip.className = 'tour-tooltip';
-    tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
-    tooltip.style.left = `${rect.left + window.scrollX + rect.width + 8}px`;
-    const label = btn.getAttribute('title') || btn.getAttribute('aria-label') || btn.innerText || 'Botón';
-    tooltip.innerHTML = `<strong>${label}</strong><br/><button onclick="triggerButton('${btn.id}')">Ir</button>`;
+    tooltip.id = 'active-tour-tooltip';
+
+    // Position tooltip below button, keeping within viewport bounds
+    const topPos = rect.bottom + window.scrollY + 8;
+    const leftPos = Math.max(10, Math.min(window.innerWidth - 290, rect.left + window.scrollX + (rect.width / 2) - 130));
+
+    tooltip.style.top = `${topPos}px`;
+    tooltip.style.left = `${leftPos}px`;
+
+    const label = btn.getAttribute('title') || btn.getAttribute('aria-label') || btn.innerText.trim() || 'Botón de encabezado';
+    const isLast = (index === tourButtons.length - 1);
+    const actionText = isLast ? 'Probar y Finalizar' : 'Probar e Ir';
+
+    tooltip.innerHTML = `
+        <div class="tour-header">
+            <span>Paso ${index + 1} de ${tourButtons.length}</span>
+            <button class="tour-close-btn" title="Cerrar tour" onclick="finishHeaderTour()">✕</button>
+        </div>
+        <div class="tour-body">
+            <strong>${label}</strong>
+        </div>
+        <div class="tour-footer">
+            <button class="tour-next-btn" onclick="advanceTourStep(${index})">${actionText}</button>
+        </div>
+    `;
+
     document.body.appendChild(tooltip);
 }
 
-function triggerButton(btnId) {
-    const btn = document.getElementById(btnId);
-    if (btn) btn.click();
-    removeAllTooltips();
+function advanceTourStep(index) {
+    const btn = tourButtons[index];
+    if (btn) {
+        btn.click();
+    }
+    tourCurrentIndex = index + 1;
+    setTimeout(() => {
+        showTourStep(tourCurrentIndex);
+    }, 350);
 }
 
-function removeAllTooltips() {
+function removeAllTooltips(markCompleted = false) {
     document.querySelectorAll('.tour-tooltip').forEach(t => t.remove());
-    localStorage.setItem('headerTourCompleted', 'true');
+    document.querySelectorAll('.tour-highlight').forEach(b => b.classList.remove('tour-highlight'));
+    if (markCompleted) {
+        localStorage.setItem('headerTourCompleted', 'true');
+    }
+}
+
+function finishHeaderTour() {
+    removeAllTooltips(true);
 }
 /* ==== End Guided Header Tour Functions ==== */
