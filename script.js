@@ -1200,16 +1200,76 @@ document.addEventListener('keydown', (e) => {
 let tourButtons = [];
 let tourCurrentIndex = 0;
 
+function getButtonDescription(btn) {
+    const text = (btn.innerText || '').trim();
+    const title = btn.getAttribute('title') || btn.getAttribute('aria-label') || '';
+
+    if (title.includes('Biblioteca') || text.includes('Biblioteca')) {
+        return {
+            title: 'Logo Biblioteca Digital',
+            desc: 'Te lleva al catálogo principal de libros y documentos académicos.'
+        };
+    }
+    if (title.includes('AETSRO') || text.includes('AETSRO')) {
+        return {
+            title: 'Sección AETSRO',
+            desc: 'Muestra novedades de la Asociación de Estudiantes de Trabajo Social.'
+        };
+    }
+    if (title.includes('Consejo') || text.includes('Consejo')) {
+        return {
+            title: 'Consejo Elvira Barreno',
+            desc: 'Acceso directo a comunicados y publicaciones del Consejo Estudiantil.'
+        };
+    }
+    if (text.includes('Cursos')) {
+        return {
+            title: 'Cursos y Recursos',
+            desc: 'Explora plataformas globales de estudio y recursos educativos.'
+        };
+    }
+    if (text.includes('IA')) {
+        return {
+            title: 'Herramientas de IA',
+            desc: 'Asistentes inteligentes para redacción y análisis de textos académicos.'
+        };
+    }
+    if (text.includes('Plataforma')) {
+        return {
+            title: 'Plataforma General',
+            desc: 'Acceso al Muro de Noticias, Biblioteca Drive y Canales de Comunicación.'
+        };
+    }
+    if (btn.id === 'btn-admin-access' || text.includes('Admin')) {
+        return {
+            title: 'Acceso Administración',
+            desc: 'Módulo de ingreso para administradores y docentes autorizados.'
+        };
+    }
+    if (btn.id === 'btn-theme' || title.includes('tema')) {
+        return {
+            title: 'Modo Oscuro / Claro',
+            desc: 'Cambia el contraste visual de la página para descansar tu vista.'
+        };
+    }
+
+    return {
+        title: title || text || 'Botón de Encabezado',
+        desc: 'Opción de navegación principal para explorar la plataforma.'
+    };
+}
+
 function startHeaderTour(force = false) {
-    if (!force && localStorage.getItem('headerTourCompleted')) return;
+    const userTourKey = currentUser ? 'headerTourCompleted_' + (currentUser.carne || currentUser.id) : 'headerTourCompleted_guest';
+    if (!force && localStorage.getItem(userTourKey)) return;
 
     // Delay execution slightly so browser paints header layout after removing .hidden class
     setTimeout(() => {
         const header = document.getElementById('app-header');
         if (!header) return;
 
-        // Select all header buttons
-        const allButtons = Array.from(header.querySelectorAll('button'));
+        // Select all header buttons and dropdown triggers
+        const allButtons = Array.from(header.querySelectorAll('button, .dropbtn'));
         tourButtons = allButtons.filter(btn => {
             if (btn.classList.contains('hidden')) return false;
             if (btn.id === 'btn-admin-panel' && (!currentUser || !currentUser.isAdmin)) return false;
@@ -1223,11 +1283,10 @@ function startHeaderTour(force = false) {
 
         tourCurrentIndex = 0;
         showTourStep(tourCurrentIndex);
-    }, 500);
+    }, 600);
 }
 
 function showTourStep(index) {
-    // Remove current tooltip and highlights without marking completed
     removeAllTooltips(false);
 
     if (index >= tourButtons.length) {
@@ -1241,15 +1300,12 @@ function showTourStep(index) {
         return;
     }
 
-    // Ensure button has unique ID
     if (!btn.id) {
         btn.id = 'tour-btn-' + Math.random().toString(36).substr(2, 9);
     }
 
-    // Add highlight ring to current button
     btn.classList.add('tour-highlight');
 
-    // Scroll into view if needed
     try {
         btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
     } catch (e) {}
@@ -1259,24 +1315,25 @@ function showTourStep(index) {
     tooltip.className = 'tour-tooltip';
     tooltip.id = 'active-tour-tooltip';
 
-    // Position tooltip below button, keeping within viewport bounds
-    const topPos = Math.max(10, rect.bottom + window.scrollY + 8);
-    const leftPos = Math.max(10, Math.min(window.innerWidth - 290, rect.left + window.scrollX + (rect.width / 2) - 130));
+    // Position tooltip nicely below button
+    const topPos = Math.max(10, rect.bottom + window.scrollY + 10);
+    const leftPos = Math.max(10, Math.min(window.innerWidth - 310, rect.left + window.scrollX + (rect.width / 2) - 140));
 
     tooltip.style.top = `${topPos}px`;
     tooltip.style.left = `${leftPos}px`;
 
-    const label = btn.getAttribute('title') || btn.getAttribute('aria-label') || btn.innerText.trim() || 'Botón de encabezado';
+    const info = getButtonDescription(btn);
     const isLast = (index === tourButtons.length - 1);
-    const actionText = isLast ? 'Probar y Finalizar' : 'Probar e Ir';
+    const actionText = isLast ? 'Entendido y Finalizar' : 'Probar e Ir ➔';
 
     tooltip.innerHTML = `
         <div class="tour-header">
-            <span>Paso ${index + 1} de ${tourButtons.length}</span>
+            <span class="tour-step-tag">PASO ${index + 1} DE ${tourButtons.length}</span>
             <button class="tour-close-btn" title="Cerrar tour" onclick="finishHeaderTour()">✕</button>
         </div>
         <div class="tour-body">
-            <strong>${label}</strong>
+            <h4 class="tour-title">${info.title}</h4>
+            <p class="tour-desc">${info.desc}</p>
         </div>
         <div class="tour-footer">
             <button class="tour-next-btn" onclick="advanceTourStep(${index})">${actionText}</button>
@@ -1296,14 +1353,15 @@ function advanceTourStep(index) {
     tourCurrentIndex = index + 1;
     setTimeout(() => {
         showTourStep(tourCurrentIndex);
-    }, 400);
+    }, 450);
 }
 
 function removeAllTooltips(markCompleted = false) {
     document.querySelectorAll('.tour-tooltip').forEach(t => t.remove());
     document.querySelectorAll('.tour-highlight').forEach(b => b.classList.remove('tour-highlight'));
     if (markCompleted) {
-        localStorage.setItem('headerTourCompleted', 'true');
+        const userTourKey = currentUser ? 'headerTourCompleted_' + (currentUser.carne || currentUser.id) : 'headerTourCompleted_guest';
+        localStorage.setItem(userTourKey, 'true');
     }
 }
 
@@ -1314,7 +1372,11 @@ function finishHeaderTour() {
 // Expose globally for browser console debugging / testing
 window.startHeaderTour = startHeaderTour;
 window.resetHeaderTour = function() {
+    if (currentUser) {
+        localStorage.removeItem('headerTourCompleted_' + (currentUser.carne || currentUser.id));
+    }
     localStorage.removeItem('headerTourCompleted');
     startHeaderTour(true);
 };
+/* ==== End Guided Header Tour Functions ==== */
 /* ==== End Guided Header Tour Functions ==== */
