@@ -264,11 +264,14 @@ function loginSuccess(user, isNewRegistration = false) {
     switchMainView('biblioteca');
     renderAll();
 
-    if (isNewRegistration) {
+    const userTourKey = 'headerTourCompleted_' + (currentUser.carne || currentUser.id || 'student');
+    if (isNewRegistration || !localStorage.getItem(userTourKey)) {
+        localStorage.removeItem(userTourKey);
         localStorage.removeItem('headerTourCompleted');
+        startHeaderTour(true);
+    } else {
+        startHeaderTour(false);
     }
-    // Start guided tour automatically after UI is rendered
-    startHeaderTour(isNewRegistration);
 }
 
 function handleLogout() {
