@@ -60,6 +60,7 @@
             let w, h;
 
             function redimensionar() {
+                const oldW = w;
                 w = window.innerWidth;
                 h = window.innerHeight;
                 canvas.width  = w * dpr;
@@ -67,6 +68,15 @@
                 canvas.style.width  = w + 'px';
                 canvas.style.height = h + 'px';
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                if ((!oldW || oldW < 100) && w > 100) {
+                    mouseX = w / 2;
+                    mouseY = h * 0.38;
+                    mouseObjX = mouseX;
+                    mouseObjY = mouseY;
+                    if (typeof paginas !== 'undefined') {
+                        paginas.forEach(p => p.reset(true));
+                    }
+                }
             }
             redimensionar();
             window.addEventListener('resize', redimensionar);
@@ -187,7 +197,18 @@
             function animar() {
                 // Detener animación si el welcome screen ya no está visible
                 if (document.getElementById('welcome-screen').classList.contains('hidden')) return;
-                ctx.clearRect(0,0,w,h);
+
+                // Si el tamaño real de la ventana cambió, redimensionamos
+                if (w !== window.innerWidth || h !== window.innerHeight) {
+                    redimensionar();
+                }
+
+                // Limpiar todo el canvas físico con precisión para evitar estelas/recortes
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+
                 mouseX += (mouseObjX-mouseX)*0.08;
                 mouseY += (mouseObjY-mouseY)*0.08;
                 tiltX  += (tiltObjX-tiltX)*0.06;
