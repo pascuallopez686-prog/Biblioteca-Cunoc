@@ -9,7 +9,8 @@ const KEYS = {
     anns:    'biblioteca_anns_v3',
     session: 'biblioteca_session_v3',
     msgs:    'biblioteca_msgs_v3',
-    social:  'biblioteca_social_v1'
+    social:  'biblioteca_social_v1',
+    emps:    'biblioteca_emps_v1'
 };
 
 /* ============================================================
@@ -141,6 +142,8 @@ function setExclusiveTab(tabName) {
         restartHeroGif();
     } else if (tabName === 'plataforma') {
         renderAll();
+    } else if (tabName === 'emprendimientos') {
+        renderEmprendimientos();
     }
 }
 
@@ -287,6 +290,22 @@ function handleLogout() {
     document.getElementById('register-form')?.reset();
     studentSessionDocs = 0;
     studentSessionAnns = 0;
+}
+
+function enterPortalDirectly() {
+    document.getElementById('welcome-screen')?.classList.add('hidden');
+    document.getElementById('app-header')?.classList.remove('hidden');
+    document.getElementById('public-view')?.classList.remove('hidden');
+    document.getElementById('app-footer')?.classList.remove('hidden');
+    document.getElementById('admin-panel')?.classList.add('hidden');
+
+    if (!currentUser) {
+        currentUser = { id: 'visitor_' + Date.now(), name: 'Visitante', role: 'public' };
+    }
+
+    updateHeaderUI();
+    switchMainView('biblioteca');
+    renderAll();
 }
 
 /* ============================================================
@@ -677,13 +696,17 @@ async function togglePinAnn(id) {
 function studentAddDoc(e) {
     e.preventDefault();
     if (studentSessionDocs >= 1) { alert('Límite de 1 documento por sesión'); return; }
+    const typeEl = document.getElementById('student-doc-type');
+    const titleEl = document.getElementById('student-doc-title');
+    const linkEl = document.getElementById('student-doc-link');
+    if (!typeEl || !titleEl || !linkEl) return;
     const docs = store.get(KEYS.docs) || [];
     docs.push({
         id: Date.now(),
-        type: document.getElementById('student-doc-type').value,
-        title: document.getElementById('student-doc-title').value.trim(),
-        author: currentUser.name,
-        link: document.getElementById('student-doc-link').value.trim(),
+        type: typeEl.value,
+        title: titleEl.value.trim(),
+        author: currentUser ? currentUser.name : 'Usuario',
+        link: linkEl.value.trim(),
         pinned: false, isStudentContribution: true, createdAt: new Date().toISOString()
     });
     store.set(KEYS.docs, docs);
@@ -696,13 +719,16 @@ function studentAddDoc(e) {
 function studentAddAnn(e) {
     e.preventDefault();
     if (studentSessionAnns >= 1) { alert('Límite de 1 aviso por sesión'); return; }
+    const titleEl = document.getElementById('student-ann-title');
+    const contentEl = document.getElementById('student-ann-content');
+    if (!titleEl || !contentEl) return;
     const anns = store.get(KEYS.anns) || [];
     anns.unshift({
         id: Date.now(),
-        title: document.getElementById('student-ann-title').value.trim(),
-        content: document.getElementById('student-ann-content').value.trim(),
+        title: titleEl.value.trim(),
+        content: contentEl.value.trim(),
         type: 'general', pinned: false, isStudentContribution: true,
-        studentName: currentUser.name, createdAt: new Date().toISOString()
+        studentName: currentUser ? currentUser.name : 'Usuario', createdAt: new Date().toISOString()
     });
     store.set(KEYS.anns, anns);
     studentSessionAnns++;
@@ -713,13 +739,15 @@ function studentAddAnn(e) {
 
 function studentSendMsg(e) {
     e.preventDefault();
+    const contentEl = document.getElementById('msg-content');
+    if (!contentEl) return;
     const msgs = store.get(KEYS.msgs) || [];
     msgs.push({
         id: Date.now(),
-        studentId: currentUser.id,
-        studentName: currentUser.name,
-        studentCarne: currentUser.carne,
-        content: document.getElementById('msg-content').value.trim(),
+        studentId: currentUser ? currentUser.id : 'anon',
+        studentName: currentUser ? currentUser.name : 'Visitante',
+        studentCarne: currentUser ? currentUser.carne : '',
+        content: contentEl.value.trim(),
         reply: null,
         timestamp: new Date().toISOString()
     });
@@ -953,7 +981,7 @@ function closeMobileNav() {
 }
 
 function setupEventListeners() {
-    document.getElementById('btn-enter')?.addEventListener('click', showAuthModal);
+    document.getElementById('btn-enter')?.addEventListener('click', enterPortalDirectly);
     document.getElementById('login-form')?.addEventListener('submit', handleAuth);
     document.getElementById('register-form')?.addEventListener('submit', handleAuth);
     // Admin form: listener asíncrono
@@ -1133,14 +1161,138 @@ function setupSocialForm() {
         }
     });
 }
+/* ============================================================
+   EMPRENDIMIENTOS – CRUD LOCAL
+   ============================================================ */
+
+const CATEGORY_EMOJIS = {
+    'Alimentación': '🍽️',
+    'Moda y Accesorios': '👗',
+    'Belleza y Cuidado': '💄',
+    'Tecnología': '💻',
+    'Arte y Artesanías': '🎨',
+    'Educación': '📚',
+    'Salud y Bienestar': '🌿',
+    'Hogar': '🏠',
+    'Servicios': '🔧',
+    'Otro': '📦'
+};
+
+function adminAddEmp(e) {
+    e.preventDefault();
+    const owner    = document.getElementById('emp-owner')?.value.trim();
+    const name     = document.getElementById('emp-name')?.value.trim();
+    const desc     = document.getElementById('emp-desc')?.value.trim();
+    const category = document.getElementById('emp-category')?.value;
+    const website  = document.getElementById('emp-website')?.value.trim();
+    const facebook = document.getElementById('emp-facebook')?.value.trim();
+    const instagram= document.getElementById('emp-instagram')?.value.trim();
+    const whatsapp = document.getElementById('emp-whatsapp')?.value.trim();
+
+    if (!owner || !name || !desc || !category) { alert('Completa los campos obligatorios'); return; }
+
+    const emps = store.get(KEYS.emps) || [];
+    emps.unshift({
+        id: Date.now(),
+        owner, name, desc, category,
+        website:   website   || null,
+        facebook:  facebook  || null,
+        instagram: instagram || null,
+        whatsapp:  whatsapp  || null,
+        createdAt: new Date().toISOString()
+    });
+    store.set(KEYS.emps, emps);
+    e.target.reset();
+    alert('¡Emprendimiento publicado exitosamente!');
+    renderAdminEmpList();
+    renderEmprendimientos();
+}
+
+function deleteEmp(id) {
+    if (!confirm('¿Eliminar este emprendimiento?')) return;
+    const emps = (store.get(KEYS.emps) || []).filter(e => e.id !== id);
+    store.set(KEYS.emps, emps);
+    renderAdminEmpList();
+    renderEmprendimientos();
+}
+
+function renderEmprendimientos() {
+    const emps = store.get(KEYS.emps) || [];
+    const grid = document.getElementById('emp-cards-grid');
+    if (!grid) return;
+
+    if (!emps.length) {
+        grid.innerHTML = `
+            <div class="emp-empty-state">
+                <i class="fas fa-store-slash" style="font-size:3rem;color:var(--gray-400);display:block;margin-bottom:1rem;"></i>
+                <p>Aún no hay emprendimientos publicados.<br>¡Sé el primero en aparecer aquí!</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = emps.map(emp => {
+        const emoji = CATEGORY_EMOJIS[emp.category] || '📦';
+        const links = [
+            emp.website   ? `<a href="${emp.website}" target="_blank" rel="noopener" class="emp-link-btn" title="Sitio Web"><i class="fas fa-globe"></i> Web</a>` : '',
+            emp.facebook  ? `<a href="${emp.facebook}" target="_blank" rel="noopener" class="emp-link-btn emp-facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>` : '',
+            emp.instagram ? `<a href="${emp.instagram}" target="_blank" rel="noopener" class="emp-link-btn emp-instagram" title="Instagram"><i class="fab fa-instagram"></i></a>` : '',
+            emp.whatsapp  ? `<a href="${emp.whatsapp}" target="_blank" rel="noopener" class="emp-link-btn emp-whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>` : ''
+        ].filter(Boolean).join('');
+
+        return `
+        <div class="emp-card theme-card">
+            <div class="emp-card-header">
+                <span class="emp-category-badge">${emoji} ${emp.category}</span>
+            </div>
+            <div class="emp-card-body">
+                <h3 class="emp-name">${emp.name}</h3>
+                <p class="emp-owner"><i class="fas fa-user" style="color:var(--bronze);margin-right:.3rem"></i>${emp.owner}</p>
+                <p class="emp-desc">${emp.desc}</p>
+            </div>
+            <div class="emp-card-footer">
+                ${links || '<span style="color:var(--gray-400);font-size:.8rem;">Sin links</span>'}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function renderAdminEmpList() {
+    const emps = store.get(KEYS.emps) || [];
+    const container = document.getElementById('admin-emp-list');
+    if (!container) return;
+    if (!emps.length) {
+        container.innerHTML = '<p style="color:var(--gray-500);">No hay emprendimientos publicados aún.</p>';
+        return;
+    }
+    container.innerHTML = emps.map(emp => `
+        <div class="message-card" style="margin-bottom:1rem;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;">
+                <div>
+                    <strong>${emp.name}</strong> &mdash; <em>${emp.category}</em><br>
+                    <span style="font-size:.85rem;color:var(--gray-500);">Por: ${emp.owner}</span>
+                </div>
+                <button onclick="deleteEmp(${emp.id})" class="btn-small" style="background:#e53e3e;color:#fff;flex-shrink:0;">Eliminar</button>
+            </div>
+            <p style="font-size:.85rem;margin:.5rem 0 0;">${emp.desc}</p>
+        </div>
+    `).join('');
+}
+
+function setupEmpForm() {
+    document.getElementById('admin-emp-form')?.addEventListener('submit', adminAddEmp);
+}
+
 
 window.addEventListener('DOMContentLoaded', async () => {
     applyStoredTheme();
     applyImageInteractivity(document);
     setupEventListeners();
     setupSocialForm();
+    setupEmpForm();
     renderSocialLinks();
     loadSocialFormValues();
+    renderEmprendimientos();
+    renderAdminEmpList();
 
     const session = store.get(KEYS.session);
     if (session?.token) {
