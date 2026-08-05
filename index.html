@@ -51,13 +51,20 @@
         <script>
         (function () {
             const canvas  = document.getElementById('ws-canvas');
+            if (!canvas) return;
             const ctx     = canvas.getContext('2d');
             const lampara = document.getElementById('ws-lampara');
             const main    = document.getElementById('ws-main');
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             let dpr = Math.min(window.devicePixelRatio || 1, 2);
-            let w, h;
+            let w = window.innerWidth, h = window.innerHeight;
+            let paginas = [];
+            let chispas = [];
+            let anillos = [];
+            let mouseX = w / 2, mouseY = h * 0.38;
+            let mouseObjX = mouseX, mouseObjY = mouseY;
+            let tiltX = 0, tiltY = 0, tiltObjX = 0, tiltObjY = 0;
 
             function redimensionar() {
                 const oldW = w;
@@ -73,13 +80,11 @@
                     mouseY = h * 0.38;
                     mouseObjX = mouseX;
                     mouseObjY = mouseY;
-                    if (typeof paginas !== 'undefined') {
-                        paginas.forEach(p => p.reset(true));
-                    }
+                }
+                if (paginas && paginas.length) {
+                    paginas.forEach(p => p.reset(true));
                 }
             }
-            redimensionar();
-            window.addEventListener('resize', redimensionar);
 
             const paletaPaginas = ['#d4a15c', '#f0c987', '#e8d5b0', '#b98a4a'];
 
@@ -155,25 +160,25 @@
                 }
             }
 
-            const cantidad = w < 640 ? 34 : 60;
-            const paginas  = Array.from({length: cantidad}, () => new Pagina());
-            let chispas = [], anillos = [];
+            redimensionar();
+            window.addEventListener('resize', redimensionar);
 
-            let mouseX = w/2, mouseY = h*0.38;
-            let mouseObjX = mouseX, mouseObjY = mouseY;
-            let tiltX=0, tiltY=0, tiltObjX=0, tiltObjY=0;
+            const cantidad = w < 640 ? 34 : 60;
+            paginas = Array.from({length: cantidad}, () => new Pagina());
 
             window.addEventListener('pointermove', (e) => {
                 mouseObjX = e.clientX; mouseObjY = e.clientY;
-                lampara.style.setProperty('--ws-mx', e.clientX + 'px');
-                lampara.style.setProperty('--ws-my', e.clientY + 'px');
+                if (lampara) {
+                    lampara.style.setProperty('--ws-mx', e.clientX + 'px');
+                    lampara.style.setProperty('--ws-my', e.clientY + 'px');
+                }
                 tiltObjX = (e.clientX/w)*2-1;
                 tiltObjY = (e.clientY/h)*2-1;
             });
 
             window.addEventListener('pointerdown', (e) => {
-                // solo disparar efectos si el welcome-screen está visible
-                if (document.getElementById('welcome-screen').classList.contains('hidden')) return;
+                const ws = document.getElementById('welcome-screen');
+                if (!ws || ws.classList.contains('hidden')) return;
                 if (reduceMotion) return;
                 for (let i=0;i<16;i++) chispas.push(new Chispa(e.clientX, e.clientY));
                 anillos.push(new Anillo(e.clientX, e.clientY));
@@ -195,15 +200,13 @@
             }
 
             function animar() {
-                // Detener animación si el welcome screen ya no está visible
-                if (document.getElementById('welcome-screen').classList.contains('hidden')) return;
+                const ws = document.getElementById('welcome-screen');
+                if (!ws || ws.classList.contains('hidden')) return;
 
-                // Si el tamaño real de la ventana cambió, redimensionamos
                 if (w !== window.innerWidth || h !== window.innerHeight) {
                     redimensionar();
                 }
 
-                // Limpiar todo el canvas físico con precisión para evitar estelas/recortes
                 ctx.save();
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -219,7 +222,9 @@
                 chispas = chispas.filter(c => c.vida > 0);
                 anillos.forEach(a => { a.actualizar(); a.dibujar(); });
                 anillos = anillos.filter(a => a.vida > 0);
-                main.style.transform = `translate3d(${tiltX*-10}px,${tiltY*-8}px,0)`;
+                if (main) {
+                    main.style.transform = `translate3d(${tiltX*-10}px,${tiltY*-8}px,0)`;
+                }
                 requestAnimationFrame(animar);
             }
 
