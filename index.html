@@ -42,7 +42,7 @@
                     Ingresar al Portal
                 </button>
             </div>
-            <p class="ws-pista">Mueve el cursor &middot; haz clic para ver el efecto</p>
+            <p class="ws-pista">Mueve el cursor &middot; haz clic y arrastra para iluminar el camino</p>
         </main>
 
         <footer class="ws-footer">Biblioteca Digital &middot; Acceso abierto</footer>
@@ -50,181 +50,273 @@
         <!-- Script de animación del fondo -->
         <script>
         (function () {
-            const canvas  = document.getElementById('ws-canvas');
-            if (!canvas) return;
-            const ctx     = canvas.getContext('2d');
-            const lampara = document.getElementById('ws-lampara');
-            const main    = document.getElementById('ws-main');
+            const contenedor = document.getElementById('welcome-screen');
+            const canvas     = document.getElementById('ws-canvas');
+            if (!canvas || !contenedor) return;
+            const ctx        = canvas.getContext('2d');
+            const lampara    = document.getElementById('ws-lampara');
+            const main       = document.getElementById('ws-main');
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             let dpr = Math.min(window.devicePixelRatio || 1, 2);
             let w = window.innerWidth, h = window.innerHeight;
-            let paginas = [];
-            let chispas = [];
-            let anillos = [];
-            let mouseX = w / 2, mouseY = h * 0.38;
-            let mouseObjX = mouseX, mouseObjY = mouseY;
-            let tiltX = 0, tiltY = 0, tiltObjX = 0, tiltObjY = 0;
 
             function redimensionar() {
-                const oldW = w;
-                w = window.innerWidth;
-                h = window.innerHeight;
+                const rect = contenedor.getBoundingClientRect();
+                w = rect.width || window.innerWidth;
+                h = rect.height || window.innerHeight;
                 canvas.width  = w * dpr;
                 canvas.height = h * dpr;
                 canvas.style.width  = w + 'px';
                 canvas.style.height = h + 'px';
                 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-                if ((!oldW || oldW < 100) && w > 100) {
-                    mouseX = w / 2;
-                    mouseY = h * 0.38;
-                    mouseObjX = mouseX;
-                    mouseObjY = mouseY;
-                }
-                if (paginas && paginas.length) {
-                    paginas.forEach(p => p.reset(true));
-                }
+            }
+            redimensionar();
+
+            if (window.ResizeObserver) {
+                new ResizeObserver(redimensionar).observe(contenedor);
+            } else {
+                window.addEventListener('resize', redimensionar);
             }
 
             const paletaPaginas = ['#d4a15c', '#f0c987', '#e8d5b0', '#b98a4a'];
+
+            class Bokeh {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.radio = 60 + Math.random() * 120;
+                    this.velX = (Math.random() - 0.5) * 0.06;
+                    this.velY = (Math.random() - 0.5) * 0.06;
+                    this.opacidad = 0.03 + Math.random() * 0.05;
+                    this.color = Math.random() > 0.5 ? '212, 161, 92' : '61, 74, 107';
+                }
+                mover() {
+                    this.x += this.velX;
+                    this.y += this.velY;
+                    if (this.x < -this.radio) this.x = w + this.radio;
+                    if (this.x > w + this.radio) this.x = -this.radio;
+                    if (this.y < -this.radio) this.y = h + this.radio;
+                    if (this.y > h + this.radio) this.y = -this.radio;
+                }
+                dibujar() {
+                    const gradiente = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radio);
+                    gradiente.addColorStop(0, `rgba(${this.color}, ${this.opacidad})`);
+                    gradiente.addColorStop(1, `rgba(${this.color}, 0)`);
+                    ctx.fillStyle = gradiente;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
 
             class Pagina {
                 constructor() { this.reset(true); }
                 reset(inicial) {
                     this.x = Math.random() * w;
-                    this.y = inicial ? Math.random() * h : -20;
+                    this.y = inicial ? Math.random() * h : h + 20;
                     this.ancho = 4 + Math.random() * 7;
                     this.alto  = this.ancho * (1.3 + Math.random() * 0.4);
                     this.velY  = 0.18 + Math.random() * 0.35;
                     this.derivaX   = (Math.random() - 0.5) * 0.35;
                     this.angulo    = Math.random() * Math.PI * 2;
                     this.velAngulo = (Math.random() - 0.5) * 0.012;
-                    this.opacidad  = 0.15 + Math.random() * 0.4;
+                    this.opacidadBase  = 0.15 + Math.random() * 0.4;
                     this.color     = paletaPaginas[Math.floor(Math.random() * paletaPaginas.length)];
                     this.oscilacion = Math.random() * Math.PI * 2;
+                    this.impulsoX  = 0;
+                    this.impulsoY  = 0;
+                    this.brillo    = 0;
+                }
+                empujar(x, y, fuerza) {
+                    const dx = this.x - x;
+                    const dy = this.y - y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    this.impulsoX += (dx / dist) * fuerza;
+                    this.impulsoY += (dy / dist) * fuerza;
+                    this.velAngulo += (Math.random() - 0.5) * 0.06;
                 }
                 mover(mx, my) {
                     this.oscilacion += 0.01;
-                    this.y += this.velY;
-                    this.x += this.derivaX + Math.sin(this.oscilacion) * 0.15;
+                    this.y -= this.velY;
+                    this.x += this.derivaX + Math.sin(this.oscilacion) * 0.15 + this.impulsoX;
                     this.angulo += this.velAngulo;
-                    const dx = this.x - mx, dy = this.y - my;
-                    const distSq = dx*dx + dy*dy, radio = 130;
-                    if (distSq < radio*radio) {
+
+                    this.impulsoX *= 0.9;
+                    this.impulsoY *= 0.9;
+                    this.velAngulo *= 0.96;
+
+                    const dx = this.x - mx;
+                    const dy = this.y - my;
+                    const distSq = dx * dx + dy * dy;
+                    const radio = 130;
+                    let objetivoBrillo = 0;
+                    if (distSq < radio * radio) {
                         const dist = Math.sqrt(distSq) || 1;
-                        const fuerza = (1 - dist/radio) * 0.6;
-                        this.x += (dx/dist)*fuerza;
-                        this.y += (dy/dist)*fuerza;
+                        const fuerza = (1 - dist / radio) * 0.6;
+                        this.x += (dx / dist) * fuerza;
+                        this.y += (dy / dist) * fuerza;
+                        objetivoBrillo = 1 - dist / radio;
                     }
-                    if (this.y > h + 20) this.reset(false);
-                    if (this.x < -20)    this.x = w + 20;
+                    this.brillo += (objetivoBrillo - this.brillo) * 0.15;
+
+                    if (this.y < -20) this.reset(false);
+                    if (this.x < -20) this.x = w + 20;
                     if (this.x > w + 20) this.x = -20;
                 }
                 dibujar() {
+                    const escala = 1 + this.brillo * 0.9;
                     ctx.save();
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.angulo);
-                    ctx.globalAlpha = this.opacidad;
+                    ctx.scale(escala, escala);
+                    ctx.globalAlpha = Math.min(this.opacidadBase + this.brillo * 0.5, 1);
                     ctx.fillStyle   = this.color;
                     ctx.shadowColor = this.color;
-                    ctx.shadowBlur  = 6;
-                    ctx.fillRect(-this.ancho/2, -this.alto/2, this.ancho, this.alto);
+                    ctx.shadowBlur  = 6 + this.brillo * 10;
+                    ctx.fillRect(-this.ancho / 2, -this.alto / 2, this.ancho, this.alto);
                     ctx.restore();
                 }
             }
 
-            class Chispa {
+            class PuntoEstela {
                 constructor(x, y) {
-                    const a = Math.random()*Math.PI*2, v = 1.5+Math.random()*3.5;
-                    this.x = x; this.y = y;
-                    this.vx = Math.cos(a)*v; this.vy = Math.sin(a)*v;
-                    this.radio = 1+Math.random()*2;
-                    this.vida  = 1;
-                    this.color = paletaPaginas[Math.floor(Math.random()*paletaPaginas.length)];
+                    this.x = x;
+                    this.y = y;
+                    this.vida = 1;
                 }
-                actualizar() { this.x+=this.vx; this.y+=this.vy; this.vx*=0.96; this.vy*=0.96; this.vida-=0.022; }
-                dibujar() {
-                    ctx.save(); ctx.globalAlpha=Math.max(this.vida,0);
-                    ctx.fillStyle=this.color; ctx.shadowColor=this.color; ctx.shadowBlur=8;
-                    ctx.beginPath(); ctx.arc(this.x,this.y,this.radio,0,Math.PI*2); ctx.fill(); ctx.restore();
+                actualizar() {
+                    this.vida -= 0.035;
                 }
             }
 
-            class Anillo {
-                constructor(x,y){ this.x=x; this.y=y; this.radio=2; this.vida=1; }
-                actualizar() { this.radio+=3.4; this.vida-=0.03; }
-                dibujar() {
-                    ctx.save(); ctx.globalAlpha=Math.max(this.vida,0);
-                    ctx.strokeStyle='#f0c987'; ctx.lineWidth=1.3;
-                    ctx.beginPath(); ctx.arc(this.x,this.y,this.radio,0,Math.PI*2); ctx.stroke(); ctx.restore();
-                }
+            const bokehs = Array.from({ length: 8 }, () => new Bokeh());
+            const paginas = [];
+            function crearPaginas() {
+                paginas.length = 0;
+                const cantidad = w < 640 ? 34 : 60;
+                for (let i = 0; i < cantidad; i++) paginas.push(new Pagina());
+            }
+            crearPaginas();
+
+            const estela = [];
+            let arrastrando = false;
+
+            let mouseX = w / 2;
+            let mouseY = h * 0.38;
+            let mouseObjX = mouseX, mouseObjY = mouseY;
+            let tiltX = 0, tiltY = 0, tiltObjX = 0, tiltObjY = 0;
+            const RADIO_CONSTELACION = 150;
+
+            function posicionRelativa(e) {
+                const rect = contenedor.getBoundingClientRect();
+                return { x: e.clientX - rect.left, y: e.clientY - rect.top };
             }
 
-            redimensionar();
-            window.addEventListener('resize', redimensionar);
-
-            const cantidad = w < 640 ? 34 : 60;
-            paginas = Array.from({length: cantidad}, () => new Pagina());
-
-            window.addEventListener('pointermove', (e) => {
-                mouseObjX = e.clientX; mouseObjY = e.clientY;
+            contenedor.addEventListener('pointermove', (e) => {
+                const pos = posicionRelativa(e);
+                mouseObjX = pos.x;
+                mouseObjY = pos.y;
                 if (lampara) {
-                    lampara.style.setProperty('--ws-mx', e.clientX + 'px');
-                    lampara.style.setProperty('--ws-my', e.clientY + 'px');
+                    lampara.style.setProperty('--ws-mx', pos.x + 'px');
+                    lampara.style.setProperty('--ws-my', pos.y + 'px');
                 }
-                tiltObjX = (e.clientX/w)*2-1;
-                tiltObjY = (e.clientY/h)*2-1;
+                tiltObjX = (pos.x / w) * 2 - 1;
+                tiltObjY = (pos.y / h) * 2 - 1;
+
+                if (arrastrando && !reduceMotion) {
+                    estela.push(new PuntoEstela(pos.x, pos.y));
+                }
             });
 
-            window.addEventListener('pointerdown', (e) => {
+            contenedor.addEventListener('pointerdown', (e) => {
                 const ws = document.getElementById('welcome-screen');
                 if (!ws || ws.classList.contains('hidden')) return;
+                arrastrando = true;
                 if (reduceMotion) return;
-                for (let i=0;i<16;i++) chispas.push(new Chispa(e.clientX, e.clientY));
-                anillos.push(new Anillo(e.clientX, e.clientY));
+                const pos = posicionRelativa(e);
+                estela.push(new PuntoEstela(pos.x, pos.y));
+                paginas.forEach((p) => {
+                    const dx = p.x - pos.x;
+                    const dy = p.y - pos.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 200) p.empujar(pos.x, pos.y, (1 - dist / 200) * 6);
+                });
             });
 
+            window.addEventListener('pointerup', () => { arrastrando = false; });
+            contenedor.addEventListener('pointerleave', () => { arrastrando = false; });
+
             function dibujarConstelacion() {
-                for (let i=0; i<paginas.length; i++) {
+                for (let i = 0; i < paginas.length; i++) {
                     const p = paginas[i];
-                    const dx = p.x-mouseX, dy = p.y-mouseY;
-                    const dist = Math.sqrt(dx*dx+dy*dy);
-                    if (dist < 150) {
+                    const dx = p.x - mouseX;
+                    const dy = p.y - mouseY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < RADIO_CONSTELACION) {
                         ctx.save();
-                        ctx.globalAlpha = (1-dist/150)*0.35;
-                        ctx.strokeStyle='#f0c987'; ctx.lineWidth=0.8;
-                        ctx.beginPath(); ctx.moveTo(mouseX,mouseY); ctx.lineTo(p.x,p.y); ctx.stroke();
+                        ctx.globalAlpha = (1 - dist / RADIO_CONSTELACION) * 0.35;
+                        ctx.strokeStyle = '#f0c987';
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(mouseX, mouseY);
+                        ctx.lineTo(p.x, p.y);
+                        ctx.stroke();
                         ctx.restore();
                     }
                 }
             }
 
+            function dibujarEstela() {
+                if (estela.length < 2) return;
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.shadowColor = '#f0c987';
+                ctx.shadowBlur = 12;
+                for (let i = 1; i < estela.length; i++) {
+                    const a = estela[i - 1];
+                    const b = estela[i];
+                    const vidaProm = (a.vida + b.vida) / 2;
+                    if (vidaProm <= 0) continue;
+                    ctx.globalAlpha = vidaProm * 0.6;
+                    ctx.strokeStyle = '#f0c987';
+                    ctx.lineWidth = 1 + vidaProm * 3.5;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+
             function animar() {
                 const ws = document.getElementById('welcome-screen');
-                if (!ws || ws.classList.contains('hidden')) return;
-
-                if (w !== window.innerWidth || h !== window.innerHeight) {
-                    redimensionar();
+                if (ws && ws.classList.contains('hidden')) {
+                    requestAnimationFrame(animar);
+                    return;
                 }
 
-                ctx.save();
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.restore();
+                ctx.clearRect(0, 0, w, h);
 
-                mouseX += (mouseObjX-mouseX)*0.08;
-                mouseY += (mouseObjY-mouseY)*0.08;
-                tiltX  += (tiltObjX-tiltX)*0.06;
-                tiltY  += (tiltObjY-tiltY)*0.06;
-                paginas.forEach(p => { p.mover(mouseX,mouseY); p.dibujar(); });
+                mouseX += (mouseObjX - mouseX) * 0.08;
+                mouseY += (mouseObjY - mouseY) * 0.08;
+                tiltX  += (tiltObjX - tiltX) * 0.06;
+                tiltY  += (tiltObjY - tiltY) * 0.06;
+
+                bokehs.forEach(b => { b.mover(); b.dibujar(); });
+                paginas.forEach(p => { p.mover(mouseX, mouseY); p.dibujar(); });
                 dibujarConstelacion();
-                chispas.forEach(c => { c.actualizar(); c.dibujar(); });
-                chispas = chispas.filter(c => c.vida > 0);
-                anillos.forEach(a => { a.actualizar(); a.dibujar(); });
-                anillos = anillos.filter(a => a.vida > 0);
+
+                estela.forEach(pt => pt.actualizar());
+                while (estela.length && estela[0].vida <= 0) estela.shift();
+                dibujarEstela();
+
                 if (main) {
-                    main.style.transform = `translate3d(${tiltX*-10}px,${tiltY*-8}px,0)`;
+                    main.style.transform = `translate3d(${tiltX * -10}px, ${tiltY * -8}px, 0)`;
                 }
+
                 requestAnimationFrame(animar);
             }
 
