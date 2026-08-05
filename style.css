@@ -1085,6 +1085,18 @@ body.dark .admin-tab-btn.active {
     align-items: start;
 }
 
+/* Responsive adjustments for announcements list */
+@media screen and (max-width: 768px) {
+  #announcements-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (max-width: 480px) {
+  #announcements-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 #repositorio-list,
 #messages-list {
     display: grid;
@@ -3762,3 +3774,12 @@ body.dark .legal-section h4 {
     pointer-events: none;
 }
 
+
+/* ----------- Muro de Noticias en móviles ----------- */
+@media (max-width: 768px) {
+    #announcements-list {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+}

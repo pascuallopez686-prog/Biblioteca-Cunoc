@@ -10,11 +10,8 @@ const ADMIN_LIMIT_WINDOW  = 50;   // Admin puede publicar hasta 50 en 3 días
 module.exports = async (req, res) => {
   loadLocalEnv();
 
-  // ── GET /api/announcements — cualquier sesión válida (admin o estudiante) ──
+  // ── GET /api/announcements — acceso público ──
   if (req.method === 'GET') {
-    const payload = requireAuth(req);
-    if (!payload) return res.status(401).json({ success: false, message: 'No autorizado' });
-
     try {
       const rows = await supabaseRequest('announcements', {
         query: '?select=*&order=pinned.desc,created_at.desc&limit=50'
