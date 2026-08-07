@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="style.css?v=3.1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
 </head>
@@ -739,12 +739,10 @@
             <section id="tab-inicio" class="tab-content active">
                 <div class="hero-section theme-section">
                     <div class="hero-bg">
+                        <canvas id="hero-canvas"></canvas>
                         <div class="hero-overlay"></div>
                     </div>
                     <div class="hero-content">
-                        <div class="hero-knowledge-badge">
-                            <i class="fas fa-graduation-cap"></i> Conocimiento &bull; Aprendizaje &bull; Excelencia
-                        </div>
                         <h1 id="welcome-message">Bienvenido a la Biblioteca Digital</h1>
                         <p>Plataforma para estudiantes y población en general</p>
                     </div>
@@ -2191,6 +2189,149 @@
                 </div>
             </div>
         </footer>
+
+        <!-- Animación de fondo del hero (Conocimiento y Aprendizaje) -->
+        <script>
+        (function() {
+            const heroCanvas = document.getElementById('hero-canvas');
+            if (!heroCanvas) return;
+            const hCtx = heroCanvas.getContext('2d');
+            const heroSection = heroCanvas.closest('.hero-section');
+
+            let hW, hH;
+            function heroResize() {
+                const rect = heroSection.getBoundingClientRect();
+                hW = rect.width;
+                hH = rect.height;
+                heroCanvas.width = hW * 2;
+                heroCanvas.height = hH * 2;
+                heroCanvas.style.width = hW + 'px';
+                heroCanvas.style.height = hH + 'px';
+                hCtx.setTransform(2, 0, 0, 2, 0, 0);
+            }
+            heroResize();
+            window.addEventListener('resize', heroResize);
+
+            const symbols = ['📖', '🎓', '💡', '⚙️', '🔬', '✏️', '📐', '🧠', '📚', '🌐'];
+            const colors = ['rgba(0,242,254,', 'rgba(79,172,254,', 'rgba(155,81,224,', 'rgba(240,201,135,'];
+
+            class HeroParticle {
+                constructor() { this.reset(true); }
+                reset(init) {
+                    this.x = Math.random() * hW;
+                    this.y = init ? Math.random() * hH : hH + 20;
+                    this.size = 12 + Math.random() * 18;
+                    this.velY = -(0.15 + Math.random() * 0.3);
+                    this.velX = (Math.random() - 0.5) * 0.3;
+                    this.rotation = Math.random() * Math.PI * 2;
+                    this.rotSpeed = (Math.random() - 0.5) * 0.008;
+                    this.opacity = 0.12 + Math.random() * 0.22;
+                    this.symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                    this.oscillation = Math.random() * Math.PI * 2;
+                    this.oscSpeed = 0.005 + Math.random() * 0.01;
+                }
+                update() {
+                    this.oscillation += this.oscSpeed;
+                    this.y += this.velY;
+                    this.x += this.velX + Math.sin(this.oscillation) * 0.2;
+                    this.rotation += this.rotSpeed;
+                    if (this.y < -30 || this.x < -30 || this.x > hW + 30) this.reset(false);
+                }
+                draw() {
+                    hCtx.save();
+                    hCtx.translate(this.x, this.y);
+                    hCtx.rotate(this.rotation);
+                    hCtx.globalAlpha = this.opacity;
+                    hCtx.font = this.size + 'px serif';
+                    hCtx.textAlign = 'center';
+                    hCtx.textBaseline = 'middle';
+                    hCtx.fillText(this.symbol, 0, 0);
+                    hCtx.restore();
+                }
+            }
+
+            class HeroDot {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * hW;
+                    this.y = Math.random() * hH;
+                    this.r = 1 + Math.random() * 2.5;
+                    this.velX = (Math.random() - 0.5) * 0.4;
+                    this.velY = (Math.random() - 0.5) * 0.4;
+                    this.colorBase = colors[Math.floor(Math.random() * colors.length)];
+                    this.alpha = 0.2 + Math.random() * 0.4;
+                    this.pulsePhase = Math.random() * Math.PI * 2;
+                }
+                update() {
+                    this.x += this.velX;
+                    this.y += this.velY;
+                    this.pulsePhase += 0.02;
+                    if (this.x < 0) this.x = hW;
+                    if (this.x > hW) this.x = 0;
+                    if (this.y < 0) this.y = hH;
+                    if (this.y > hH) this.y = 0;
+                }
+                draw() {
+                    const pulse = 0.5 + Math.sin(this.pulsePhase) * 0.5;
+                    const a = this.alpha * (0.6 + pulse * 0.4);
+                    hCtx.save();
+                    hCtx.globalAlpha = a;
+                    hCtx.fillStyle = this.colorBase + '1)';
+                    hCtx.shadowColor = this.colorBase + '0.8)';
+                    hCtx.shadowBlur = 6;
+                    hCtx.beginPath();
+                    hCtx.arc(this.x, this.y, this.r * (0.8 + pulse * 0.4), 0, Math.PI * 2);
+                    hCtx.fill();
+                    hCtx.restore();
+                }
+            }
+
+            const particles = [];
+            const dots = [];
+            const CONNECT_DIST = 120;
+
+            function initParticles() {
+                particles.length = 0;
+                dots.length = 0;
+                const count = hW < 640 ? 10 : 18;
+                const dotCount = hW < 640 ? 25 : 50;
+                for (let i = 0; i < count; i++) particles.push(new HeroParticle());
+                for (let i = 0; i < dotCount; i++) dots.push(new HeroDot());
+            }
+            initParticles();
+
+            function drawConnections() {
+                for (let i = 0; i < dots.length; i++) {
+                    for (let j = i + 1; j < dots.length; j++) {
+                        const dx = dots[i].x - dots[j].x;
+                        const dy = dots[i].y - dots[j].y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < CONNECT_DIST) {
+                            const alpha = (1 - dist / CONNECT_DIST) * 0.15;
+                            hCtx.save();
+                            hCtx.globalAlpha = alpha;
+                            hCtx.strokeStyle = '#00f2fe';
+                            hCtx.lineWidth = 0.5;
+                            hCtx.beginPath();
+                            hCtx.moveTo(dots[i].x, dots[i].y);
+                            hCtx.lineTo(dots[j].x, dots[j].y);
+                            hCtx.stroke();
+                            hCtx.restore();
+                        }
+                    }
+                }
+            }
+
+            function heroAnimate() {
+                hCtx.clearRect(0, 0, hW, hH);
+                dots.forEach(d => { d.update(); d.draw(); });
+                drawConnections();
+                particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(heroAnimate);
+            }
+            heroAnimate();
+        })();
+        </script>
 
         <script src="script.js?v=2.1"></script>
 
