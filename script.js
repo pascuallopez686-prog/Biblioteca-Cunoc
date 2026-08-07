@@ -78,17 +78,13 @@ if (!store.get(KEYS.docs))   store.set(KEYS.docs, []);
 if (!store.get(KEYS.anns))   store.set(KEYS.anns, []);
 if (!store.get(KEYS.msgs))   store.set(KEYS.msgs, []);
 
-let currentUser        = null;
-let currentFilter      = 'all';
-let studentSessionDocs = 0;
-let studentSessionAnns = 0;
+let currentUser = null;
 
 /* ============================================================
-   NAVEGACIÓN ENTRE VISTAS INSTITUCIONALES
+   NAVEGACIÓN ENTRE VISTAS
    ============================================================ */
 function switchMainView(viewName) {
     closeMobileNav();
-    // Ocultar panel admin si está visible
     const adminPanel = document.getElementById('admin-panel');
     if (adminPanel) adminPanel.classList.add('hidden');
 
@@ -99,17 +95,8 @@ function switchMainView(viewName) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     if (viewName === 'biblioteca') {
-        // Mostrar la vista pública y el tab de inicio
         document.getElementById('public-view')?.classList.remove('hidden');
         setExclusiveTab('inicio');
-    } else if (viewName === 'aetsro') {
-        restartAetsroGif();
-        // Aplicar interactividad a las imágenes de AETSRO
-        setTimeout(() => applyImageInteractivity(target), 100);
-    } else if (viewName === 'consejo') {
-        restartConsejoGif();
-        // Aplicar interactividad a las imágenes del Consejo
-        setTimeout(() => applyImageInteractivity(target), 100);
     }
 }
 
@@ -138,9 +125,7 @@ function setExclusiveTab(tabName) {
         tab.classList.add('active');
     }
 
-    if (tabName === 'inicio') {
-        restartHeroGif();
-    } else if (tabName === 'plataforma') {
+    if (tabName === 'plataforma') {
         renderAll();
     } else if (tabName === 'emprendimientos') {
         renderEmprendimientos();
@@ -148,57 +133,7 @@ function setExclusiveTab(tabName) {
 }
 
 /* ============================================================
-   AUTENTICACIÓN DE ESTUDIANTES (Supabase vía API)
-   ============================================================ */
-async function handleAuth(e) {
-    e.preventDefault();
-    const isLogin = !document.getElementById('login-form').classList.contains('hidden');
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    if (submitBtn) { submitBtn.disabled = true; }
-
-    try {
-        if (isLogin) {
-            const carne    = document.getElementById('login-carne').value.trim();
-            const password = document.getElementById('login-password').value;
-            const response = await fetch('/api/auth/student-login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ carne, password })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                alert(data.message || 'Carné o contraseña incorrectos');
-                return;
-            }
-            loginSuccess(sanitizeSessionUser({ ...data.user, token: data.token }));
-        } else {
-            const name     = document.getElementById('reg-name').value.trim();
-            const carne    = document.getElementById('reg-carne').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const response = await fetch('/api/auth/student-register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, carne, password })
-            });
-            const data = await response.json();
-            if (!data.success) {
-                alert(data.message || 'No se pudo completar el registro');
-                return;
-            }
-            alert('Registro exitoso. Entrando a la biblioteca.');
-            loginSuccess(sanitizeSessionUser({ ...data.user, token: data.token }), true);
-            e.target.reset();
-        }
-    } catch (err) {
-        console.error(`${DEBUG_PREFIX} Error de autenticación:`, err);
-        alert('Error de conexión. Verifica que el servidor esté activo y Supabase configurado.');
-    } finally {
-        if (submitBtn) submitBtn.disabled = false;
-    }
-}
-
-/* ============================================================
-   AUTENTICACIÓN ADMIN CON HASHING ASÍNCRONO
+   AUTENTICACIÓN ADMIN
    ============================================================ */
 async function handleAdminAccess(e) {
     e.preventDefault();
@@ -257,7 +192,6 @@ function loginSuccess(user, isNewRegistration = false) {
     store.set(KEYS.session, sessionUser);
 
     document.getElementById('welcome-screen')?.classList.add('hidden');
-    document.getElementById('auth-modal')?.classList.add('hidden');
     document.getElementById('app-header')?.classList.remove('hidden');
     document.getElementById('public-view')?.classList.remove('hidden');
     document.getElementById('app-footer')?.classList.remove('hidden');
@@ -285,11 +219,6 @@ function handleLogout() {
     document.getElementById('public-view')?.classList.add('hidden');
     document.getElementById('app-footer')?.classList.add('hidden');
     document.getElementById('admin-panel')?.classList.add('hidden');
-    closeAuthModal();
-    document.getElementById('login-form')?.reset();
-    document.getElementById('register-form')?.reset();
-    studentSessionDocs = 0;
-    studentSessionAnns = 0;
 }
 
 function enterPortalDirectly() {
@@ -311,14 +240,6 @@ function enterPortalDirectly() {
 /* ============================================================
    UI Y MODALES
    ============================================================ */
-function showAuthModal() {
-    const m = document.getElementById('auth-modal');
-    if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; }
-}
-function closeAuthModal() {
-    const m = document.getElementById('auth-modal');
-    if (m) { m.classList.add('hidden'); m.style.display = 'none'; }
-}
 function openAdminModal() {
     const m = document.getElementById('admin-modal');
     if (m) { m.classList.remove('hidden'); m.style.display = 'flex'; }
@@ -326,14 +247,6 @@ function openAdminModal() {
 function closeAdminModal() {
     const m = document.getElementById('admin-modal');
     if (m) { m.classList.add('hidden'); m.style.display = 'none'; }
-}
-function switchAuthTab(mode) {
-    const loginForm    = document.getElementById('login-form');
-    const registerForm = document.getElementById('register-form');
-    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-    document.querySelector(`[data-tab="${mode}"]`)?.classList.add('active');
-    if (mode === 'login') { loginForm?.classList.remove('hidden'); registerForm?.classList.add('hidden'); }
-    else                  { loginForm?.classList.add('hidden');    registerForm?.classList.remove('hidden'); }
 }
 
 function updateHeaderUI() {
@@ -345,43 +258,6 @@ function updateHeaderUI() {
     const welcomeMsg = document.getElementById('welcome-message');
     if (welcomeMsg) welcomeMsg.textContent = `Bienvenido, ${currentUser.name}`;
 }
-
-function restartHeroGif() {
-    const heroGif = document.getElementById('hero-gif-bg');
-    if (!heroGif) return;
-
-    if (heroGif.gifTimeout) {
-        clearTimeout(heroGif.gifTimeout);
-    }
-
-    // Evitar almacenamiento en caché para forzar el reinicio de la animación del GIF y mantenerlo animado de forma continua
-    heroGif.src = 'imags/usac1_hd.gif?t=' + Date.now();
-}
-
-function restartAetsroGif() {
-    const aetsroGif = document.getElementById('aetsro-gif-bg');
-    if (!aetsroGif) return;
-
-    if (aetsroGif.gifTimeout) {
-        clearTimeout(aetsroGif.gifTimeout);
-    }
-
-    // Evitar almacenamiento en caché para forzar el reinicio de la animación del GIF y mantenerlo animado de forma continua
-    aetsroGif.src = 'imags/aetsro_hd.gif?t=' + Date.now();
-}
-
-function restartConsejoGif() {
-    const consejoGif = document.getElementById('consejo-gif-bg');
-    if (!consejoGif) return;
-
-    if (consejoGif.gifTimeout) {
-        clearTimeout(consejoGif.gifTimeout);
-    }
-
-    // Evitar caché para reiniciar la animación del GIF y mantenerlo animado de forma continua
-    consejoGif.src = 'imags/huelga.gif?t=' + Date.now();
-}
-
 
 function toggleDark() {
     document.body.classList.toggle('dark');
@@ -475,14 +351,6 @@ function switchAdminTab(tabId) {
             btn.classList.add('active');
         }
     });
-}
-
-/* ============================================================
-   ACORDEONES (AETSRO / CONSEJO)
-   ============================================================ */
-function toggleAccordion(id) {
-    const content = document.getElementById(id);
-    if (content) content.classList.toggle('hidden');
 }
 
 /* ============================================================
@@ -691,52 +559,8 @@ async function togglePinAnn(id) {
 }
 
 /* ============================================================
-   ACCIONES DE ESTUDIANTE
+   ACCIONES DE ESTUDIANTE / VISITANTE
    ============================================================ */
-function studentAddDoc(e) {
-    e.preventDefault();
-    if (studentSessionDocs >= 1) { alert('Límite de 1 documento por sesión'); return; }
-    const typeEl = document.getElementById('student-doc-type');
-    const titleEl = document.getElementById('student-doc-title');
-    const linkEl = document.getElementById('student-doc-link');
-    if (!typeEl || !titleEl || !linkEl) return;
-    const docs = store.get(KEYS.docs) || [];
-    docs.push({
-        id: Date.now(),
-        type: typeEl.value,
-        title: titleEl.value.trim(),
-        author: currentUser ? currentUser.name : 'Usuario',
-        link: linkEl.value.trim(),
-        pinned: false, isStudentContribution: true, createdAt: new Date().toISOString()
-    });
-    store.set(KEYS.docs, docs);
-    studentSessionDocs++;
-    e.target.reset();
-    alert('Documento publicado');
-    renderAll();
-}
-
-function studentAddAnn(e) {
-    e.preventDefault();
-    if (studentSessionAnns >= 1) { alert('Límite de 1 aviso por sesión'); return; }
-    const titleEl = document.getElementById('student-ann-title');
-    const contentEl = document.getElementById('student-ann-content');
-    if (!titleEl || !contentEl) return;
-    const anns = store.get(KEYS.anns) || [];
-    anns.unshift({
-        id: Date.now(),
-        title: titleEl.value.trim(),
-        content: contentEl.value.trim(),
-        type: 'general', pinned: false, isStudentContribution: true,
-        studentName: currentUser ? currentUser.name : 'Usuario', createdAt: new Date().toISOString()
-    });
-    store.set(KEYS.anns, anns);
-    studentSessionAnns++;
-    e.target.reset();
-    alert('Aviso publicado');
-    renderAll();
-}
-
 function studentSendMsg(e) {
     e.preventDefault();
     const contentEl = document.getElementById('msg-content');
@@ -890,7 +714,7 @@ function closeLightbox() {
     currentImageIndex = 0;
 }
 
-function renderAll() { fetchAndRenderAnnouncements(); renderRepositorio(); renderMyMessages(); }
+function renderAll() { fetchAndRenderAnnouncements(); renderMyMessages(); }
 
 // Caché en memoria de los anuncios cargados desde la API
 let _cachedAnns = [];
@@ -907,9 +731,13 @@ async function fetchAndRenderAnnouncements(search = '') {
         const data = await response.json();
         if (data.success) {
             _cachedAnns = data.announcements || [];
+        } else {
+            console.warn(`${DEBUG_PREFIX} Anuncios no cargados:`, data.message || response.status);
+            container.innerHTML = `<p style="color:var(--gray-600);padding:1rem;">No se pudieron cargar las noticias (${data.message || response.status}).</p>`;
+            return;
         }
     } catch (err) {
-        console.warn(`${DEBUG_PREFIX} Sin conexión, usando caché local de anuncios.`, err);
+        console.warn(`${DEBUG_PREFIX} Sin conexión al cargar anuncios.`, err);
     }
 
     renderAnnouncements(search);
@@ -940,27 +768,6 @@ function renderAnnouncements(search = '') {
     applyImageInteractivity(container);
 }
 
-function renderRepositorio(search = '', filter = 'all') {
-    let docs = store.get(KEYS.docs) || [];
-    if (filter !== 'all') docs = docs.filter(d => d.type === filter);
-    if (search) { const s = search.toLowerCase(); docs = docs.filter(d => d.title.toLowerCase().includes(s) || d.author.toLowerCase().includes(s)); }
-    docs.sort((a, b) => {
-        if (a.pinned && !b.pinned) return -1;
-        if (!a.pinned && b.pinned) return 1;
-        return new Date(b.createdAt) - new Date(a.createdAt);
-    });
-    const container = document.getElementById('repositorio-list');
-    if (!container) return;
-    if (!docs.length) { container.innerHTML = '<p>No hay documentos</p>'; return; }
-    container.innerHTML = docs.map(d =>
-        `<div class="doc-card">
-            <h3>${d.pinned ? '📌 ' : ''}${d.title}</h3>
-            <div class="doc-meta">Autor: ${d.author} | Tipo: ${d.type.toUpperCase()}</div>
-            <a href="${d.link}" target="_blank" class="btn-blue" style="display:inline-block;margin-top:0.5rem;text-decoration:none;">Ver Documento →</a>
-        </div>`
-    ).join('');
-}
-
 /* ============================================================
    EVENT LISTENERS E INICIALIZACIÓN
    ============================================================ */
@@ -982,14 +789,7 @@ function closeMobileNav() {
 
 function setupEventListeners() {
     document.getElementById('btn-enter')?.addEventListener('click', enterPortalDirectly);
-    document.getElementById('login-form')?.addEventListener('submit', handleAuth);
-    document.getElementById('register-form')?.addEventListener('submit', handleAuth);
-    // Admin form: listener asíncrono
     document.getElementById('admin-form')?.addEventListener('submit', (e) => handleAdminAccess(e));
-
-    document.querySelectorAll('.auth-tabs .tab-btn').forEach(btn =>
-        btn.addEventListener('click', () => switchAuthTab(btn.dataset.tab))
-    );
 
     document.getElementById('btn-mobile-menu')?.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1004,23 +804,11 @@ function setupEventListeners() {
 
     document.getElementById('admin-doc-form')?.addEventListener('submit', adminAddDoc);
     document.getElementById('admin-ann-form')?.addEventListener('submit', adminAddAnn);
-    document.getElementById('student-doc-form')?.addEventListener('submit', studentAddDoc);
-    document.getElementById('student-ann-form')?.addEventListener('submit', studentAddAnn);
     document.getElementById('student-msg-form')?.addEventListener('submit', studentSendMsg);
 
     document.getElementById('global-search')?.addEventListener('input', (e) => {
         renderAnnouncements(e.target.value);
-        renderRepositorio(e.target.value, currentFilter);
     });
-
-    document.querySelectorAll('.filter-btn').forEach(btn =>
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.filter;
-            renderRepositorio(document.getElementById('global-search')?.value || '', currentFilter);
-        })
-    );
 
     // Cerrar modales al hacer clic en el backdrop
     document.querySelectorAll('.modal-backdrop').forEach(modal =>
@@ -1318,9 +1106,6 @@ window.addEventListener('DOMContentLoaded', async () => {
             localStorage.removeItem(KEYS.session);
         }
     }
-
-    studentSessionDocs = 0;
-    studentSessionAnns = 0;
 });
 
 /* ============================================================

@@ -118,7 +118,6 @@ body.dark .about-section,
 body.dark .contribution-forms form,
 body.dark .messages-history,
 body.dark .tab-btn,
-body.dark .filter-btn,
 body.dark .btn-small,
 body.dark .premium-input,
 body.dark .accordion-btn,
@@ -1097,7 +1096,6 @@ body.dark .admin-tab-btn.active {
   }
 }
 
-#repositorio-list,
 #messages-list {
     display: grid;
     gap: 1rem;
@@ -1191,29 +1189,6 @@ body.dark .admin-tab-btn.active {
     }
 }
 
-
-.repo-filters {
-    display: flex;
-    gap: .5rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-}
-
-.filter-btn {
-    padding: .5rem 1rem;
-    border: 2px solid var(--gray-300);
-    background: var(--white);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: var(--transition);
-    font-family: inherit;
-}
-
-.filter-btn.active {
-    background: var(--usac-blue);
-    color: var(--white);
-    border-color: var(--usac-blue);
-}
 
 .doc-card {
     background: var(--white);

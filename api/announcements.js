@@ -10,7 +10,7 @@ const ADMIN_LIMIT_WINDOW  = 50;   // Admin puede publicar hasta 50 en 3 días
 module.exports = async (req, res) => {
   loadLocalEnv();
 
-  // ── GET /api/announcements — acceso público ──
+  // ── GET /api/announcements — acceso público (sin token) ──
   if (req.method === 'GET') {
     try {
       const rows = await supabaseRequest('announcements', {

@@ -40,6 +40,7 @@ const API_ROUTES = {
   '/api/auth/student-register': require('./api/auth/student-register.js'),
   '/api/auth/student-login': require('./api/auth/student-login.js'),
   '/api/students': require('./api/students/index.js'),
+  '/api/announcements': require('./api/announcements.js'),
   '/api/aetsro-documents': require('./api/aetsro-documents.js')
 };
 
