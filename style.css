@@ -7,12 +7,9 @@
 
 :root {
     --usac-blue: #1F2937;
-    /* Gris carbón elegante y serio (antes azul) */
     --usac-blue-dark: #111827;
     --usac-gold: #4B5563;
-    /* Gris medio para destaques (antes dorado) */
     --accent: #374151;
-    /* Gris oscuro para acentos */
     --bronze: #4B5563;
     --bronze-light: #9CA3AF;
     --white: #FFFFFF;
@@ -32,6 +29,19 @@
     --radius-md: 10px;
     --radius-lg: 16px;
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bloqueo de selección al arrastrar mouse en pantallas animadas */
+#welcome-screen,
+#welcome-screen *,
+.hero-section,
+.hero-section *,
+.hero-content,
+.hero-content * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 
 * {
@@ -863,7 +873,7 @@ body.dark .admin-tab-btn.active {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #002c5f 0%, #0d1b2a 25%, #1b263b 50%, #004e92 75%, #002c5f 100%);
+    background: var(--daily-hero-bg, linear-gradient(135deg, #050508 0%, #0d1b2a 25%, #1b263b 50%, #004e92 75%, #050508 100%));
     background-size: 300% 300%;
     animation: heroKnowledgeGradient 10s ease-in-out infinite;
     color: var(--white);
@@ -874,6 +884,18 @@ body.dark .admin-tab-btn.active {
         0 20px 45px rgba(0, 44, 95, 0.35),
         0 0 35px rgba(0, 242, 254, 0.12),
         inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.hero-section *,
+.hero-content * {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 /* Destello pulsante de luz de conocimiento y aprendizaje */
@@ -3742,7 +3764,7 @@ body.dark .legal-section h4 {
     width: 100vw;
     height: 100vh;
     z-index: 99999;
-    background: #12172b; /* --ink-900 */
+    background: var(--daily-bg, #08090c);
     font-family: 'Inter', sans-serif;
     overflow: hidden;
     display: flex;
@@ -3754,6 +3776,13 @@ body.dark .legal-section h4 {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+}
+
+#welcome-screen * {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 
 #welcome-screen.hidden {

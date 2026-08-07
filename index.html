@@ -11,9 +11,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.2">
+    <link rel="stylesheet" href="style.css?v=3.4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script>
+    (function applyDailyDarkTheme() {
+        const today = new Date().getDay(); // 0 (Domingo) - 6 (Sábado)
+        const darkThemes = [
+            // 0 - Domingo: Obsidian Black & Gold
+            { bg: '#050508', heroBg: 'linear-gradient(135deg, #050508 0%, #12101a 30%, #1a150a 60%, #050508 100%)', colors: ['#f0c987', '#d4a15c', '#ffd79a', '#e8b86d', '#ffffff'] },
+            // 1 - Lunes: Midnight Navy & Cyan
+            { bg: '#030814', heroBg: 'linear-gradient(135deg, #030814 0%, #0a192f 30%, #002c5f 60%, #030814 100%)', colors: ['#00f2fe', '#4facfe', '#00d2ff', '#38ef7d', '#ffffff'] },
+            // 2 - Martes: Deep Emerald & Jade
+            { bg: '#020d08', heroBg: 'linear-gradient(135deg, #020d08 0%, #0b2218 30%, #12382c 60%, #020d08 100%)', colors: ['#00ffcc', '#2ecc71', '#1abc9c', '#a8ff78', '#ffffff'] },
+            // 3 - Miércoles: Royal Amethyst & Dark Violet
+            { bg: '#0b0514', heroBg: 'linear-gradient(135deg, #0b0514 0%, #1a0b36 30%, #2d155c 60%, #0b0514 100%)', colors: ['#9b51e0', '#c77dff', '#e0aaff', '#7b2cbf', '#ffffff'] },
+            // 4 - Jueves: Platinum Charcoal & Silver
+            { bg: '#08090c', heroBg: 'linear-gradient(135deg, #08090c 0%, #161822 30%, #222533 60%, #08090c 100%)', colors: ['#f8fafc', '#cbd5e1', '#94a3b8', '#38bdf8', '#ffffff'] },
+            // 5 - Viernes: Crimson Ruby & Flame Noir
+            { bg: '#0f0407', heroBg: 'linear-gradient(135deg, #0f0407 0%, #240a12 30%, #3d141e 60%, #0f0407 100%)', colors: ['#ff4d6d', '#ff758f', '#f0c987', '#ffb703', '#ffffff'] },
+            // 6 - Sábado: Deep Cobalt & Electric Indigo
+            { bg: '#050914', heroBg: 'linear-gradient(135deg, #050914 0%, #0e1838 30%, #182858 60%, #050914 100%)', colors: ['#4361ee', '#4895ef', '#4cc9f0', '#7209b7', '#ffffff'] }
+        ];
+        const t = darkThemes[today];
+        document.documentElement.style.setProperty('--daily-bg', t.bg);
+        document.documentElement.style.setProperty('--daily-hero-bg', t.heroBg);
+        window.DAILY_THEME_COLORS = t.colors;
+    })();
+    </script>
 </head>
 
 <body>
@@ -2214,7 +2239,7 @@
             }
 
             const symbols = ['📖', '🎓', '💡', '⚙️', '🔬', '✏️', '📐', '🧠', '📚', '🌐'];
-            const colors = ['#00f2fe', '#4facfe', '#9b51e0', '#f0c987', '#00ffcc'];
+            const colors = window.DAILY_THEME_COLORS || ['#00f2fe', '#4facfe', '#9b51e0', '#f0c987', '#00ffcc'];
 
             class HeroParticle {
                 constructor() { this.reset(true); }
