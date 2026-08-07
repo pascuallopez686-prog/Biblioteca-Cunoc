@@ -54,7 +54,6 @@
             const ctx        = canvas.getContext('2d');
             const lampara    = document.getElementById('ws-lampara');
             const main       = document.getElementById('ws-main');
-            // reduceMotion: solo afecta efectos interactivos (estela/impulso), NO el loop principal del canvas
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             let dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -78,7 +77,7 @@
                 window.addEventListener('resize', redimensionar);
             }
 
-            const paletaPaginas = ['#d4a15c', '#f0c987', '#e8d5b0', '#b98a4a'];
+            const paletaPaginas = ['#d4a15c', '#f0c987', '#e8d5b0', '#b98a4a', '#ffd79a'];
 
             class Bokeh {
                 constructor() { this.reset(); }
@@ -149,16 +148,16 @@
                     const dx = this.x - mx;
                     const dy = this.y - my;
                     const distSq = dx * dx + dy * dy;
-                    const radio = 130;
+                    const radio = 140;
                     let objetivoBrillo = 0;
                     if (distSq < radio * radio) {
                         const dist = Math.sqrt(distSq) || 1;
-                        const fuerza = (1 - dist / radio) * 0.6;
+                        const fuerza = (1 - dist / radio) * 0.75;
                         this.x += (dx / dist) * fuerza;
                         this.y += (dy / dist) * fuerza;
                         objetivoBrillo = 1 - dist / radio;
                     }
-                    this.brillo += (objetivoBrillo - this.brillo) * 0.15;
+                    this.brillo += (objetivoBrillo - this.brillo) * 0.18;
 
                     if (this.y < -20) this.reset(false);
                     if (this.x < -20) this.x = w + 20;
@@ -170,10 +169,10 @@
                     ctx.translate(this.x, this.y);
                     ctx.rotate(this.angulo);
                     ctx.scale(escala, escala);
-                    ctx.globalAlpha = Math.min(this.opacidadBase + this.brillo * 0.5, 1);
+                    ctx.globalAlpha = Math.min(this.opacidadBase + this.brillo * 0.6, 1);
                     ctx.fillStyle   = this.color;
                     ctx.shadowColor = this.color;
-                    ctx.shadowBlur  = 6 + this.brillo * 10;
+                    ctx.shadowBlur  = 6 + this.brillo * 12;
                     ctx.fillRect(-this.ancho / 2, -this.alto / 2, this.ancho, this.alto);
                     ctx.restore();
                 }
@@ -186,7 +185,68 @@
                     this.vida = 1;
                 }
                 actualizar() {
-                    this.vida -= 0.035;
+                    this.vida -= 0.03;
+                }
+            }
+
+            class Chispa {
+                constructor(x, y, intensa) {
+                    this.x = x;
+                    this.y = y;
+                    const ang = Math.random() * Math.PI * 2;
+                    const vel = (intensa ? 2.5 : 0.8) + Math.random() * (intensa ? 4 : 2);
+                    this.velX = Math.cos(ang) * vel;
+                    this.velY = Math.sin(ang) * vel;
+                    this.radio = 1.2 + Math.random() * 2.2;
+                    this.vida = 1;
+                    this.decaimiento = 0.02 + Math.random() * 0.03;
+                    this.color = paletaPaginas[Math.floor(Math.random() * paletaPaginas.length)];
+                }
+                actualizar() {
+                    this.x += this.velX;
+                    this.y += this.velY;
+                    this.velX *= 0.94;
+                    this.velY *= 0.94;
+                    this.vida -= this.decaimiento;
+                }
+                dibujar() {
+                    if (this.vida <= 0) return;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, this.vida);
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = 8;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radio * this.vida, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            class Onda {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.radio = 10;
+                    this.maxRadio = 180 + Math.random() * 60;
+                    this.opacidad = 0.75;
+                }
+                actualizar() {
+                    this.radio += (this.maxRadio - this.radio) * 0.08;
+                    this.opacidad *= 0.92;
+                }
+                dibujar() {
+                    if (this.opacidad < 0.01) return;
+                    ctx.save();
+                    ctx.globalAlpha = this.opacidad;
+                    ctx.strokeStyle = '#f0c987';
+                    ctx.shadowColor = '#f0c987';
+                    ctx.shadowBlur = 15;
+                    ctx.lineWidth = 2 * this.opacidad;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
                 }
             }
 
@@ -200,13 +260,15 @@
             crearPaginas();
 
             const estela = [];
+            const chispas = [];
+            const ondas = [];
             let arrastrando = false;
 
             let mouseX = w / 2;
             let mouseY = h * 0.38;
             let mouseObjX = mouseX, mouseObjY = mouseY;
             let tiltX = 0, tiltY = 0, tiltObjX = 0, tiltObjY = 0;
-            const RADIO_CONSTELACION = 150;
+            const RADIO_CONSTELACION = 160;
 
             function posicionRelativa(e) {
                 const rect = contenedor.getBoundingClientRect();
@@ -224,23 +286,37 @@
                 tiltObjX = (pos.x / w) * 2 - 1;
                 tiltObjY = (pos.y / h) * 2 - 1;
 
-                if (arrastrando && !reduceMotion) {
-                    estela.push(new PuntoEstela(pos.x, pos.y));
+                if (Math.random() < (arrastrando ? 0.8 : 0.35)) {
+                    chispas.push(new Chispa(pos.x, pos.y, arrastrando));
                 }
+
+                estela.push(new PuntoEstela(pos.x, pos.y));
             });
 
             contenedor.addEventListener('pointerdown', (e) => {
                 const ws = document.getElementById('welcome-screen');
                 if (!ws || ws.classList.contains('hidden')) return;
+
+                // Evitar que el navegador seleccione texto al arrastrar el mouse
+                const tag = e.target.tagName;
+                if (tag !== 'BUTTON' && tag !== 'A' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                    e.preventDefault();
+                }
+
                 arrastrando = true;
-                if (reduceMotion) return;
                 const pos = posicionRelativa(e);
+                ondas.push(new Onda(pos.x, pos.y));
+
+                for (let i = 0; i < 18; i++) {
+                    chispas.push(new Chispa(pos.x, pos.y, true));
+                }
+
                 estela.push(new PuntoEstela(pos.x, pos.y));
                 paginas.forEach((p) => {
                     const dx = p.x - pos.x;
                     const dy = p.y - pos.y;
                     const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 200) p.empujar(pos.x, pos.y, (1 - dist / 200) * 6);
+                    if (dist < 220) p.empujar(pos.x, pos.y, (1 - dist / 220) * 8);
                 });
             });
 
@@ -255,9 +331,11 @@
                     const dist = Math.sqrt(dx * dx + dy * dy);
                     if (dist < RADIO_CONSTELACION) {
                         ctx.save();
-                        ctx.globalAlpha = (1 - dist / RADIO_CONSTELACION) * 0.35;
-                        ctx.strokeStyle = '#f0c987';
-                        ctx.lineWidth = 0.8;
+                        ctx.globalAlpha = (1 - dist / RADIO_CONSTELACION) * 0.45;
+                        ctx.strokeStyle = p.color;
+                        ctx.lineWidth = 1;
+                        ctx.shadowColor = p.color;
+                        ctx.shadowBlur = 6;
                         ctx.beginPath();
                         ctx.moveTo(mouseX, mouseY);
                         ctx.lineTo(p.x, p.y);
@@ -273,15 +351,15 @@
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.shadowColor = '#f0c987';
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 14;
                 for (let i = 1; i < estela.length; i++) {
                     const a = estela[i - 1];
                     const b = estela[i];
                     const vidaProm = (a.vida + b.vida) / 2;
                     if (vidaProm <= 0) continue;
-                    ctx.globalAlpha = vidaProm * 0.6;
+                    ctx.globalAlpha = vidaProm * 0.65;
                     ctx.strokeStyle = '#f0c987';
-                    ctx.lineWidth = 1 + vidaProm * 3.5;
+                    ctx.lineWidth = 1.5 + vidaProm * 4;
                     ctx.beginPath();
                     ctx.moveTo(a.x, a.y);
                     ctx.lineTo(b.x, b.y);
@@ -308,9 +386,24 @@
                 paginas.forEach(p => { p.mover(mouseX, mouseY); p.dibujar(); });
                 dibujarConstelacion();
 
+                // Dibujar y actualizar estela
                 estela.forEach(pt => pt.actualizar());
                 while (estela.length && estela[0].vida <= 0) estela.shift();
                 dibujarEstela();
+
+                // Dibujar y actualizar chispas de luz
+                for (let i = chispas.length - 1; i >= 0; i--) {
+                    chispas[i].actualizar();
+                    chispas[i].dibujar();
+                    if (chispas[i].vida <= 0) chispas.splice(i, 1);
+                }
+
+                // Dibujar y actualizar ondas de choque
+                for (let i = ondas.length - 1; i >= 0; i--) {
+                    ondas[i].actualizar();
+                    ondas[i].dibujar();
+                    if (ondas[i].opacidad < 0.01) ondas.splice(i, 1);
+                }
 
                 if (main) {
                     main.style.transform = `translate3d(${tiltX * -10}px, ${tiltY * -8}px, 0)`;
@@ -319,7 +412,6 @@
                 requestAnimationFrame(animar);
             }
 
-            // Siempre inicia el loop de animación — reduceMotion solo limita efectos interactivos
             animar();
         })();
         </script>
