@@ -966,6 +966,46 @@ const CATEGORY_EMOJIS = {
     'Otro': '📦'
 };
 
+/* Base64 temporal para imagen del emprendimiento en formulario admin */
+let _empImageBase64 = null;
+
+function setupEmpImageUpload() {
+    const input = document.getElementById('emp-image');
+    if (!input) return;
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+            alert('La imagen no debe superar 2 MB. Prueba reducir su tamaño.');
+            input.value = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            _empImageBase64 = ev.target.result;
+            const preview = document.getElementById('emp-img-preview');
+            const placeholder = document.getElementById('emp-img-placeholder');
+            const removeBtn = document.getElementById('emp-img-remove');
+            if (preview) { preview.src = _empImageBase64; preview.style.display = 'block'; }
+            if (placeholder) placeholder.style.display = 'none';
+            if (removeBtn) removeBtn.style.display = 'inline-flex';
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function clearEmpImage() {
+    _empImageBase64 = null;
+    const input = document.getElementById('emp-image');
+    const preview = document.getElementById('emp-img-preview');
+    const placeholder = document.getElementById('emp-img-placeholder');
+    const removeBtn = document.getElementById('emp-img-remove');
+    if (input) input.value = '';
+    if (preview) { preview.src = ''; preview.style.display = 'none'; }
+    if (placeholder) { placeholder.style.display = 'flex'; }
+    if (removeBtn) removeBtn.style.display = 'none';
+}
+
 function adminAddEmp(e) {
     e.preventDefault();
     const owner    = document.getElementById('emp-owner')?.value.trim();
@@ -987,10 +1027,12 @@ function adminAddEmp(e) {
         facebook:  facebook  || null,
         instagram: instagram || null,
         whatsapp:  whatsapp  || null,
+        imageBase64: _empImageBase64 || null,
         createdAt: new Date().toISOString()
     });
     store.set(KEYS.emps, emps);
     e.target.reset();
+    clearEmpImage();
     alert('¡Emprendimiento publicado exitosamente!');
     renderAdminEmpList();
     renderEmprendimientos();
@@ -1027,8 +1069,15 @@ function renderEmprendimientos() {
             emp.whatsapp  ? `<a href="${emp.whatsapp}" target="_blank" rel="noopener" class="emp-link-btn emp-whatsapp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>` : ''
         ].filter(Boolean).join('');
 
+        const imgHtml = emp.imageBase64
+            ? `<div class="emp-card-img-wrap"><img src="${emp.imageBase64}" alt="Imagen de ${emp.name}" class="emp-card-img" loading="lazy"></div>`
+            : `<div class="emp-card-img-wrap emp-card-img-placeholder">
+                <span class="emp-placeholder-emoji">${emoji}</span>
+               </div>`;
+
         return `
         <div class="emp-card theme-card">
+            ${imgHtml}
             <div class="emp-card-header">
                 <span class="emp-category-badge">${emoji} ${emp.category}</span>
             </div>
@@ -1054,10 +1103,16 @@ function renderAdminEmpList() {
     }
     container.innerHTML = emps.map(emp => `
         <div class="message-card" style="margin-bottom:1rem;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;">
-                <div>
-                    <strong>${emp.name}</strong> &mdash; <em>${emp.category}</em><br>
-                    <span style="font-size:.85rem;color:var(--gray-500);">Por: ${emp.owner}</span>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;">
+                <div style="display:flex;align-items:center;gap:.75rem;flex:1;min-width:0;">
+                    ${emp.imageBase64
+                        ? `<img src="${emp.imageBase64}" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">`
+                        : `<div style="width:48px;height:48px;border-radius:8px;background:var(--gray-200);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;">${CATEGORY_EMOJIS[emp.category] || '📦'}</div>`
+                    }
+                    <div style="min-width:0;">
+                        <strong>${emp.name}</strong> &mdash; <em>${emp.category}</em><br>
+                        <span style="font-size:.85rem;color:var(--gray-500);">Por: ${emp.owner}</span>
+                    </div>
                 </div>
                 <button onclick="deleteEmp(${emp.id})" class="btn-small" style="background:#e53e3e;color:#fff;flex-shrink:0;">Eliminar</button>
             </div>
@@ -1068,6 +1123,7 @@ function renderAdminEmpList() {
 
 function setupEmpForm() {
     document.getElementById('admin-emp-form')?.addEventListener('submit', adminAddEmp);
+    setupEmpImageUpload();
 }
 
 

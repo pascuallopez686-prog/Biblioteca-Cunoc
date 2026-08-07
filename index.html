@@ -54,6 +54,7 @@
             const ctx        = canvas.getContext('2d');
             const lampara    = document.getElementById('ws-lampara');
             const main       = document.getElementById('ws-main');
+            // reduceMotion: solo afecta efectos interactivos (estela/impulso), NO el loop principal del canvas
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
             let dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -318,11 +319,8 @@
                 requestAnimationFrame(animar);
             }
 
-            if (reduceMotion) {
-                paginas.forEach(p => p.dibujar());
-            } else {
-                animar();
-            }
+            // Siempre inicia el loop de animación — reduceMotion solo limita efectos interactivos
+            animar();
         })();
         </script>
     </div>
@@ -598,6 +596,25 @@
                                 class="premium-input">
                             <input type="url" id="emp-whatsapp"
                                 placeholder="WhatsApp link (opcional, ej: https://wa.me/502...)" class="premium-input">
+
+                            <!-- Imagen de referencia — se guarda como Base64 en localStorage -->
+                            <div class="emp-img-upload-wrapper">
+                                <label for="emp-image" class="emp-img-label">
+                                    <i class="fas fa-image"></i> Imagen de referencia <span style="color:var(--gray-400);font-weight:400;">(opcional)</span>
+                                </label>
+                                <div class="emp-img-drop-area" id="emp-img-drop-area" onclick="document.getElementById('emp-image').click()">
+                                    <img id="emp-img-preview" src="" alt="" style="display:none;">
+                                    <div id="emp-img-placeholder">
+                                        <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--gray-400);display:block;margin-bottom:.5rem;"></i>
+                                        <span style="font-size:.85rem;color:var(--gray-500);">Haz clic para seleccionar imagen<br><small style="color:var(--gray-400);">JPG, PNG, WEBP — máx. 2 MB</small></span>
+                                    </div>
+                                </div>
+                                <input type="file" id="emp-image" accept="image/*" style="display:none;">
+                                <button type="button" id="emp-img-remove" class="emp-img-remove-btn" style="display:none;" onclick="clearEmpImage()">
+                                    <i class="fas fa-times"></i> Quitar imagen
+                                </button>
+                            </div>
+
                             <button type="submit" class="btn-blue"><i class="fas fa-store"></i> Publicar
                                 Emprendimiento</button>
                         </form>
