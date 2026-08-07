@@ -857,16 +857,94 @@ body.dark .admin-tab-btn.active {
     position: relative;
     overflow: hidden;
     text-align: center;
-    padding: 8rem 3rem;
+    padding: 6rem 3rem;
     min-height: 400px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, var(--usac-blue), var(--gray-600));
+    background: linear-gradient(135deg, #002c5f 0%, #0d1b2a 25%, #1b263b 50%, #004e92 75%, #002c5f 100%);
+    background-size: 300% 300%;
+    animation: heroKnowledgeGradient 10s ease-in-out infinite;
     color: var(--white);
     border-radius: var(--radius-lg);
     margin-bottom: 2rem;
+    border: 1px solid rgba(0, 242, 254, 0.25);
+    box-shadow: 
+        0 20px 45px rgba(0, 44, 95, 0.35),
+        0 0 35px rgba(0, 242, 254, 0.12),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Destello pulsante de luz de conocimiento y aprendizaje */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle, rgba(0, 242, 254, 0.18) 0%, rgba(147, 51, 234, 0.12) 35%, transparent 70%);
+    animation: heroKnowledgePulse 7s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Borde animado brillante en la caja hero */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    padding: 2px;
+    background: linear-gradient(120deg, #00f2fe, #4facfe, #9b51e0, #f5a623, #00f2fe);
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: heroAuraFlow 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0.85;
+}
+
+@keyframes heroKnowledgeGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes heroKnowledgePulse {
+    0% { transform: scale(0.85) rotate(0deg); opacity: 0.5; }
+    100% { transform: scale(1.25) rotate(20deg); opacity: 0.95; }
+}
+
+@keyframes heroAuraFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero-knowledge-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 18px;
+    border-radius: 30px;
+    background: rgba(0, 242, 254, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 242, 254, 0.35);
+    color: #f0c987;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    animation: badgeFloat 4s ease-in-out infinite alternate;
+}
+
+@keyframes badgeFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
 }
 
 .hero-bg {
@@ -3743,81 +3821,38 @@ body.dark .legal-section h4 {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 42px 48px;
-    max-width: 620px;
-    margin: 0 16px;
-    background: rgba(14, 18, 36, 0.78);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-radius: 22px;
-    box-shadow: 
-        0 24px 60px rgba(0, 0, 0, 0.5),
-        0 0 45px rgba(0, 242, 254, 0.12);
-    transition: transform 0.25s ease-out, box-shadow 0.4s ease;
+    padding: 24px;
+    transition: transform 0.25s ease-out;
     will-change: transform;
     pointer-events: auto;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    overflow: hidden;
-}
-
-/* Borde animado de Dinámica de Conocimiento y Aprendizaje (Cyan/Zafiro/Púrpura/Oro) */
-#ws-main::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 22px;
-    padding: 2px;
-    background: linear-gradient(125deg, #00f2fe 0%, #4facfe 25%, #9b51e0 50%, #f5a623 75%, #00f2fe 100%);
-    background-size: 300% 300%;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: knowledgeAuraFlow 6s ease-in-out infinite;
-    pointer-events: none;
-    opacity: 0.9;
-}
-
-/* Resplandor de fondo pulsante de conocimiento */
-#ws-main::after {
-    content: '';
-    position: absolute;
-    inset: -60%;
-    background: radial-gradient(circle, rgba(0, 242, 254, 0.09) 0%, rgba(155, 81, 224, 0.06) 40%, transparent 70%);
-    animation: knowledgePulse 6s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: -1;
-}
-
-@keyframes knowledgeAuraFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes knowledgePulse {
-    0% { transform: scale(0.85) rotate(0deg); opacity: 0.5; }
-    100% { transform: scale(1.2) rotate(20deg); opacity: 0.95; }
 }
 
 .ws-marca {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    color: #00f2fe;
-    background: rgba(0, 242, 254, 0.08);
-    border: 1px solid rgba(0, 242, 254, 0.28);
-    border-radius: 20px;
-    padding: 5px 16px;
-    letter-spacing: 0.2em;
+    gap: 10px;
+    color: #d4a15c;
+    letter-spacing: 0.22em;
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     margin-bottom: 22px;
-    box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
-    text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+    opacity: 0.9;
+}
+
+.ws-marca::before,
+.ws-marca::after {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4a15c);
+}
+.ws-marca::after {
+    background: linear-gradient(90deg, #d4a15c, transparent);
 }
 
 .ws-titulo {
