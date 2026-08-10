@@ -941,11 +941,12 @@ function setupSocialForm() {
         if (btn) {
             const original = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-check"></i> ¡Guardado!';
-        btn.style.background = '#22c55e';
-        setTimeout(() => {
-            btn.innerHTML = original;
-            btn.style.background = '';
-        }, 2000);
+            btn.style.background = '#22c55e';
+            setTimeout(() => {
+                btn.innerHTML = original;
+                btn.style.background = '';
+            }, 2000);
+        }
     });
 }
 /* ============================================================
