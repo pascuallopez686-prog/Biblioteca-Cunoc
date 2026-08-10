@@ -941,16 +941,15 @@ function setupSocialForm() {
         if (btn) {
             const original = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-check"></i> ¡Guardado!';
-            btn.style.background = '#22c55e';
-            setTimeout(() => {
-                btn.innerHTML = original;
-                btn.style.background = '';
-            }, 2000);
-        }
+        btn.style.background = '#22c55e';
+        setTimeout(() => {
+            btn.innerHTML = original;
+            btn.style.background = '';
+        }, 2000);
     });
 }
 /* ============================================================
-   EMPRENDIMIENTOS – CRUD LOCAL
+   EMPRENDIMIENTOS – CRUD VÍA API (Supabase)
    ============================================================ */
 
 const CATEGORY_EMOJIS = {
@@ -1006,8 +1005,9 @@ function clearEmpImage() {
     if (removeBtn) removeBtn.style.display = 'none';
 }
 
-function adminAddEmp(e) {
+async function adminAddEmp(e) {
     e.preventDefault();
+    const btn      = e.target.querySelector('button[type="submit"]');
     const owner    = document.getElementById('emp-owner')?.value.trim();
     const name     = document.getElementById('emp-name')?.value.trim();
     const desc     = document.getElementById('emp-desc')?.value.trim();
@@ -1019,35 +1019,82 @@ function adminAddEmp(e) {
 
     if (!owner || !name || !desc || !category) { alert('Completa los campos obligatorios'); return; }
 
-    const emps = store.get(KEYS.emps) || [];
-    emps.unshift({
-        id: Date.now(),
-        owner, name, desc, category,
-        website:   website   || null,
-        facebook:  facebook  || null,
-        instagram: instagram || null,
-        whatsapp:  whatsapp  || null,
-        imageBase64: _empImageBase64 || null,
-        createdAt: new Date().toISOString()
-    });
-    store.set(KEYS.emps, emps);
-    e.target.reset();
-    clearEmpImage();
-    alert('¡Emprendimiento publicado exitosamente!');
-    renderAdminEmpList();
-    renderEmprendimientos();
+    if (btn) { btn.disabled = true; btn.textContent = 'Publicando…'; }
+
+    try {
+        const response = await fetch('/api/emprendimientos', {
+            method: 'POST',
+            headers: authHeaders(true),
+            body: JSON.stringify({
+                owner, name, desc, category,
+                website:     website     || null,
+                facebook:    facebook    || null,
+                instagram:   instagram   || null,
+                whatsapp:    whatsapp    || null,
+                imageBase64: _empImageBase64 || null
+            })
+        });
+        const data = await response.json();
+        if (!data.success) {
+            alert('Error: ' + (data.message || 'No se pudo publicar'));
+            return;
+        }
+        e.target.reset();
+        clearEmpImage();
+        alert('¡Emprendimiento publicado exitosamente!');
+        await fetchAndRenderEmprendimientos();
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error publicando emprendimiento:`, err);
+        alert('Error de conexión al publicar el emprendimiento');
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-store"></i> Publicar Emprendimiento'; }
+    }
 }
 
-function deleteEmp(id) {
+async function deleteEmp(id) {
     if (!confirm('¿Eliminar este emprendimiento?')) return;
-    const emps = (store.get(KEYS.emps) || []).filter(e => e.id !== id);
-    store.set(KEYS.emps, emps);
-    renderAdminEmpList();
+    try {
+        const response = await fetch('/api/emprendimientos', {
+            method: 'DELETE',
+            headers: authHeaders(true),
+            body: JSON.stringify({ id })
+        });
+        const data = await response.json();
+        if (!data.success) { alert('Error eliminando: ' + (data.message || '')); return; }
+        await fetchAndRenderEmprendimientos();
+    } catch (err) {
+        console.error(`${DEBUG_PREFIX} Error eliminando emprendimiento:`, err);
+        alert('Error de conexión al eliminar');
+    }
+}
+
+/* Caché en memoria de emprendimientos */
+let _cachedEmps = [];
+
+async function fetchAndRenderEmprendimientos() {
+    const grid      = document.getElementById('emp-cards-grid');
+    const adminList = document.getElementById('admin-emp-list');
+
+    if (grid) grid.innerHTML = '<p style="color:var(--gray-500);padding:1rem;">Cargando emprendimientos…</p>';
+
+    try {
+        const response = await fetch('/api/emprendimientos');
+        const data     = await response.json();
+        if (data.success) {
+            _cachedEmps = data.emprendimientos || [];
+        } else {
+            console.warn(`${DEBUG_PREFIX} Emprendimientos no cargados:`, data.message);
+        }
+    } catch (err) {
+        console.warn(`${DEBUG_PREFIX} Sin conexión al cargar emprendimientos.`, err);
+    }
+
     renderEmprendimientos();
+    renderAdminEmpList();
 }
 
 function renderEmprendimientos() {
-    const emps = store.get(KEYS.emps) || [];
+    const emps = _cachedEmps;
     const grid = document.getElementById('emp-cards-grid');
     if (!grid) return;
 
@@ -1094,7 +1141,7 @@ function renderEmprendimientos() {
 }
 
 function renderAdminEmpList() {
-    const emps = store.get(KEYS.emps) || [];
+    const emps      = _cachedEmps;
     const container = document.getElementById('admin-emp-list');
     if (!container) return;
     if (!emps.length) {
@@ -1114,7 +1161,7 @@ function renderAdminEmpList() {
                         <span style="font-size:.85rem;color:var(--gray-500);">Por: ${emp.owner}</span>
                     </div>
                 </div>
-                <button onclick="deleteEmp(${emp.id})" class="btn-small" style="background:#e53e3e;color:#fff;flex-shrink:0;">Eliminar</button>
+                <button onclick="deleteEmp('${emp.id}')" class="btn-small" style="background:#e53e3e;color:#fff;flex-shrink:0;">Eliminar</button>
             </div>
             <p style="font-size:.85rem;margin:.5rem 0 0;">${emp.desc}</p>
         </div>
@@ -1135,8 +1182,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     setupEmpForm();
     renderSocialLinks();
     loadSocialFormValues();
-    renderEmprendimientos();
-    renderAdminEmpList();
+    fetchAndRenderEmprendimientos();
 
     const session = store.get(KEYS.session);
     if (session?.token) {
