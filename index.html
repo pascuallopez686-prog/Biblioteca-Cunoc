@@ -10,34 +10,35 @@
     <title>Biblioteca Digital</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=3.4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <script>
-    (function applyDailyDarkTheme() {
-        const today = new Date().getDay(); // 0 (Domingo) - 6 (Sábado)
-        const darkThemes = [
-            // 0 - Domingo: Obsidian Black & Gold
-            { bg: '#050508', heroBg: 'linear-gradient(135deg, #050508 0%, #12101a 30%, #1a150a 60%, #050508 100%)', colors: ['#f0c987', '#d4a15c', '#ffd79a', '#e8b86d', '#ffffff'] },
-            // 1 - Lunes: Midnight Navy & Cyan
-            { bg: '#030814', heroBg: 'linear-gradient(135deg, #030814 0%, #0a192f 30%, #002c5f 60%, #030814 100%)', colors: ['#00f2fe', '#4facfe', '#00d2ff', '#38ef7d', '#ffffff'] },
-            // 2 - Martes: Deep Emerald & Jade
-            { bg: '#020d08', heroBg: 'linear-gradient(135deg, #020d08 0%, #0b2218 30%, #12382c 60%, #020d08 100%)', colors: ['#00ffcc', '#2ecc71', '#1abc9c', '#a8ff78', '#ffffff'] },
-            // 3 - Miércoles: Royal Amethyst & Dark Violet
-            { bg: '#0b0514', heroBg: 'linear-gradient(135deg, #0b0514 0%, #1a0b36 30%, #2d155c 60%, #0b0514 100%)', colors: ['#9b51e0', '#c77dff', '#e0aaff', '#7b2cbf', '#ffffff'] },
-            // 4 - Jueves: Platinum Charcoal & Silver
-            { bg: '#08090c', heroBg: 'linear-gradient(135deg, #08090c 0%, #161822 30%, #222533 60%, #08090c 100%)', colors: ['#f8fafc', '#cbd5e1', '#94a3b8', '#38bdf8', '#ffffff'] },
-            // 5 - Viernes: Crimson Ruby & Flame Noir
-            { bg: '#0f0407', heroBg: 'linear-gradient(135deg, #0f0407 0%, #240a12 30%, #3d141e 60%, #0f0407 100%)', colors: ['#ff4d6d', '#ff758f', '#f0c987', '#ffb703', '#ffffff'] },
-            // 6 - Sábado: Deep Cobalt & Electric Indigo
-            { bg: '#050914', heroBg: 'linear-gradient(135deg, #050914 0%, #0e1838 30%, #182858 60%, #050914 100%)', colors: ['#4361ee', '#4895ef', '#4cc9f0', '#7209b7', '#ffffff'] }
-        ];
-        const t = darkThemes[today];
-        document.documentElement.style.setProperty('--daily-bg', t.bg);
-        document.documentElement.style.setProperty('--daily-hero-bg', t.heroBg);
-        window.DAILY_THEME_COLORS = t.colors;
-    })();
+        (function applyDailyDarkTheme() {
+            const today = new Date().getDay(); // 0 (Domingo) - 6 (Sábado)
+            const darkThemes = [
+                // 0 - Domingo: Obsidian Black & Gold
+                { bg: '#050508', heroBg: 'linear-gradient(135deg, #050508 0%, #12101a 30%, #1a150a 60%, #050508 100%)', colors: ['#f0c987', '#d4a15c', '#ffd79a', '#e8b86d', '#ffffff'] },
+                // 1 - Lunes: Midnight Navy & Cyan
+                { bg: '#030814', heroBg: 'linear-gradient(135deg, #030814 0%, #0a192f 30%, #002c5f 60%, #030814 100%)', colors: ['#00f2fe', '#4facfe', '#00d2ff', '#38ef7d', '#ffffff'] },
+                // 2 - Martes: Deep Emerald & Jade
+                { bg: '#020d08', heroBg: 'linear-gradient(135deg, #020d08 0%, #0b2218 30%, #12382c 60%, #020d08 100%)', colors: ['#00ffcc', '#2ecc71', '#1abc9c', '#a8ff78', '#ffffff'] },
+                // 3 - Miércoles: Royal Amethyst & Dark Violet
+                { bg: '#0b0514', heroBg: 'linear-gradient(135deg, #0b0514 0%, #1a0b36 30%, #2d155c 60%, #0b0514 100%)', colors: ['#9b51e0', '#c77dff', '#e0aaff', '#7b2cbf', '#ffffff'] },
+                // 4 - Jueves: Platinum Charcoal & Silver
+                { bg: '#08090c', heroBg: 'linear-gradient(135deg, #08090c 0%, #161822 30%, #222533 60%, #08090c 100%)', colors: ['#f8fafc', '#cbd5e1', '#94a3b8', '#38bdf8', '#ffffff'] },
+                // 5 - Viernes: Crimson Ruby & Flame Noir
+                { bg: '#0f0407', heroBg: 'linear-gradient(135deg, #0f0407 0%, #240a12 30%, #3d141e 60%, #0f0407 100%)', colors: ['#ff4d6d', '#ff758f', '#f0c987', '#ffb703', '#ffffff'] },
+                // 6 - Sábado: Deep Cobalt & Electric Indigo
+                { bg: '#050914', heroBg: 'linear-gradient(135deg, #050914 0%, #0e1838 30%, #182858 60%, #050914 100%)', colors: ['#4361ee', '#4895ef', '#4cc9f0', '#7209b7', '#ffffff'] }
+            ];
+            const t = darkThemes[today];
+            document.documentElement.style.setProperty('--daily-bg', t.bg);
+            document.documentElement.style.setProperty('--daily-hero-bg', t.heroBg);
+            window.DAILY_THEME_COLORS = t.colors;
+        })();
     </script>
 </head>
 
@@ -56,9 +57,8 @@
 
         <!-- Contenido central -->
         <main id="ws-main">
-            <span class="ws-marca">Acceso Abierto</span>
             <h1 class="ws-titulo">Biblioteca <em>Digital</em></h1>
-            <p class="ws-sub">Plataforma para estudiantes y población en general.<br>Consulta, descarga y explora el acervo desde cualquier lugar.</p>
+            <p class="ws-sub">Plataforma para estudiantes y población en general.<br>Consulta, descarga y explora</p>
             <div class="ws-accion">
                 <button id="btn-enter" class="ws-btn-ingresar" type="button"
                     onclick="event.stopPropagation(); enterPortalDirectly();">
@@ -72,373 +72,373 @@
 
         <!-- Script de animación del fondo -->
         <script>
-        (function () {
-            const contenedor = document.getElementById('welcome-screen');
-            const canvas     = document.getElementById('ws-canvas');
-            if (!canvas || !contenedor) return;
-            const ctx        = canvas.getContext('2d');
-            const lampara    = document.getElementById('ws-lampara');
-            const main       = document.getElementById('ws-main');
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            (function () {
+                const contenedor = document.getElementById('welcome-screen');
+                const canvas = document.getElementById('ws-canvas');
+                if (!canvas || !contenedor) return;
+                const ctx = canvas.getContext('2d');
+                const lampara = document.getElementById('ws-lampara');
+                const main = document.getElementById('ws-main');
+                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            let dpr = Math.min(window.devicePixelRatio || 1, 2);
-            let w = window.innerWidth, h = window.innerHeight;
+                let dpr = Math.min(window.devicePixelRatio || 1, 2);
+                let w = window.innerWidth, h = window.innerHeight;
 
-            function redimensionar() {
-                const rect = contenedor.getBoundingClientRect();
-                w = rect.width || window.innerWidth;
-                h = rect.height || window.innerHeight;
-                canvas.width  = w * dpr;
-                canvas.height = h * dpr;
-                canvas.style.width  = w + 'px';
-                canvas.style.height = h + 'px';
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            }
-            redimensionar();
-
-            if (window.ResizeObserver) {
-                new ResizeObserver(redimensionar).observe(contenedor);
-            } else {
-                window.addEventListener('resize', redimensionar);
-            }
-
-            const paletaPaginas = ['#d4a15c', '#f0c987', '#e8d5b0', '#b98a4a', '#ffd79a'];
-
-            class Bokeh {
-                constructor() { this.reset(); }
-                reset() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.radio = 60 + Math.random() * 120;
-                    this.velX = (Math.random() - 0.5) * 0.06;
-                    this.velY = (Math.random() - 0.5) * 0.06;
-                    this.opacidad = 0.03 + Math.random() * 0.05;
-                    this.color = Math.random() > 0.5 ? '212, 161, 92' : '61, 74, 107';
+                function redimensionar() {
+                    const rect = contenedor.getBoundingClientRect();
+                    w = rect.width || window.innerWidth;
+                    h = rect.height || window.innerHeight;
+                    canvas.width = w * dpr;
+                    canvas.height = h * dpr;
+                    canvas.style.width = w + 'px';
+                    canvas.style.height = h + 'px';
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 }
-                mover() {
-                    this.x += this.velX;
-                    this.y += this.velY;
-                    if (this.x < -this.radio) this.x = w + this.radio;
-                    if (this.x > w + this.radio) this.x = -this.radio;
-                    if (this.y < -this.radio) this.y = h + this.radio;
-                    if (this.y > h + this.radio) this.y = -this.radio;
-                }
-                dibujar() {
-                    const gradiente = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radio);
-                    gradiente.addColorStop(0, `rgba(${this.color}, ${this.opacidad})`);
-                    gradiente.addColorStop(1, `rgba(${this.color}, 0)`);
-                    ctx.fillStyle = gradiente;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
+                redimensionar();
 
-            class Pagina {
-                constructor() { this.reset(true); }
-                reset(inicial) {
-                    this.x = Math.random() * w;
-                    this.y = inicial ? Math.random() * h : h + 20;
-                    this.ancho = 4 + Math.random() * 7;
-                    this.alto  = this.ancho * (1.3 + Math.random() * 0.4);
-                    this.velY  = 0.18 + Math.random() * 0.35;
-                    this.derivaX   = (Math.random() - 0.5) * 0.35;
-                    this.angulo    = Math.random() * Math.PI * 2;
-                    this.velAngulo = (Math.random() - 0.5) * 0.012;
-                    this.opacidadBase  = 0.15 + Math.random() * 0.4;
-                    this.color     = paletaPaginas[Math.floor(Math.random() * paletaPaginas.length)];
-                    this.oscilacion = Math.random() * Math.PI * 2;
-                    this.impulsoX  = 0;
-                    this.impulsoY  = 0;
-                    this.brillo    = 0;
+                if (window.ResizeObserver) {
+                    new ResizeObserver(redimensionar).observe(contenedor);
+                } else {
+                    window.addEventListener('resize', redimensionar);
                 }
-                empujar(x, y, fuerza) {
-                    const dx = this.x - x;
-                    const dy = this.y - y;
-                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                    this.impulsoX += (dx / dist) * fuerza;
-                    this.impulsoY += (dy / dist) * fuerza;
-                    this.velAngulo += (Math.random() - 0.5) * 0.06;
-                }
-                mover(mx, my) {
-                    this.oscilacion += 0.01;
-                    this.y -= this.velY;
-                    this.x += this.derivaX + Math.sin(this.oscilacion) * 0.15 + this.impulsoX;
-                    this.angulo += this.velAngulo;
 
-                    this.impulsoX *= 0.9;
-                    this.impulsoY *= 0.9;
-                    this.velAngulo *= 0.96;
+                const paletaPaginas = ['#d4a15c', '#f0c987', '#e8d5b0', '#b98a4a', '#ffd79a'];
 
-                    const dx = this.x - mx;
-                    const dy = this.y - my;
-                    const distSq = dx * dx + dy * dy;
-                    const radio = 140;
-                    let objetivoBrillo = 0;
-                    if (distSq < radio * radio) {
-                        const dist = Math.sqrt(distSq) || 1;
-                        const fuerza = (1 - dist / radio) * 0.75;
-                        this.x += (dx / dist) * fuerza;
-                        this.y += (dy / dist) * fuerza;
-                        objetivoBrillo = 1 - dist / radio;
+                class Bokeh {
+                    constructor() { this.reset(); }
+                    reset() {
+                        this.x = Math.random() * w;
+                        this.y = Math.random() * h;
+                        this.radio = 60 + Math.random() * 120;
+                        this.velX = (Math.random() - 0.5) * 0.06;
+                        this.velY = (Math.random() - 0.5) * 0.06;
+                        this.opacidad = 0.03 + Math.random() * 0.05;
+                        this.color = Math.random() > 0.5 ? '212, 161, 92' : '61, 74, 107';
                     }
-                    this.brillo += (objetivoBrillo - this.brillo) * 0.18;
-
-                    if (this.y < -20) this.reset(false);
-                    if (this.x < -20) this.x = w + 20;
-                    if (this.x > w + 20) this.x = -20;
-                }
-                dibujar() {
-                    const escala = 1 + this.brillo * 0.9;
-                    ctx.save();
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.angulo);
-                    ctx.scale(escala, escala);
-                    ctx.globalAlpha = Math.min(this.opacidadBase + this.brillo * 0.6, 1);
-                    ctx.fillStyle   = this.color;
-                    ctx.shadowColor = this.color;
-                    ctx.shadowBlur  = 6 + this.brillo * 12;
-                    ctx.fillRect(-this.ancho / 2, -this.alto / 2, this.ancho, this.alto);
-                    ctx.restore();
-                }
-            }
-
-            class PuntoEstela {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.vida = 1;
-                }
-                actualizar() {
-                    this.vida -= 0.03;
-                }
-            }
-
-            class Chispa {
-                constructor(x, y, intensa) {
-                    this.x = x;
-                    this.y = y;
-                    const ang = Math.random() * Math.PI * 2;
-                    const vel = (intensa ? 2.5 : 0.8) + Math.random() * (intensa ? 4 : 2);
-                    this.velX = Math.cos(ang) * vel;
-                    this.velY = Math.sin(ang) * vel;
-                    this.radio = 1.2 + Math.random() * 2.2;
-                    this.vida = 1;
-                    this.decaimiento = 0.02 + Math.random() * 0.03;
-                    this.color = paletaPaginas[Math.floor(Math.random() * paletaPaginas.length)];
-                }
-                actualizar() {
-                    this.x += this.velX;
-                    this.y += this.velY;
-                    this.velX *= 0.94;
-                    this.velY *= 0.94;
-                    this.vida -= this.decaimiento;
-                }
-                dibujar() {
-                    if (this.vida <= 0) return;
-                    ctx.save();
-                    ctx.globalAlpha = Math.max(0, this.vida);
-                    ctx.fillStyle = this.color;
-                    ctx.shadowColor = this.color;
-                    ctx.shadowBlur = 8;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radio * this.vida, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            }
-
-            class Onda {
-                constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
-                    this.radio = 10;
-                    this.maxRadio = 180 + Math.random() * 60;
-                    this.opacidad = 0.75;
-                }
-                actualizar() {
-                    this.radio += (this.maxRadio - this.radio) * 0.08;
-                    this.opacidad *= 0.92;
-                }
-                dibujar() {
-                    if (this.opacidad < 0.01) return;
-                    ctx.save();
-                    ctx.globalAlpha = this.opacidad;
-                    ctx.strokeStyle = '#f0c987';
-                    ctx.shadowColor = '#f0c987';
-                    ctx.shadowBlur = 15;
-                    ctx.lineWidth = 2 * this.opacidad;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.restore();
-                }
-            }
-
-            const bokehs = Array.from({ length: 8 }, () => new Bokeh());
-            const paginas = [];
-            function crearPaginas() {
-                paginas.length = 0;
-                const cantidad = w < 640 ? 34 : 60;
-                for (let i = 0; i < cantidad; i++) paginas.push(new Pagina());
-            }
-            crearPaginas();
-
-            const estela = [];
-            const chispas = [];
-            const ondas = [];
-            let arrastrando = false;
-
-            let mouseX = w / 2;
-            let mouseY = h * 0.38;
-            let mouseObjX = mouseX, mouseObjY = mouseY;
-            let tiltX = 0, tiltY = 0, tiltObjX = 0, tiltObjY = 0;
-            const RADIO_CONSTELACION = 160;
-
-            function posicionRelativa(e) {
-                const rect = contenedor.getBoundingClientRect();
-                return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-            }
-
-            contenedor.addEventListener('pointermove', (e) => {
-                const pos = posicionRelativa(e);
-                mouseObjX = pos.x;
-                mouseObjY = pos.y;
-                if (lampara) {
-                    lampara.style.setProperty('--ws-mx', pos.x + 'px');
-                    lampara.style.setProperty('--ws-my', pos.y + 'px');
-                }
-                tiltObjX = (pos.x / w) * 2 - 1;
-                tiltObjY = (pos.y / h) * 2 - 1;
-
-                if (Math.random() < (arrastrando ? 0.8 : 0.35)) {
-                    chispas.push(new Chispa(pos.x, pos.y, arrastrando));
-                }
-
-                estela.push(new PuntoEstela(pos.x, pos.y));
-            });
-
-            contenedor.addEventListener('pointerdown', (e) => {
-                const ws = document.getElementById('welcome-screen');
-                if (!ws || ws.classList.contains('hidden')) return;
-
-                // Evitar que el navegador seleccione texto al arrastrar el mouse
-                const tag = e.target.tagName;
-                if (tag !== 'BUTTON' && tag !== 'A' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
-                    e.preventDefault();
-                }
-
-                arrastrando = true;
-                const pos = posicionRelativa(e);
-                ondas.push(new Onda(pos.x, pos.y));
-
-                for (let i = 0; i < 18; i++) {
-                    chispas.push(new Chispa(pos.x, pos.y, true));
-                }
-
-                estela.push(new PuntoEstela(pos.x, pos.y));
-                paginas.forEach((p) => {
-                    const dx = p.x - pos.x;
-                    const dy = p.y - pos.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 220) p.empujar(pos.x, pos.y, (1 - dist / 220) * 8);
-                });
-            });
-
-            window.addEventListener('pointerup', () => { arrastrando = false; });
-            contenedor.addEventListener('pointerleave', () => { arrastrando = false; });
-
-            function dibujarConstelacion() {
-                for (let i = 0; i < paginas.length; i++) {
-                    const p = paginas[i];
-                    const dx = p.x - mouseX;
-                    const dy = p.y - mouseY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < RADIO_CONSTELACION) {
-                        ctx.save();
-                        ctx.globalAlpha = (1 - dist / RADIO_CONSTELACION) * 0.45;
-                        ctx.strokeStyle = p.color;
-                        ctx.lineWidth = 1;
-                        ctx.shadowColor = p.color;
-                        ctx.shadowBlur = 6;
+                    mover() {
+                        this.x += this.velX;
+                        this.y += this.velY;
+                        if (this.x < -this.radio) this.x = w + this.radio;
+                        if (this.x > w + this.radio) this.x = -this.radio;
+                        if (this.y < -this.radio) this.y = h + this.radio;
+                        if (this.y > h + this.radio) this.y = -this.radio;
+                    }
+                    dibujar() {
+                        const gradiente = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radio);
+                        gradiente.addColorStop(0, `rgba(${this.color}, ${this.opacidad})`);
+                        gradiente.addColorStop(1, `rgba(${this.color}, 0)`);
+                        ctx.fillStyle = gradiente;
                         ctx.beginPath();
-                        ctx.moveTo(mouseX, mouseY);
-                        ctx.lineTo(p.x, p.y);
+                        ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                class Pagina {
+                    constructor() { this.reset(true); }
+                    reset(inicial) {
+                        this.x = Math.random() * w;
+                        this.y = inicial ? Math.random() * h : h + 20;
+                        this.ancho = 4 + Math.random() * 7;
+                        this.alto = this.ancho * (1.3 + Math.random() * 0.4);
+                        this.velY = 0.18 + Math.random() * 0.35;
+                        this.derivaX = (Math.random() - 0.5) * 0.35;
+                        this.angulo = Math.random() * Math.PI * 2;
+                        this.velAngulo = (Math.random() - 0.5) * 0.012;
+                        this.opacidadBase = 0.15 + Math.random() * 0.4;
+                        this.color = paletaPaginas[Math.floor(Math.random() * paletaPaginas.length)];
+                        this.oscilacion = Math.random() * Math.PI * 2;
+                        this.impulsoX = 0;
+                        this.impulsoY = 0;
+                        this.brillo = 0;
+                    }
+                    empujar(x, y, fuerza) {
+                        const dx = this.x - x;
+                        const dy = this.y - y;
+                        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                        this.impulsoX += (dx / dist) * fuerza;
+                        this.impulsoY += (dy / dist) * fuerza;
+                        this.velAngulo += (Math.random() - 0.5) * 0.06;
+                    }
+                    mover(mx, my) {
+                        this.oscilacion += 0.01;
+                        this.y -= this.velY;
+                        this.x += this.derivaX + Math.sin(this.oscilacion) * 0.15 + this.impulsoX;
+                        this.angulo += this.velAngulo;
+
+                        this.impulsoX *= 0.9;
+                        this.impulsoY *= 0.9;
+                        this.velAngulo *= 0.96;
+
+                        const dx = this.x - mx;
+                        const dy = this.y - my;
+                        const distSq = dx * dx + dy * dy;
+                        const radio = 140;
+                        let objetivoBrillo = 0;
+                        if (distSq < radio * radio) {
+                            const dist = Math.sqrt(distSq) || 1;
+                            const fuerza = (1 - dist / radio) * 0.75;
+                            this.x += (dx / dist) * fuerza;
+                            this.y += (dy / dist) * fuerza;
+                            objetivoBrillo = 1 - dist / radio;
+                        }
+                        this.brillo += (objetivoBrillo - this.brillo) * 0.18;
+
+                        if (this.y < -20) this.reset(false);
+                        if (this.x < -20) this.x = w + 20;
+                        if (this.x > w + 20) this.x = -20;
+                    }
+                    dibujar() {
+                        const escala = 1 + this.brillo * 0.9;
+                        ctx.save();
+                        ctx.translate(this.x, this.y);
+                        ctx.rotate(this.angulo);
+                        ctx.scale(escala, escala);
+                        ctx.globalAlpha = Math.min(this.opacidadBase + this.brillo * 0.6, 1);
+                        ctx.fillStyle = this.color;
+                        ctx.shadowColor = this.color;
+                        ctx.shadowBlur = 6 + this.brillo * 12;
+                        ctx.fillRect(-this.ancho / 2, -this.alto / 2, this.ancho, this.alto);
+                        ctx.restore();
+                    }
+                }
+
+                class PuntoEstela {
+                    constructor(x, y) {
+                        this.x = x;
+                        this.y = y;
+                        this.vida = 1;
+                    }
+                    actualizar() {
+                        this.vida -= 0.03;
+                    }
+                }
+
+                class Chispa {
+                    constructor(x, y, intensa) {
+                        this.x = x;
+                        this.y = y;
+                        const ang = Math.random() * Math.PI * 2;
+                        const vel = (intensa ? 2.5 : 0.8) + Math.random() * (intensa ? 4 : 2);
+                        this.velX = Math.cos(ang) * vel;
+                        this.velY = Math.sin(ang) * vel;
+                        this.radio = 1.2 + Math.random() * 2.2;
+                        this.vida = 1;
+                        this.decaimiento = 0.02 + Math.random() * 0.03;
+                        this.color = paletaPaginas[Math.floor(Math.random() * paletaPaginas.length)];
+                    }
+                    actualizar() {
+                        this.x += this.velX;
+                        this.y += this.velY;
+                        this.velX *= 0.94;
+                        this.velY *= 0.94;
+                        this.vida -= this.decaimiento;
+                    }
+                    dibujar() {
+                        if (this.vida <= 0) return;
+                        ctx.save();
+                        ctx.globalAlpha = Math.max(0, this.vida);
+                        ctx.fillStyle = this.color;
+                        ctx.shadowColor = this.color;
+                        ctx.shadowBlur = 8;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radio * this.vida, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+                }
+
+                class Onda {
+                    constructor(x, y) {
+                        this.x = x;
+                        this.y = y;
+                        this.radio = 10;
+                        this.maxRadio = 180 + Math.random() * 60;
+                        this.opacidad = 0.75;
+                    }
+                    actualizar() {
+                        this.radio += (this.maxRadio - this.radio) * 0.08;
+                        this.opacidad *= 0.92;
+                    }
+                    dibujar() {
+                        if (this.opacidad < 0.01) return;
+                        ctx.save();
+                        ctx.globalAlpha = this.opacidad;
+                        ctx.strokeStyle = '#f0c987';
+                        ctx.shadowColor = '#f0c987';
+                        ctx.shadowBlur = 15;
+                        ctx.lineWidth = 2 * this.opacidad;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radio, 0, Math.PI * 2);
                         ctx.stroke();
                         ctx.restore();
                     }
                 }
-            }
 
-            function dibujarEstela() {
-                if (estela.length < 2) return;
-                ctx.save();
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.shadowColor = '#f0c987';
-                ctx.shadowBlur = 14;
-                for (let i = 1; i < estela.length; i++) {
-                    const a = estela[i - 1];
-                    const b = estela[i];
-                    const vidaProm = (a.vida + b.vida) / 2;
-                    if (vidaProm <= 0) continue;
-                    ctx.globalAlpha = vidaProm * 0.65;
-                    ctx.strokeStyle = '#f0c987';
-                    ctx.lineWidth = 1.5 + vidaProm * 4;
-                    ctx.beginPath();
-                    ctx.moveTo(a.x, a.y);
-                    ctx.lineTo(b.x, b.y);
-                    ctx.stroke();
+                const bokehs = Array.from({ length: 8 }, () => new Bokeh());
+                const paginas = [];
+                function crearPaginas() {
+                    paginas.length = 0;
+                    const cantidad = w < 640 ? 34 : 60;
+                    for (let i = 0; i < cantidad; i++) paginas.push(new Pagina());
                 }
-                ctx.restore();
-            }
+                crearPaginas();
 
-            function animar() {
-                const ws = document.getElementById('welcome-screen');
-                if (ws && ws.classList.contains('hidden')) {
+                const estela = [];
+                const chispas = [];
+                const ondas = [];
+                let arrastrando = false;
+
+                let mouseX = w / 2;
+                let mouseY = h * 0.38;
+                let mouseObjX = mouseX, mouseObjY = mouseY;
+                let tiltX = 0, tiltY = 0, tiltObjX = 0, tiltObjY = 0;
+                const RADIO_CONSTELACION = 160;
+
+                function posicionRelativa(e) {
+                    const rect = contenedor.getBoundingClientRect();
+                    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+                }
+
+                contenedor.addEventListener('pointermove', (e) => {
+                    const pos = posicionRelativa(e);
+                    mouseObjX = pos.x;
+                    mouseObjY = pos.y;
+                    if (lampara) {
+                        lampara.style.setProperty('--ws-mx', pos.x + 'px');
+                        lampara.style.setProperty('--ws-my', pos.y + 'px');
+                    }
+                    tiltObjX = (pos.x / w) * 2 - 1;
+                    tiltObjY = (pos.y / h) * 2 - 1;
+
+                    if (Math.random() < (arrastrando ? 0.8 : 0.35)) {
+                        chispas.push(new Chispa(pos.x, pos.y, arrastrando));
+                    }
+
+                    estela.push(new PuntoEstela(pos.x, pos.y));
+                });
+
+                contenedor.addEventListener('pointerdown', (e) => {
+                    const ws = document.getElementById('welcome-screen');
+                    if (!ws || ws.classList.contains('hidden')) return;
+
+                    // Evitar que el navegador seleccione texto al arrastrar el mouse
+                    const tag = e.target.tagName;
+                    if (tag !== 'BUTTON' && tag !== 'A' && tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                        e.preventDefault();
+                    }
+
+                    arrastrando = true;
+                    const pos = posicionRelativa(e);
+                    ondas.push(new Onda(pos.x, pos.y));
+
+                    for (let i = 0; i < 18; i++) {
+                        chispas.push(new Chispa(pos.x, pos.y, true));
+                    }
+
+                    estela.push(new PuntoEstela(pos.x, pos.y));
+                    paginas.forEach((p) => {
+                        const dx = p.x - pos.x;
+                        const dy = p.y - pos.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 220) p.empujar(pos.x, pos.y, (1 - dist / 220) * 8);
+                    });
+                });
+
+                window.addEventListener('pointerup', () => { arrastrando = false; });
+                contenedor.addEventListener('pointerleave', () => { arrastrando = false; });
+
+                function dibujarConstelacion() {
+                    for (let i = 0; i < paginas.length; i++) {
+                        const p = paginas[i];
+                        const dx = p.x - mouseX;
+                        const dy = p.y - mouseY;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < RADIO_CONSTELACION) {
+                            ctx.save();
+                            ctx.globalAlpha = (1 - dist / RADIO_CONSTELACION) * 0.45;
+                            ctx.strokeStyle = p.color;
+                            ctx.lineWidth = 1;
+                            ctx.shadowColor = p.color;
+                            ctx.shadowBlur = 6;
+                            ctx.beginPath();
+                            ctx.moveTo(mouseX, mouseY);
+                            ctx.lineTo(p.x, p.y);
+                            ctx.stroke();
+                            ctx.restore();
+                        }
+                    }
+                }
+
+                function dibujarEstela() {
+                    if (estela.length < 2) return;
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    ctx.shadowColor = '#f0c987';
+                    ctx.shadowBlur = 14;
+                    for (let i = 1; i < estela.length; i++) {
+                        const a = estela[i - 1];
+                        const b = estela[i];
+                        const vidaProm = (a.vida + b.vida) / 2;
+                        if (vidaProm <= 0) continue;
+                        ctx.globalAlpha = vidaProm * 0.65;
+                        ctx.strokeStyle = '#f0c987';
+                        ctx.lineWidth = 1.5 + vidaProm * 4;
+                        ctx.beginPath();
+                        ctx.moveTo(a.x, a.y);
+                        ctx.lineTo(b.x, b.y);
+                        ctx.stroke();
+                    }
+                    ctx.restore();
+                }
+
+                function animar() {
+                    const ws = document.getElementById('welcome-screen');
+                    if (ws && ws.classList.contains('hidden')) {
+                        requestAnimationFrame(animar);
+                        return;
+                    }
+
+                    ctx.clearRect(0, 0, w, h);
+
+                    mouseX += (mouseObjX - mouseX) * 0.08;
+                    mouseY += (mouseObjY - mouseY) * 0.08;
+                    tiltX += (tiltObjX - tiltX) * 0.06;
+                    tiltY += (tiltObjY - tiltY) * 0.06;
+
+                    bokehs.forEach(b => { b.mover(); b.dibujar(); });
+                    paginas.forEach(p => { p.mover(mouseX, mouseY); p.dibujar(); });
+                    dibujarConstelacion();
+
+                    // Dibujar y actualizar estela
+                    estela.forEach(pt => pt.actualizar());
+                    while (estela.length && estela[0].vida <= 0) estela.shift();
+                    dibujarEstela();
+
+                    // Dibujar y actualizar chispas de luz
+                    for (let i = chispas.length - 1; i >= 0; i--) {
+                        chispas[i].actualizar();
+                        chispas[i].dibujar();
+                        if (chispas[i].vida <= 0) chispas.splice(i, 1);
+                    }
+
+                    // Dibujar y actualizar ondas de choque
+                    for (let i = ondas.length - 1; i >= 0; i--) {
+                        ondas[i].actualizar();
+                        ondas[i].dibujar();
+                        if (ondas[i].opacidad < 0.01) ondas.splice(i, 1);
+                    }
+
+                    if (main) {
+                        main.style.transform = `translate3d(${tiltX * -10}px, ${tiltY * -8}px, 0)`;
+                    }
+
                     requestAnimationFrame(animar);
-                    return;
                 }
 
-                ctx.clearRect(0, 0, w, h);
-
-                mouseX += (mouseObjX - mouseX) * 0.08;
-                mouseY += (mouseObjY - mouseY) * 0.08;
-                tiltX  += (tiltObjX - tiltX) * 0.06;
-                tiltY  += (tiltObjY - tiltY) * 0.06;
-
-                bokehs.forEach(b => { b.mover(); b.dibujar(); });
-                paginas.forEach(p => { p.mover(mouseX, mouseY); p.dibujar(); });
-                dibujarConstelacion();
-
-                // Dibujar y actualizar estela
-                estela.forEach(pt => pt.actualizar());
-                while (estela.length && estela[0].vida <= 0) estela.shift();
-                dibujarEstela();
-
-                // Dibujar y actualizar chispas de luz
-                for (let i = chispas.length - 1; i >= 0; i--) {
-                    chispas[i].actualizar();
-                    chispas[i].dibujar();
-                    if (chispas[i].vida <= 0) chispas.splice(i, 1);
-                }
-
-                // Dibujar y actualizar ondas de choque
-                for (let i = ondas.length - 1; i >= 0; i--) {
-                    ondas[i].actualizar();
-                    ondas[i].dibujar();
-                    if (ondas[i].opacidad < 0.01) ondas.splice(i, 1);
-                }
-
-                if (main) {
-                    main.style.transform = `translate3d(${tiltX * -10}px, ${tiltY * -8}px, 0)`;
-                }
-
-                requestAnimationFrame(animar);
-            }
-
-            animar();
-        })();
+                animar();
+            })();
         </script>
     </div>
 
@@ -717,17 +717,23 @@
                             <!-- Imagen de referencia — se guarda como Base64 en localStorage -->
                             <div class="emp-img-upload-wrapper">
                                 <label for="emp-image" class="emp-img-label">
-                                    <i class="fas fa-image"></i> Imagen de referencia <span style="color:var(--gray-400);font-weight:400;">(opcional)</span>
+                                    <i class="fas fa-image"></i> Imagen de referencia <span
+                                        style="color:var(--gray-400);font-weight:400;">(opcional)</span>
                                 </label>
-                                <div class="emp-img-drop-area" id="emp-img-drop-area" onclick="document.getElementById('emp-image').click()">
+                                <div class="emp-img-drop-area" id="emp-img-drop-area"
+                                    onclick="document.getElementById('emp-image').click()">
                                     <img id="emp-img-preview" src="" alt="" style="display:none;">
                                     <div id="emp-img-placeholder">
-                                        <i class="fas fa-cloud-upload-alt" style="font-size:2rem;color:var(--gray-400);display:block;margin-bottom:.5rem;"></i>
-                                        <span style="font-size:.85rem;color:var(--gray-500);">Haz clic para seleccionar imagen<br><small style="color:var(--gray-400);">JPG, PNG, WEBP — máx. 2 MB</small></span>
+                                        <i class="fas fa-cloud-upload-alt"
+                                            style="font-size:2rem;color:var(--gray-400);display:block;margin-bottom:.5rem;"></i>
+                                        <span style="font-size:.85rem;color:var(--gray-500);">Haz clic para seleccionar
+                                            imagen<br><small style="color:var(--gray-400);">JPG, PNG, WEBP — máx. 2
+                                                MB</small></span>
                                     </div>
                                 </div>
                                 <input type="file" id="emp-image" accept="image/*" style="display:none;">
-                                <button type="button" id="emp-img-remove" class="emp-img-remove-btn" style="display:none;" onclick="clearEmpImage()">
+                                <button type="button" id="emp-img-remove" class="emp-img-remove-btn"
+                                    style="display:none;" onclick="clearEmpImage()">
                                     <i class="fas fa-times"></i> Quitar imagen
                                 </button>
                             </div>
@@ -984,6 +990,37 @@
                                     <strong>Biblioteca Digital </strong><br>
                                     <em>El conocimiento es de todos, el respeto a los derechos de autor también.</em>
                                 </p>
+                            </div>
+                        </div>
+
+                        <!--  Aviso Legal – Autonomía y Deslinde Institucional -->
+                        <div class="about-block theme-card legal-card" tabindex="0" role="button" aria-expanded="false"
+                            onclick="toggleLegalCard(this)">
+                            <div class="legal-header">
+                                <span class="legal-icon"></span>
+                                <h3>Aviso de Autonomía y Deslinde Institucional</h3>
+                            </div>
+                            <p class="legal-summary">
+                                Esta biblioteca es un <strong>proyecto estudiantil independiente</strong>, creado de forma autónoma y sin vinculación formal con las autoridades de la USAC o CUNOC.
+                                <span class="expand-hint">Toca o pasa el cursor para más información →</span>
+                            </p>
+                            <div class="legal-full" aria-hidden="true">
+                                <div class="legal-section">
+                                    <h4>Origen y Propósito Estudiantil</h4>
+                                    <p>Esta biblioteca digital ha sido creada y es gestionada exclusivamente por la <strong>Asociación de Estudiantes de Trabajo Social y colaboradores</strong>. Es un proyecto meramente estudiantil y <strong>sin fines de lucro</strong>, cuyo objetivo primordial es poner a disposición de la comunidad estudiantil y de la población en general materiales de fácil acceso, promoviendo la descentralización de la educación superior en función del desarrollo epistemológico de la sociedad.</p>
+                                </div>
+                                <div class="legal-section">
+                                    <h4>Autonomía del Nombre e Identidad</h4>
+                                    <p>Este repositorio no utiliza ni tiene la intención de operar bajo el nombre oficial de la universidad. Por esta razón, se evitaron intencionalmente los logotipos institucionales y se limitó al máximo la mención del nombre formal de la casa de estudios. El uso de la denominación "CUNOC" en ciertas áreas tiene una función estrictamente connotativa, orientada a que la comunidad estudiantil identifique el contexto geográfico y académico de donde nace esta iniciativa.</p>
+                                </div>
+                                <div class="legal-section legal-warning-section">
+                                    <h4>Deslinde Legal y Exención de Responsabilidad</h4>
+                                    <p>Los creadores y colaboradores de este proyecto no tienen intención alguna de lucrar ni de usurpar el nombre de la institución. En cualquier ámbito o caso jurídico, esta plataforma y sus administradores se declaran <strong>contundentemente desligados por derechos de nombre, representación o propiedad</strong> de la universidad. Este deslinde es mutuo: la universidad y sus autoridades no tienen ninguna relación, responsabilidad ni implicación legal en caso de demandas, reclamaciones o acciones jurídicas asociadas a la existencia o funcionamiento de esta biblioteca.</p>
+                                </div>
+                                <div class="legal-section">
+                                    <h4>Cumplimiento Jurídico y Aporte Social</h4>
+                                    <p>Se recalca firmemente que esta biblioteca digital no tiene la intención de sustraer, vender, piratear ni infringir los derechos de autor o cualquier otra disposición contemplada en el marco jurídico guatemalteco. Su único fin y razón de existir radica en brindar un aporte educativo y cultural libre a la sociedad.</p>
+                                </div>
                             </div>
                         </div>
 
@@ -2217,203 +2254,203 @@
 
         <!-- Animación de fondo del hero (Conocimiento y Aprendizaje) -->
         <script>
-        (function() {
-            const heroCanvas = document.getElementById('hero-canvas');
-            if (!heroCanvas) return;
-            const hCtx = heroCanvas.getContext('2d');
-            const heroSection = heroCanvas.closest('.hero-section');
+            (function () {
+                const heroCanvas = document.getElementById('hero-canvas');
+                if (!heroCanvas) return;
+                const hCtx = heroCanvas.getContext('2d');
+                const heroSection = heroCanvas.closest('.hero-section');
 
-            let hW = 0, hH = 0;
-            let mouseX = -1000, mouseY = -1000;
+                let hW = 0, hH = 0;
+                let mouseX = -1000, mouseY = -1000;
 
-            if (heroSection) {
-                heroSection.addEventListener('mousemove', (e) => {
-                    const rect = heroSection.getBoundingClientRect();
-                    mouseX = e.clientX - rect.left;
-                    mouseY = e.clientY - rect.top;
-                });
-                heroSection.addEventListener('mouseleave', () => {
-                    mouseX = -1000;
-                    mouseY = -1000;
-                });
-            }
-
-            const symbols = ['📖', '🎓', '💡', '⚙️', '🔬', '✏️', '📐', '🧠', '📚', '🌐'];
-            const colors = window.DAILY_THEME_COLORS || ['#00f2fe', '#4facfe', '#9b51e0', '#f0c987', '#00ffcc'];
-
-            class HeroParticle {
-                constructor() { this.reset(true); }
-                reset(init) {
-                    const w = hW || 800;
-                    const h = hH || 400;
-                    this.x = Math.random() * w;
-                    this.y = init ? Math.random() * h : h + 30;
-                    this.size = 14 + Math.random() * 22;
-                    this.velY = -(0.25 + Math.random() * 0.45);
-                    this.velX = (Math.random() - 0.5) * 0.4;
-                    this.rotation = Math.random() * Math.PI * 2;
-                    this.rotSpeed = (Math.random() - 0.5) * 0.015;
-                    this.opacity = 0.25 + Math.random() * 0.35;
-                    this.symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                    this.oscillation = Math.random() * Math.PI * 2;
-                    this.oscSpeed = 0.008 + Math.random() * 0.012;
+                if (heroSection) {
+                    heroSection.addEventListener('mousemove', (e) => {
+                        const rect = heroSection.getBoundingClientRect();
+                        mouseX = e.clientX - rect.left;
+                        mouseY = e.clientY - rect.top;
+                    });
+                    heroSection.addEventListener('mouseleave', () => {
+                        mouseX = -1000;
+                        mouseY = -1000;
+                    });
                 }
-                update() {
-                    if (!hW || !hH) return;
-                    this.oscillation += this.oscSpeed;
-                    this.y += this.velY;
-                    this.x += this.velX + Math.sin(this.oscillation) * 0.35;
-                    this.rotation += this.rotSpeed;
 
-                    // Reacción al mouse
-                    const dx = this.x - mouseX;
-                    const dy = this.y - mouseY;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 100) {
-                        const force = (100 - dist) / 100;
-                        this.x += (dx / dist) * force * 3;
-                        this.y += (dy / dist) * force * 3;
+                const symbols = ['📖', '🎓', '💡', '⚙️', '🔬', '✏️', '📐', '🧠', '📚', '🌐'];
+                const colors = window.DAILY_THEME_COLORS || ['#00f2fe', '#4facfe', '#9b51e0', '#f0c987', '#00ffcc'];
+
+                class HeroParticle {
+                    constructor() { this.reset(true); }
+                    reset(init) {
+                        const w = hW || 800;
+                        const h = hH || 400;
+                        this.x = Math.random() * w;
+                        this.y = init ? Math.random() * h : h + 30;
+                        this.size = 14 + Math.random() * 22;
+                        this.velY = -(0.25 + Math.random() * 0.45);
+                        this.velX = (Math.random() - 0.5) * 0.4;
+                        this.rotation = Math.random() * Math.PI * 2;
+                        this.rotSpeed = (Math.random() - 0.5) * 0.015;
+                        this.opacity = 0.25 + Math.random() * 0.35;
+                        this.symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                        this.oscillation = Math.random() * Math.PI * 2;
+                        this.oscSpeed = 0.008 + Math.random() * 0.012;
                     }
+                    update() {
+                        if (!hW || !hH) return;
+                        this.oscillation += this.oscSpeed;
+                        this.y += this.velY;
+                        this.x += this.velX + Math.sin(this.oscillation) * 0.35;
+                        this.rotation += this.rotSpeed;
 
-                    if (this.y < -40 || this.x < -40 || this.x > hW + 40) this.reset(false);
-                }
-                draw() {
-                    if (!hCtx || !hW) return;
-                    hCtx.save();
-                    hCtx.translate(this.x, this.y);
-                    hCtx.rotate(this.rotation);
-                    hCtx.globalAlpha = this.opacity;
-                    hCtx.font = this.size + 'px sans-serif';
-                    hCtx.textAlign = 'center';
-                    hCtx.textBaseline = 'middle';
-                    hCtx.fillText(this.symbol, 0, 0);
-                    hCtx.restore();
-                }
-            }
-
-            class HeroDot {
-                constructor() { this.reset(); }
-                reset() {
-                    const w = hW || 800;
-                    const h = hH || 400;
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.r = 1.5 + Math.random() * 3;
-                    this.velX = (Math.random() - 0.5) * 0.6;
-                    this.velY = (Math.random() - 0.5) * 0.6;
-                    this.color = colors[Math.floor(Math.random() * colors.length)];
-                    this.alpha = 0.3 + Math.random() * 0.5;
-                    this.pulsePhase = Math.random() * Math.PI * 2;
-                }
-                update() {
-                    if (!hW || !hH) return;
-                    this.x += this.velX;
-                    this.y += this.velY;
-                    this.pulsePhase += 0.03;
-                    if (this.x < 0) this.x = hW;
-                    if (this.x > hW) this.x = 0;
-                    if (this.y < 0) this.y = hH;
-                    if (this.y > hH) this.y = 0;
-                }
-                draw() {
-                    if (!hCtx) return;
-                    const pulse = 0.5 + Math.sin(this.pulsePhase) * 0.5;
-                    const a = this.alpha * (0.7 + pulse * 0.3);
-                    hCtx.save();
-                    hCtx.globalAlpha = a;
-                    hCtx.fillStyle = this.color;
-                    hCtx.shadowColor = this.color;
-                    hCtx.shadowBlur = 8;
-                    hCtx.beginPath();
-                    hCtx.arc(this.x, this.y, this.r * (0.8 + pulse * 0.4), 0, Math.PI * 2);
-                    hCtx.fill();
-                    hCtx.restore();
-                }
-            }
-
-            const particles = [];
-            const dots = [];
-            const CONNECT_DIST = 130;
-
-            function initParticles() {
-                particles.length = 0;
-                dots.length = 0;
-                const count = (hW || 800) < 640 ? 12 : 22;
-                const dotCount = (hW || 800) < 640 ? 30 : 60;
-                for (let i = 0; i < count; i++) particles.push(new HeroParticle());
-                for (let i = 0; i < dotCount; i++) dots.push(new HeroDot());
-            }
-
-            function drawConnections() {
-                if (!hCtx) return;
-                for (let i = 0; i < dots.length; i++) {
-                    for (let j = i + 1; j < dots.length; j++) {
-                        const dx = dots[i].x - dots[j].x;
-                        const dy = dots[i].y - dots[j].y;
+                        // Reacción al mouse
+                        const dx = this.x - mouseX;
+                        const dy = this.y - mouseY;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < CONNECT_DIST) {
-                            const alpha = (1 - dist / CONNECT_DIST) * 0.28;
-                            hCtx.save();
-                            hCtx.globalAlpha = alpha;
-                            hCtx.strokeStyle = '#00f2fe';
-                            hCtx.lineWidth = 0.8;
-                            hCtx.beginPath();
-                            hCtx.moveTo(dots[i].x, dots[i].y);
-                            hCtx.lineTo(dots[j].x, dots[j].y);
-                            hCtx.stroke();
-                            hCtx.restore();
+                        if (dist < 100) {
+                            const force = (100 - dist) / 100;
+                            this.x += (dx / dist) * force * 3;
+                            this.y += (dy / dist) * force * 3;
                         }
-                    }
 
-                    // Conexión al mouse
-                    if (mouseX > 0 && mouseY > 0) {
-                        const mdx = dots[i].x - mouseX;
-                        const mdy = dots[i].y - mouseY;
-                        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-                        if (mdist < 140) {
-                            const mAlpha = (1 - mdist / 140) * 0.5;
-                            hCtx.save();
-                            hCtx.globalAlpha = mAlpha;
-                            hCtx.strokeStyle = '#f0c987';
-                            hCtx.lineWidth = 1;
-                            hCtx.beginPath();
-                            hCtx.moveTo(dots[i].x, dots[i].y);
-                            hCtx.lineTo(mouseX, mouseY);
-                            hCtx.stroke();
-                            hCtx.restore();
-                        }
+                        if (this.y < -40 || this.x < -40 || this.x > hW + 40) this.reset(false);
+                    }
+                    draw() {
+                        if (!hCtx || !hW) return;
+                        hCtx.save();
+                        hCtx.translate(this.x, this.y);
+                        hCtx.rotate(this.rotation);
+                        hCtx.globalAlpha = this.opacity;
+                        hCtx.font = this.size + 'px sans-serif';
+                        hCtx.textAlign = 'center';
+                        hCtx.textBaseline = 'middle';
+                        hCtx.fillText(this.symbol, 0, 0);
+                        hCtx.restore();
                     }
                 }
-            }
 
-            function checkResize() {
-                if (!heroSection) return;
-                const rect = heroSection.getBoundingClientRect();
-                if (rect.width > 0 && rect.height > 0 && (rect.width !== hW || rect.height !== hH)) {
-                    hW = rect.width;
-                    hH = rect.height;
-                    heroCanvas.width = hW * 2;
-                    heroCanvas.height = hH * 2;
-                    heroCanvas.style.width = hW + 'px';
-                    heroCanvas.style.height = hH + 'px';
-                    hCtx.setTransform(2, 0, 0, 2, 0, 0);
-                    initParticles();
+                class HeroDot {
+                    constructor() { this.reset(); }
+                    reset() {
+                        const w = hW || 800;
+                        const h = hH || 400;
+                        this.x = Math.random() * w;
+                        this.y = Math.random() * h;
+                        this.r = 1.5 + Math.random() * 3;
+                        this.velX = (Math.random() - 0.5) * 0.6;
+                        this.velY = (Math.random() - 0.5) * 0.6;
+                        this.color = colors[Math.floor(Math.random() * colors.length)];
+                        this.alpha = 0.3 + Math.random() * 0.5;
+                        this.pulsePhase = Math.random() * Math.PI * 2;
+                    }
+                    update() {
+                        if (!hW || !hH) return;
+                        this.x += this.velX;
+                        this.y += this.velY;
+                        this.pulsePhase += 0.03;
+                        if (this.x < 0) this.x = hW;
+                        if (this.x > hW) this.x = 0;
+                        if (this.y < 0) this.y = hH;
+                        if (this.y > hH) this.y = 0;
+                    }
+                    draw() {
+                        if (!hCtx) return;
+                        const pulse = 0.5 + Math.sin(this.pulsePhase) * 0.5;
+                        const a = this.alpha * (0.7 + pulse * 0.3);
+                        hCtx.save();
+                        hCtx.globalAlpha = a;
+                        hCtx.fillStyle = this.color;
+                        hCtx.shadowColor = this.color;
+                        hCtx.shadowBlur = 8;
+                        hCtx.beginPath();
+                        hCtx.arc(this.x, this.y, this.r * (0.8 + pulse * 0.4), 0, Math.PI * 2);
+                        hCtx.fill();
+                        hCtx.restore();
+                    }
                 }
-            }
 
-            function heroAnimate() {
-                checkResize();
-                if (hW > 0 && hH > 0) {
-                    hCtx.clearRect(0, 0, hW, hH);
-                    dots.forEach(d => { d.update(); d.draw(); });
-                    drawConnections();
-                    particles.forEach(p => { p.update(); p.draw(); });
+                const particles = [];
+                const dots = [];
+                const CONNECT_DIST = 130;
+
+                function initParticles() {
+                    particles.length = 0;
+                    dots.length = 0;
+                    const count = (hW || 800) < 640 ? 12 : 22;
+                    const dotCount = (hW || 800) < 640 ? 30 : 60;
+                    for (let i = 0; i < count; i++) particles.push(new HeroParticle());
+                    for (let i = 0; i < dotCount; i++) dots.push(new HeroDot());
                 }
-                requestAnimationFrame(heroAnimate);
-            }
 
-            heroAnimate();
-        })();
+                function drawConnections() {
+                    if (!hCtx) return;
+                    for (let i = 0; i < dots.length; i++) {
+                        for (let j = i + 1; j < dots.length; j++) {
+                            const dx = dots[i].x - dots[j].x;
+                            const dy = dots[i].y - dots[j].y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < CONNECT_DIST) {
+                                const alpha = (1 - dist / CONNECT_DIST) * 0.28;
+                                hCtx.save();
+                                hCtx.globalAlpha = alpha;
+                                hCtx.strokeStyle = '#00f2fe';
+                                hCtx.lineWidth = 0.8;
+                                hCtx.beginPath();
+                                hCtx.moveTo(dots[i].x, dots[i].y);
+                                hCtx.lineTo(dots[j].x, dots[j].y);
+                                hCtx.stroke();
+                                hCtx.restore();
+                            }
+                        }
+
+                        // Conexión al mouse
+                        if (mouseX > 0 && mouseY > 0) {
+                            const mdx = dots[i].x - mouseX;
+                            const mdy = dots[i].y - mouseY;
+                            const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+                            if (mdist < 140) {
+                                const mAlpha = (1 - mdist / 140) * 0.5;
+                                hCtx.save();
+                                hCtx.globalAlpha = mAlpha;
+                                hCtx.strokeStyle = '#f0c987';
+                                hCtx.lineWidth = 1;
+                                hCtx.beginPath();
+                                hCtx.moveTo(dots[i].x, dots[i].y);
+                                hCtx.lineTo(mouseX, mouseY);
+                                hCtx.stroke();
+                                hCtx.restore();
+                            }
+                        }
+                    }
+                }
+
+                function checkResize() {
+                    if (!heroSection) return;
+                    const rect = heroSection.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0 && (rect.width !== hW || rect.height !== hH)) {
+                        hW = rect.width;
+                        hH = rect.height;
+                        heroCanvas.width = hW * 2;
+                        heroCanvas.height = hH * 2;
+                        heroCanvas.style.width = hW + 'px';
+                        heroCanvas.style.height = hH + 'px';
+                        hCtx.setTransform(2, 0, 0, 2, 0, 0);
+                        initParticles();
+                    }
+                }
+
+                function heroAnimate() {
+                    checkResize();
+                    if (hW > 0 && hH > 0) {
+                        hCtx.clearRect(0, 0, hW, hH);
+                        dots.forEach(d => { d.update(); d.draw(); });
+                        drawConnections();
+                        particles.forEach(p => { p.update(); p.draw(); });
+                    }
+                    requestAnimationFrame(heroAnimate);
+                }
+
+                heroAnimate();
+            })();
         </script>
 
         <script src="script.js?v=2.1"></script>
