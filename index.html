@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.5">
+    <link rel="stylesheet" href="style.css?v=3.6">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
     <script>
@@ -551,6 +551,9 @@
                         <a href="#" role="menuitem"
                             onclick="setExclusiveTab('plataforma'); scrollToSection('platform-communication'); return false;">
                             Comunicación Directa</a>
+                        <a href="#" role="menuitem"
+                            onclick="setExclusiveTab('inicio'); scrollToSection('acerca'); return false;">
+                            <i class="fas fa-scale-balanced" style="margin-right:6px;color:var(--bronze);"></i>Avisos Legales y Acerca de</a>
                     </div>
                 </div>
 
@@ -2246,8 +2249,8 @@
                     <!-- Los íconos se generan dinámicamente desde localStorage via renderSocialLinks() -->
                 </div>
                 <div class="footer-copy">
-                    <p>&copy; 2026 Biblioteca Digital . Todos los derechos reservados.</p>
-                    <p>Diseñado por Pascual Aguilar</p>
+                    <p>&copy; 2026 Biblioteca Digital. Todos los derechos reservados.</p>
+                    <p><a href="#" onclick="setExclusiveTab('inicio'); scrollToSection('acerca'); return false;" style="color:var(--bronze);text-decoration:none;font-weight:600;"><i class="fas fa-shield-alt" style="margin-right:4px;"></i> Avisos Legales y Acerca de</a> &middot; Diseñado por Pascual Aguilar</p>
                 </div>
             </div>
         </footer>
@@ -2453,7 +2456,7 @@
             })();
         </script>
 
-        <script src="script.js?v=2.3"></script>
+        <script src="script.js?v=2.4"></script>
 
 
         <!-- ===== LIGHTBOX IMAGEN ===== -->
